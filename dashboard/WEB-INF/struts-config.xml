@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_3.dtd">
+
+
+<struts-config>
+    
+    <form-beans>
+        <form-bean name="DashboardForm" type="com.pearson.dashboard.form.DashboardForm"/>
+        <form-bean name="LoginForm" type="com.pearson.dashboard.form.LoginForm"/>
+    </form-beans>
+    
+    <action-mappings>
+   
+        <action path="/login" type="com.pearson.dashboard.action.LoginAction" scope="session" name="LoginForm">
+			<forward name="loginsuccess" path="/dashboard.do"/>
+			<forward name="login" path="/login.jsp"/>
+        </action>
+   
+        <action path="/dashboard" type="com.pearson.dashboard.action.DashboardAction" scope="session" name="DashboardForm">
+			<forward name="showDashboard" path="/showDashboard.do"/>
+			<forward name="login" path="/login.jsp"/>
+        </action>
+        
+        <action path="/showDashboard" forward="/mydashboard.jsp"/>
+        
+    </action-mappings>
+
+    <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>
+    
+    <message-resources parameter="com/pearson/dashboard/ApplicationResource"/>    
+    
+    <plug-in className="org.apache.struts.tiles.TilesPlugin" >  
+        <set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml" />      
+        <set-property property="moduleAware" value="true" />
+    </plug-in>
+    
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property
+            property="pathnames"
+            value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+    </plug-in>
+  
+</struts-config>
