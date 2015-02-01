@@ -16,6 +16,7 @@ public class Defect {
     private String priority;
     private String project;
     private String lastUpdateDate;
+    private String lastUpdateDateOriginal;
     
 	public String getDefectId() {
 		return defectId;
@@ -53,5 +54,10 @@ public class Defect {
 	public void setDefectDesc(String defectDesc) {
 		this.defectDesc = defectDesc;
 	}
-    
+	public String getLastUpdateDateOriginal() {
+		return lastUpdateDateOriginal;
+	}
+	public void setLastUpdateDateOriginal(String lastUpdateDateOriginal) {
+		this.lastUpdateDateOriginal = lastUpdateDateOriginal;
+	}
 }

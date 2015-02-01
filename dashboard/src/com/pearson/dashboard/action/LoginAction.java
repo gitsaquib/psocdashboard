@@ -16,6 +16,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.pearson.dashboard.form.LoginForm;
+import com.pearson.dashboard.util.Util;
 
 /**
  *
@@ -29,16 +30,17 @@ public class LoginAction extends Action {
     		request.getSession().invalidate();
     	} else {
 	    	LoginForm loginForm = (LoginForm) form;
-	    	if(null != loginForm.getUsername() && loginForm.getUsername().equalsIgnoreCase("admin") && 
-	    			null != loginForm.getPassword() && loginForm.getPassword().equalsIgnoreCase("admin")) {
-	    		
-	    		HttpSession session = request.getSession();
-				session.setAttribute("user", loginForm.getUsername());
-				session.setMaxInactiveInterval(30*60);
-				Cookie userName = new Cookie("user", loginForm.getUsername());
-				userName.setMaxAge(30*60);
-				response.addCookie(userName);
-				return mapping.findForward("loginsuccess");
+	    	if(null != loginForm.getUsername()) {
+	    		String password = Util.readUserFile(loginForm.getUsername());
+	    		if(null != password && password.equals(loginForm.getPassword())) {
+	    			HttpSession session = request.getSession();
+					session.setAttribute("user", loginForm.getUsername());
+					session.setMaxInactiveInterval(30*60);
+					Cookie userName = new Cookie("user", loginForm.getUsername());
+					userName.setMaxAge(30*60);
+					response.addCookie(userName);
+					return mapping.findForward("loginsuccess");
+	    		}
 	    	}
     	}
         return mapping.findForward("login");

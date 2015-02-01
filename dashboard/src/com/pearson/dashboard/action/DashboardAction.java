@@ -36,6 +36,7 @@ public class DashboardAction extends Action {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	DashboardForm dashboardForm = (DashboardForm) form;
+    	
     	if(null != request.getParameter("export")) {
     		request.getSession().setAttribute("dashboardForm", dashboardForm);
     		request.setAttribute("dashboardForm", dashboardForm);
@@ -57,15 +58,16 @@ public class DashboardAction extends Action {
 		Configuration configuration = Util.readConfigFile();
         List<Project> projects = configuration.getProjects();
     	
-    	List<Release> releases = Util.retrieveReleaseInfo(configuration);
-    	dashboardForm.setReleases(releases);
     	dashboardForm.setProjects(projects);
     	
-    	if(null != request.getParameter("release") && null != request.getParameter("proj")) {
-    		dashboardForm.setProjectId(request.getParameter("proj"));
-    		dashboardForm.setSelectedRelease(request.getParameter("release"));
-    		Util.populateDefectData(dashboardForm, configuration);
+    	int tab = 0;
+    	if(null != request.getParameter("tab")) {
+    		tab = Integer.parseInt(request.getParameter("tab"));
     	}
+    	
+    	dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
+    	dashboardForm.setSelectedRelease(Util.getProjectAttribute(configuration, "release", tab));
+		Util.populateDefectData(dashboardForm, configuration);
         return mapping.findForward("showDashboard");
     }
     

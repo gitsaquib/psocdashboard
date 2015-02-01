@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,13 +72,12 @@ public class Util {
 		JsonArray defectsArray;
 		defects = new ArrayList<Defect>();
     	if(yesterdayDefects) {
-    		Date date = new Date();
-    		DateFormat df = new SimpleDateFormat("yyyy-dd-MM");
-    		String dateStr = df.format(date);
+    		String today = getDate("today");
+    		String yesterday = getDate("yesterday");
     		if(typeCategory.equalsIgnoreCase("ClosedY")) {
-    			queryFilter = new QueryFilter("State", "=", "Closed").and(new QueryFilter("Release.Name", "=", releaseNum)).and(new QueryFilter("ClosedDate", "=", dateStr));
+    			queryFilter = new QueryFilter("State", "=", "Closed").and(new QueryFilter("Release.Name", "=", releaseNum)).and(new QueryFilter("ClosedDate", "<", today)).and(new QueryFilter("ClosedDate", ">=", yesterday));
     		} else {
-    			queryFilter = new QueryFilter("Release.Name", "=", releaseNum).and(new QueryFilter("CreationDate", "=", dateStr));
+    			queryFilter = new QueryFilter("Release.Name", "=", releaseNum).and(new QueryFilter("CreationDate", "<", today)).and(new QueryFilter("CreationDate", ">=", yesterday));
     		}
     	} else {
     		queryFilter = new QueryFilter("State", "=", typeCategory).and(new QueryFilter("Release.Name", "=", releaseNum));
@@ -102,6 +102,8 @@ public class Util {
 	            Date date = (Date) formatter1.parse(strFormat1);
 	            DateFormat formatter2 = new SimpleDateFormat("MMM dd");
 	            defect.setLastUpdateDate(formatter2.format(date));
+	            
+	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
 	            
 	            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty()) {
 	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
@@ -177,18 +179,23 @@ public class Util {
 			configuration.setRallyUser(prop.getProperty("rallyUser"));
 			configuration.setRallyPassword(prop.getProperty("rallyPassword"));
 			
+			stream = loader.getResourceAsStream("/project.properties");
+			prop.load(stream);
+			
 			List<Project> projectList = new ArrayList<Project>();  
-			String projectsStr = prop.getProperty("rallyProjects");
+			String projectsStr = prop.getProperty("projects");
 			if(null != projectsStr) {
-				String[] projects = projectsStr.split(",");
+				String[] projects = projectsStr.split(";");
 				if(null != projects) {
 					for(int i=0; i<projects.length; i++) {
 						String params = projects[i];
 						if(null != params) {
 							String param[] = params.split(":");
 							Project project = new Project();
-							project.setProjectId(param[1]);
-							project.setProjectKey(param[0]);
+							project.setTabIndex(Integer.parseInt(param[0]));
+							project.setProjectKey(param[1]);
+							project.setProjectId(param[2]);
+							project.setRelease(param[3]);
 							projectList.add(project);
 						}
 					}
@@ -581,4 +588,42 @@ public class Util {
 		dashboardForm.setProjectId(project.getProjectId());
 		dashboardForm.setProjectName(project.getProjectKey());
 	}
+    
+    public static String getProjectAttribute(Configuration configuration, String key, int tab) {
+    	List<Project> projects = configuration.getProjects();
+    	for(Project project:projects) {
+    		if(tab == project.getTabIndex()) {
+    			if(key.equals("release")) {
+    				return project.getRelease();
+    			} else {
+    				return project.getProjectId();
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
+    private static String getDate(String day) {
+    	Calendar cal = Calendar.getInstance();
+    	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    	if(day.equalsIgnoreCase("today")) {
+    		;
+    	} else {
+    		cal.add(Calendar.DATE, -1);
+    	}
+    	return dateFormat.format(cal.getTime());
+    }
+    
+    public static String readUserFile(String username){
+    	Properties prop = new Properties();
+    	ClassLoader loader = Thread.currentThread().getContextClassLoader();           
+    	InputStream stream = loader.getResourceAsStream("/users.properties");
+    	try {
+    		prop.load(stream);
+			return prop.getProperty(username);
+    	} catch (IOException e) {
+			return null;
+		}
+    }
+    
 }

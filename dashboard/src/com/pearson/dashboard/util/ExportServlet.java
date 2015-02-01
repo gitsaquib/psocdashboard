@@ -106,7 +106,7 @@ public class ExportServlet extends HttpServlet {
 			cellNum++;
 			
 			cell = row.createCell(cellNum);
-			cell.setCellValue(defect.getLastUpdateDate());
+			cell.setCellValue(defect.getLastUpdateDateOriginal());
 			cellNum++;
 			
 			rowNum++;

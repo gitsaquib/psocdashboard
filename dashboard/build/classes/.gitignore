@@ -1,3 +1,5 @@
 /com
 /config.properties
 /hibernate.cfg.xml
+/project.properties
+/users.properties

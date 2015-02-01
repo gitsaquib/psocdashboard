@@ -62,7 +62,6 @@ public class DashboardForm extends ActionForm {
     private String gitActivity;
     
     private String selectedRelease;
-    private List<Release> releases;
     
     public String getSelectedRelease() {
 		return selectedRelease;
@@ -70,14 +69,8 @@ public class DashboardForm extends ActionForm {
 	public void setSelectedRelease(String selectedRelease) {
 		this.selectedRelease = selectedRelease;
 	}
-	public List<Release> getReleases() {
-		return releases;
-	}
-	public void setReleases(List<Release> releases) {
-		this.releases = releases;
-	}
-    
-    public String getProjectName() {
+	
+	public String getProjectName() {
 		return projectName;
 	}
 	public void setProjectName(String projectName) {
