@@ -64,9 +64,10 @@ public class DashboardAction extends Action {
     	if(null != request.getParameter("tab")) {
     		tab = Integer.parseInt(request.getParameter("tab"));
     	}
-    	
+    	dashboardForm.setCutoffDate(Util.getProjectAttribute(configuration, "cutoffdate", tab));
     	dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
     	dashboardForm.setSelectedRelease(Util.getProjectAttribute(configuration, "release", tab));
+    	dashboardForm.setTabName(Util.getProjectAttribute(configuration, "tabname", tab));
 		Util.populateDefectData(dashboardForm, configuration);
         return mapping.findForward("showDashboard");
     }

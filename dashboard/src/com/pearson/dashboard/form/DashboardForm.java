@@ -62,6 +62,8 @@ public class DashboardForm extends ActionForm {
     private String gitActivity;
     
     private String selectedRelease;
+	private String cutoffDate;
+	private String tabName;
     
     public String getSelectedRelease() {
 		return selectedRelease;
@@ -257,4 +259,16 @@ public class DashboardForm extends ActionForm {
 	public void setLoginUser(String loginUser) {
 		this.loginUser = loginUser;
 	}
+	public String getCutoffDate() {
+		return cutoffDate;
+	}
+	public void setCutoffDate(String cutoffDate) {
+		this.cutoffDate = cutoffDate;
+	}
+	public String getTabName() {
+		return tabName;
+	}
+	public void setTabName(String tabName) {
+		this.tabName = tabName;
+	}	
 }

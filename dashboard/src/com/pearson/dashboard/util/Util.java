@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,19 +53,19 @@ public class Util {
     public static Map<String, List<Defect>> getDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
     	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
     	RallyRestApi  restApi = loginRally(configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), false);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), false);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), false);    	
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), false);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), true);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), true);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);    	
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true);
     	restApi.close();
     	return allDefects;
     }
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, boolean yesterdayDefects) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -81,6 +82,9 @@ public class Util {
     		}
     	} else {
     		queryFilter = new QueryFilter("State", "=", typeCategory).and(new QueryFilter("Release.Name", "=", releaseNum));
+			if(null != cutoffDate) {
+				queryFilter = queryFilter.and(new QueryFilter("CreationDate", ">=", cutoffDate));
+			}
     	}
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
@@ -98,9 +102,9 @@ public class Util {
 	            defect.setDefectId(object.get("FormattedID").getAsString());
 
 	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
-	            DateFormat formatter1 = new SimpleDateFormat("yyyy-dd-MM"); 
+	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
 	            Date date = (Date) formatter1.parse(strFormat1);
-	            DateFormat formatter2 = new SimpleDateFormat("MMM dd");
+	            DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
 	            defect.setLastUpdateDate(formatter2.format(date));
 	            
 	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
@@ -179,30 +183,28 @@ public class Util {
 			configuration.setRallyUser(prop.getProperty("rallyUser"));
 			configuration.setRallyPassword(prop.getProperty("rallyPassword"));
 			
-			stream = loader.getResourceAsStream("/project.properties");
-			prop.load(stream);
+			InputStream streamProject = loader.getResourceAsStream("/project.properties");
+			Properties projectProperties = new Properties();
+			projectProperties.load(streamProject);
 			
 			List<Project> projectList = new ArrayList<Project>();  
-			String projectsStr = prop.getProperty("projects");
-			if(null != projectsStr) {
-				String[] projects = projectsStr.split(";");
-				if(null != projects) {
-					for(int i=0; i<projects.length; i++) {
-						String params = projects[i];
-						if(null != params) {
-							String param[] = params.split(":");
-							Project project = new Project();
-							project.setTabIndex(Integer.parseInt(param[0]));
-							project.setProjectKey(param[1]);
-							project.setProjectId(param[2]);
-							project.setRelease(param[3]);
-							projectList.add(project);
-						}
+			for(Enumeration<String> en = (Enumeration<String>) projectProperties.propertyNames();en.hasMoreElements();) {
+				String key = (String) en.nextElement();
+				String params = projectProperties.getProperty(key);
+				if(null != params) {
+					String param[] = params.split(":");
+					Project project = new Project();
+					project.setTabIndex(Integer.parseInt(param[0]));
+					project.setProjectKey(param[1]);
+					project.setProjectId(param[2]);
+					project.setRelease(param[3]);
+					if(null != param[4] && !"null".equals(param[4])) {
+						project.setCutoffDate(param[4]);
 					}
+					projectList.add(project);
 				}
 			}
-			configuration.setProjects(projectList);
-			
+			configuration.setProjects(projectList);			
 			return configuration;
 		} catch (IOException e) {
 			return null;
@@ -210,7 +212,13 @@ public class Util {
     }
     
     public static void populateDefectData(DashboardForm dashboardForm, Configuration configuration) throws Exception {
-		Map<String, List<Defect>> allDefects = Util.getDataFromRally(dashboardForm, configuration);
+		Map<String, List<Defect>> allDefects = null;
+		
+		if(dashboardForm.getTabName().startsWith("Older")) {
+			allDefects = Util.getOlderDataFromRally(dashboardForm, configuration);
+		} else {
+			allDefects = Util.getDataFromRally(dashboardForm, configuration);
+		}
 		
 		//Open defects
 		List<Defect> openDefects = allDefects.get("Open");
@@ -473,24 +481,25 @@ public class Util {
 		priority3.setPriorityName("P3");
 		priority4 = new Priority();
 		priority4.setPriorityName("P4");
-		for(Defect defect:closedYesterdayDefects) {
-		    if(defect.getPriority().equalsIgnoreCase("TBD")) {
-		        tbd1.setPriorityCount(tbd1.getPriorityCount()+1);
-		    }
-		    if(defect.getPriority().equalsIgnoreCase("P1")) {
-		        priority1.setPriorityCount(priority1.getPriorityCount()+1);
-		    }
-		    if(defect.getPriority().equalsIgnoreCase("P2")) {
-		        priority2.setPriorityCount(priority2.getPriorityCount()+1);
-		    }
-		    if(defect.getPriority().equalsIgnoreCase("P3")) {
-		        priority3.setPriorityCount(priority3.getPriorityCount()+1);
-		    }
-		    if(defect.getPriority().equalsIgnoreCase("P4")) {
-		        priority4.setPriorityCount(priority4.getPriorityCount()+1);
-		    }
+		if(null != closedYesterdayDefects) {
+			for(Defect defect:closedYesterdayDefects) {
+			    if(defect.getPriority().equalsIgnoreCase("TBD")) {
+			        tbd1.setPriorityCount(tbd1.getPriorityCount()+1);
+			    }
+			    if(defect.getPriority().equalsIgnoreCase("P1")) {
+			        priority1.setPriorityCount(priority1.getPriorityCount()+1);
+			    }
+			    if(defect.getPriority().equalsIgnoreCase("P2")) {
+			        priority2.setPriorityCount(priority2.getPriorityCount()+1);
+			    }
+			    if(defect.getPriority().equalsIgnoreCase("P3")) {
+			        priority3.setPriorityCount(priority3.getPriorityCount()+1);
+			    }
+			    if(defect.getPriority().equalsIgnoreCase("P4")) {
+			        priority4.setPriorityCount(priority4.getPriorityCount()+1);
+			    }
+			}
 		}
-		
 		arrayList = new ArrayList<Integer>();
 		arrayList.add(tbd1.getPriorityCount());
 		arrayList.add(priority1.getPriorityCount());
@@ -518,7 +527,7 @@ public class Util {
 		priorities.add(priority4);
 		dashboardForm.setClosedYesterdayDefects(closedYesterdayDefects);
 		dashboardForm.setClosedYesterdayPriorities(priorities);
-		dashboardForm.setClosedYesterdayDefectCount(closedYesterdayDefects.size());
+		dashboardForm.setClosedYesterdayDefectCount(null == closedYesterdayDefects ? 0 : closedYesterdayDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setClosedYesterdayP1AndP2Count(p1np2cnt);
 		
@@ -535,24 +544,25 @@ public class Util {
 		priority3.setPriorityName("P3");
 		priority4 = new Priority();
 		priority4.setPriorityName("P4");
-		for(Defect defect:openYesterdayDefects) {
-			if(defect.getPriority().equalsIgnoreCase("TBD")) {
-				tbd1.setPriorityCount(tbd1.getPriorityCount()+1);
-			}
-			if(defect.getPriority().equalsIgnoreCase("P1")) {
-				priority1.setPriorityCount(priority1.getPriorityCount()+1);
-			}
-			if(defect.getPriority().equalsIgnoreCase("P2")) {
-				priority2.setPriorityCount(priority2.getPriorityCount()+1);
-			}
-			if(defect.getPriority().equalsIgnoreCase("P3")) {
-				priority3.setPriorityCount(priority3.getPriorityCount()+1);
-			}
-			if(defect.getPriority().equalsIgnoreCase("P4")) {
-				priority4.setPriorityCount(priority4.getPriorityCount()+1);
+		if(null != openYesterdayDefects) {
+			for(Defect defect:openYesterdayDefects) {
+				if(defect.getPriority().equalsIgnoreCase("TBD")) {
+					tbd1.setPriorityCount(tbd1.getPriorityCount()+1);
+				}
+				if(defect.getPriority().equalsIgnoreCase("P1")) {
+					priority1.setPriorityCount(priority1.getPriorityCount()+1);
+				}
+				if(defect.getPriority().equalsIgnoreCase("P2")) {
+					priority2.setPriorityCount(priority2.getPriorityCount()+1);
+				}
+				if(defect.getPriority().equalsIgnoreCase("P3")) {
+					priority3.setPriorityCount(priority3.getPriorityCount()+1);
+				}
+				if(defect.getPriority().equalsIgnoreCase("P4")) {
+					priority4.setPriorityCount(priority4.getPriorityCount()+1);
+				}
 			}
 		}
-		
 		arrayList = new ArrayList<Integer>();
 		arrayList.add(tbd1.getPriorityCount());
 		arrayList.add(priority1.getPriorityCount());
@@ -580,7 +590,7 @@ public class Util {
 		priorities.add(priority4);
 		dashboardForm.setOpenYesterdayDefects(openYesterdayDefects);
 		dashboardForm.setOpenYesterdayPriorities(priorities);
-		dashboardForm.setOpenYesterdayDefectCount(openYesterdayDefects.size());
+		dashboardForm.setOpenYesterdayDefectCount(null == openYesterdayDefects ? 0 : openYesterdayDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setOpenYesterdayP1AndP2Count(p1np2cnt);
 		
@@ -595,6 +605,10 @@ public class Util {
     		if(tab == project.getTabIndex()) {
     			if(key.equals("release")) {
     				return project.getRelease();
+				} else if(key.equals("cutoffdate")) {
+    				return project.getCutoffDate();
+				} else if(key.equals("tabname")) {
+    				return project.getProjectKey();
     			} else {
     				return project.getProjectId();
     			}
@@ -625,5 +639,93 @@ public class Util {
 			return null;
 		}
     }
+    
+    public static Map<String, List<Defect>> getOlderDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
+    	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
+    	RallyRestApi  restApi = loginRally(configuration);
+    	
+    	//Retrieve A team data
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate());    	
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate());
+    	
+    	//Retrieve 2-12 old data
+    	String projectId = getProjectAttribute(configuration, "project", 0);
+    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 0);    	
+    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate);
+    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate);
+    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate);    	
+    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate);
+    	
+    	//Retrieve K1 old data
+    	projectId = getProjectAttribute(configuration, "project", 1);
+    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 1);    	
+    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate);
+    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate);
+    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate);    	
+    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate);
+    	    	
+    	restApi.close();
+    	return allDefects;
+    }
+
+	private static void retrieveDefects(
+			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
+			String projectId, String typeCategory, String releaseNum, String cutoffDate) throws IOException, ParseException {
+		List<Defect> defects;
+		QueryFilter queryFilter;
+		QueryRequest defectRequest;
+		QueryResponse projectDefects;
+		JsonArray defectsArray;
+		defects = new ArrayList<Defect>();
+    	queryFilter = new QueryFilter("State", "=", typeCategory).and(new QueryFilter("Release.Name", "=", releaseNum));
+		if(null != cutoffDate) {
+			queryFilter = queryFilter.and(new QueryFilter("CreationDate", "<", cutoffDate));
+		}
+    	defectRequest = new QueryRequest("defects");
+    	defectRequest.setQueryFilter(queryFilter);
+    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setProject("/project/"+projectId);  
+    	defectRequest.setScopedDown(true);
+    	defectRequest.setLimit(2000);
+    	projectDefects = restApi.query(defectRequest);
+    	defectsArray = projectDefects.getResults();
+    	for(int i=0; i<defectsArray.size(); i++) {
+            JsonElement elements =  defectsArray.get(i);
+            JsonObject object = elements.getAsJsonObject();
+            if(!object.get("Release").isJsonNull()) {
+	            Defect defect =  new Defect();
+	            defect.setDefectId(object.get("FormattedID").getAsString());
+
+	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
+	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
+	            Date date = (Date) formatter1.parse(strFormat1);
+	            DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
+	            defect.setLastUpdateDate(formatter2.format(date));
+	            
+	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
+	            
+	            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty()) {
+	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
+	            } else {
+	                defect.setPriority("TBD");
+	            }
+	            defect.setState(object.get("State").getAsString());
+	            JsonObject project = object.get("Project").getAsJsonObject();
+	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
+	            defect.setDefectDesc(object.get("Name").getAsString());
+	            defects.add(defect);
+            }
+        }
+    	List<Defect> olderDefects = allDefects.get(typeCategory);
+    	if(null == olderDefects) {
+    		olderDefects = new ArrayList<Defect>();
+    	}
+    	olderDefects.addAll(defects);
+    	allDefects.put(typeCategory, olderDefects);
+	}
+    
+
     
 }

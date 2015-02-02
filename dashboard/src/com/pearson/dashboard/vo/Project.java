@@ -6,6 +6,7 @@ public class Project {
 	private String projectId;
 	private String projectKey;
 	private String release;
+	private String cutoffDate;
 	
 	public int getTabIndex() {
 		return tabIndex;
@@ -30,5 +31,11 @@ public class Project {
 	}
 	public void setRelease(String release) {
 		this.release = release;
+	}	
+	public String getCutoffDate() {
+		return cutoffDate;
+	}
+	public void setCutoffDate(String cutoffDate) {
+		this.cutoffDate = cutoffDate;
 	}
 }

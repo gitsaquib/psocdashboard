@@ -32,11 +32,8 @@
 			<c:forEach var="defect" items="${DashboardForm.openDefects}" varStatus="status" begin="0" end="9">
                 <tr class="${loop.index % 2 == 0 ? 'even' : 'odd'}">
                     <td><font color="orange" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font></td>
-                    <td><img src="line.jpg" height="30" width="30"></td>
                     <td><font color="orange" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-                    <td><img src="line.jpg" height="30" width="30"></td>
                     <td><font color="orange" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-                    <td><img src="line.jpg" height="30" width="30"></td>
                     <td><font color="orange" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
                 </tr>
             </c:forEach>
