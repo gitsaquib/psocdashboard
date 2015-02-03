@@ -5,11 +5,13 @@
  */
 package com.pearson.dashboard.vo;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Dell
  */
-public class Defect {
+public class Defect implements Serializable{
     private String defectId;
     private String defectDesc;
     private String state;

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<link rel="stylesheet" href="css/dashboard.css" type="text/css">
-		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
 		<script type="text/javascript" src="js/tabber.js"></script>
 		<link rel="stylesheet" href="css/tabber.css" TYPE="text/css" MEDIA="screen">
@@ -57,7 +57,7 @@
 						</div>
 				 	</div>
 				 	<div class="tabber">
-				 		<div id="tab1" class="tabbertab">
+				 		<div id="tab0" class="tabbertab">
 				 			<%@include file="jsp/common/left_nav.jsp" %>
 				    		<h3>2-12 [2.0]</h3>
 				        	<div class="siteWidth">
@@ -78,7 +78,7 @@
 								<div class="clr"></div>
 							</div>		
 				    	</div>
-				    	<div id="tab2" class="tabbertab">
+				    	<div id="tab1" class="tabbertab">
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>K1 [2.0]</h3>
 				        	<div class="siteWidth">
@@ -136,6 +136,10 @@
 								</div>
 								<div class="clr"></div>
 							</div>		
+				    	</div>
+				    	<div id="loading" style="display: none;margin: auto;" align="center" class="loadingDiv">
+				    		<img src="loading.gif" alt="loading..."/>
+				    		<div class="clr"></div>
 				    	</div>
 					</div>
 				</div>

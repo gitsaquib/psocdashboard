@@ -164,6 +164,8 @@ tabberObj.prototype.navClick = function(event) {
   document.forms["dashboardForm"].action = "/dashboard/dashboard.do?tab="+tabberIndex;
   document.forms["dashboardForm"].submit();
   self.tabShow(tabberIndex);
+  document.getElementById("tab"+tabberIndex).style.display="none";
+  document.getElementById("loading").style.display="block";
   return false;
 };
 
