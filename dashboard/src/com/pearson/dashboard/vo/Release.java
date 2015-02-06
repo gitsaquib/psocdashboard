@@ -1,5 +1,10 @@
 package com.pearson.dashboard.vo;
 
+/**
+ * 
+ * @author Mohammed Saquib (mohammed.saquib)
+ *
+ */
 public class Release {
 	
 	private String releaseName;

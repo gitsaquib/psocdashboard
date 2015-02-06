@@ -41,12 +41,31 @@ import com.rallydev.rest.util.QueryFilter;
 public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException {
 
-    	/*RallyRestApi restApi = loginRally(); 
-    	retrieveDefects(restApi);
-    	restApi.close();*/
-    	postJenkinsJob();
+    	RallyRestApi restApi = loginRally(); 
+    	retrieveTestCases(restApi);
+    	restApi.close();
+    	//postJenkinsJob();
     }
     
+    private static void retrieveTestCases(RallyRestApi restApi)
+			throws IOException {
+		
+		QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", "2014-09-16").and(new QueryFilter("Type", "=", "Regression"));
+    	QueryRequest defectRequest = new QueryRequest("testcases");
+    	defectRequest.setQueryFilter(queryFilter);
+    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict"));
+    	defectRequest.setProject("/project/21028059357"); 
+    	defectRequest.setScopedDown(true);
+    	defectRequest.setLimit(10000);
+    	QueryResponse projectDefects = restApi.query(defectRequest);
+    	JsonArray defectsArray = projectDefects.getResults();
+    
+    	for(int i=0; i<defectsArray.size(); i++) {
+    		JsonElement elements =  defectsArray.get(i);
+            JsonObject object = elements.getAsJsonObject();
+            System.out.println(i+" "+object);
+    	}
+	}
     
     public static void postJenkinsJob() throws ClientProtocolException, IOException {
     	String username = "vsaqumo";
@@ -75,10 +94,10 @@ public class TestClass {
 	private static void retrieveDefects(RallyRestApi restApi)
 			throws IOException {
 		
-		QueryFilter queryFilter = new QueryFilter("State", "=", "Closed").and(new QueryFilter("Release.Name", "=", "1.4"));
+		QueryFilter queryFilter = new QueryFilter("State", "=", "Closed");//.and(new QueryFilter("Release.Name", "=", "1.5"));
     	QueryRequest defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Release", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setFetch(new Fetch("State", "Platform", "Release", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/21028059357"); 
     	defectRequest.setScopedDown(true);
     	QueryResponse projectDefects = restApi.query(defectRequest);
@@ -87,10 +106,7 @@ public class TestClass {
     	for(int i=0; i<defectsArray.size(); i++) {
     		JsonElement elements =  defectsArray.get(i);
             JsonObject object = elements.getAsJsonObject();
-            if(!object.get("Release").isJsonNull()) {
-	            JsonObject release = object.getAsJsonObject("Release");
-	            System.out.println(release.get("_refObjectName"));
-            }
+            System.out.println(i+": "+object.get("Environment"));
     	}
 	}
     

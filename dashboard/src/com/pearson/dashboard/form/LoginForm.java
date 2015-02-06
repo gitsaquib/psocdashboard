@@ -2,6 +2,11 @@ package com.pearson.dashboard.form;
 
 import org.apache.struts.action.ActionForm;
 
+/**
+ * 
+ * @author Mohammed Saquib (mohammed.saquib)
+ *
+ */
 public class LoginForm extends ActionForm {
 
 	private String username;

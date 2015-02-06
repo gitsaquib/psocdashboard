@@ -31,6 +31,7 @@ import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Priority;
 import com.pearson.dashboard.vo.Project;
 import com.pearson.dashboard.vo.Release;
+import com.pearson.dashboard.vo.TestCase;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.QueryRequest;
 import com.rallydev.rest.response.QueryResponse;
@@ -39,7 +40,7 @@ import com.rallydev.rest.util.QueryFilter;
 
 /**
  *
- * @author Dell
+ * @author Mohammed Saquib (mohammed.saquib)
  */
 public class Util {
 	
@@ -91,7 +92,8 @@ public class Util {
     	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
-    	defectRequest.setLimit(1000);
+    	defectRequest.setLimit(2000);
+    	defectRequest.setOrder("FormattedID desc");
     	projectDefects = restApi.query(defectRequest);
     	defectsArray = projectDefects.getResults();
     	for(int i=0; i<defectsArray.size(); i++) {
@@ -214,8 +216,8 @@ public class Util {
     public static void populateDefectData(DashboardForm dashboardForm, Configuration configuration) throws Exception {
 		Map<String, List<Defect>> allDefects = null;
 		
-		if(dashboardForm.getTabName().startsWith("Older")) {
-			allDefects = Util.getOlderDataFromRally(dashboardForm, configuration);
+		if(dashboardForm.getTabName().startsWith("Older") || dashboardForm.getTabName().startsWith("Authering")) {
+			allDefects = Util.getMultiProjectDataFromRally(dashboardForm, configuration);
 		} else {
 			allDefects = Util.getDataFromRally(dashboardForm, configuration);
 		}
@@ -640,39 +642,52 @@ public class Util {
 		}
     }
     
-    public static Map<String, List<Defect>> getOlderDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
+    public static Map<String, List<Defect>> getMultiProjectDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
     	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
     	RallyRestApi  restApi = loginRally(configuration);
     	
-    	//Retrieve A team data
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate());
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate());
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate());    	
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate());
-    	
-    	//Retrieve 2-12 old data
-    	String projectId = getProjectAttribute(configuration, "project", 0);
-    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 0);    	
-    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate);
-    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate);
-    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate);    	
-    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate);
-    	
-    	//Retrieve K1 old data
-    	projectId = getProjectAttribute(configuration, "project", 1);
-    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 1);    	
-    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate);
-    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate);
-    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate);    	
-    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate);
-    	    	
+    	if(dashboard.getTabName().startsWith("Authering")) {
+    		
+    		//Retrieve V team data
+	    	String projectId = getProjectAttribute(configuration, "project", 4);
+	    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 4);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=");    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	
+	    	//Retrieve A team data
+	    	projectId = getProjectAttribute(configuration, "project", 3);
+	    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 3);    
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=");  	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	
+    	} else {
+	    	//Retrieve 2-12 old data
+	    	String projectId = getProjectAttribute(configuration, "project", 0);
+	    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 0);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<");    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	
+	    	//Retrieve K1 old data
+	    	projectId = getProjectAttribute(configuration, "project", 1);
+	    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 1);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<");    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<");
+    	}	
     	restApi.close();
     	return allDefects;
     }
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, String cutoffDate) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, String comparisonOperator) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -681,14 +696,16 @@ public class Util {
 		defects = new ArrayList<Defect>();
     	queryFilter = new QueryFilter("State", "=", typeCategory).and(new QueryFilter("Release.Name", "=", releaseNum));
 		if(null != cutoffDate) {
-			queryFilter = queryFilter.and(new QueryFilter("CreationDate", "<", cutoffDate));
+			queryFilter = queryFilter.and(new QueryFilter("CreationDate", comparisonOperator, cutoffDate));
 		}
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
     	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
+    	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(2000);
+    	defectRequest.setOrder("FormattedID desc");
     	projectDefects = restApi.query(defectRequest);
     	defectsArray = projectDefects.getResults();
     	for(int i=0; i<defectsArray.size(); i++) {
@@ -726,6 +743,98 @@ public class Util {
     	allDefects.put(typeCategory, olderDefects);
 	}
     
-
+	public static void retrieveTestCases(DashboardForm dashboardForm, Configuration configuration, String cutoffDate)
+			throws IOException, URISyntaxException {
+		RallyRestApi  restApi = loginRally(configuration);
+		List<TestCase> testCases = new ArrayList<TestCase>();
+		QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", cutoffDate).and(new QueryFilter("Type", "=", "Regression"));
+    	QueryRequest defectRequest = new QueryRequest("testcases");
+    	defectRequest.setQueryFilter(queryFilter);
+    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict"));
+    	defectRequest.setProject("/project/"+dashboardForm.getProjectId()); 
+    	defectRequest.setScopedDown(true);
+    	defectRequest.setLimit(10000);
+    	defectRequest.setOrder("FormattedID desc");
+    	QueryResponse projectDefects = restApi.query(defectRequest);
+    	JsonArray defectsArray = projectDefects.getResults();
     
+    	for(int i=0; i<defectsArray.size(); i++) {
+    		TestCase testCase = new TestCase();
+    		JsonElement elements =  defectsArray.get(i);
+            JsonObject object = elements.getAsJsonObject();
+            testCase.setTestCaseId(object.get("FormattedID").getAsString());
+            testCase.setLastVerdict(object.get("LastVerdict")==null || object.get("LastVerdict").isJsonNull() ?"":object.get("LastVerdict").getAsString());
+            testCases.add(testCase);
+    	}
+    	dashboardForm.setTestCases(testCases);
+    	restApi.close();
+    	
+    	List<Priority> priorities = new ArrayList<Priority>();
+    	Priority priority0 = new Priority();
+    	priority0.setPriorityName("Pass");
+		Priority priority1 = new Priority();
+		priority1.setPriorityName("Blocked");
+		Priority priority2 = new Priority();
+		priority2.setPriorityName("Error");
+		Priority priority3 = new Priority();
+		priority3.setPriorityName("Fail");
+		Priority priority4 = new Priority();
+		priority4.setPriorityName("Inconclusive");
+		Priority priority5 = new Priority();
+		priority5.setPriorityName("NotAttempted");
+		if(null != testCases) {
+			for(TestCase testCase:testCases) {
+			    if(testCase.getLastVerdict().equalsIgnoreCase("Pass")) {
+			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
+			    }
+			    if(testCase.getLastVerdict().equalsIgnoreCase("Blocked")) {
+			    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
+			    }
+			    if(testCase.getLastVerdict().equalsIgnoreCase("Error")) {
+			    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
+			    }
+			    if(testCase.getLastVerdict().equalsIgnoreCase("Fail")) {
+			    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
+			    }
+			    if(testCase.getLastVerdict().equalsIgnoreCase("Inconclusive")) {
+			    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
+			    }
+			    if(testCase.getLastVerdict().equalsIgnoreCase("")) {
+			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
+			    }
+			}
+		}
+		List<Integer> arrayList = new ArrayList<Integer>();
+		arrayList.add(priority0.getPriorityCount());
+		arrayList.add(priority1.getPriorityCount());
+		arrayList.add(priority2.getPriorityCount());
+		arrayList.add(priority3.getPriorityCount());
+		arrayList.add(priority4.getPriorityCount());
+		arrayList.add(priority5.getPriorityCount());
+		Integer maximumCount = Collections.max(arrayList);
+		if(maximumCount <= 0) {
+			priority0.setPxSize("0");
+		    priority1.setPxSize("0");
+		    priority2.setPxSize("0");
+		    priority3.setPxSize("0");
+		    priority4.setPxSize("0");
+		    priority5.setPxSize("0");
+		} else {
+			priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
+		    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
+		    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
+		    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
+		    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
+		    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
+		}
+		priorities.add(priority0);
+		priorities.add(priority1);
+		priorities.add(priority2);
+		priorities.add(priority3);
+		priorities.add(priority4);
+		priorities.add(priority5);
+		
+		dashboardForm.setTestCasesCount(testCases.size());
+		dashboardForm.setTestCasesPriorities(priorities);
+	}
 }

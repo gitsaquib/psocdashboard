@@ -5,11 +5,14 @@
  */
 package com.pearson.dashboard.vo;
 
+import java.io.Serializable;
+
 /**
  *
- * @author Dell
+ * @author Mohammed Saquib (mohammed.saquib)
  */
-public class Priority {
+public class Priority implements Serializable {
+	
     private String priorityName;
     private int priorityCount;
     private String pxSize;

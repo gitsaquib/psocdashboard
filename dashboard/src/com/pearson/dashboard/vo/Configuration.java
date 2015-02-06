@@ -2,6 +2,11 @@ package com.pearson.dashboard.vo;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Mohammed Saquib (mohammed.saquib)
+ *
+ */
 public class Configuration {
 	
 	private String rallyURL;

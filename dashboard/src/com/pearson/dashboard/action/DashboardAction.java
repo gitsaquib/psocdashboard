@@ -29,7 +29,7 @@ import com.pearson.dashboard.vo.Release;
 
 /**
  *
- * @author Dell
+ * @author Mohammed Saquib (mohammed.saquib)
  */
 public class DashboardAction extends Action {
 
@@ -69,6 +69,7 @@ public class DashboardAction extends Action {
     	dashboardForm.setSelectedRelease(Util.getProjectAttribute(configuration, "release", tab));
     	dashboardForm.setTabName(Util.getProjectAttribute(configuration, "tabname", tab));
 		Util.populateDefectData(dashboardForm, configuration);
+		Util.retrieveTestCases(dashboardForm, configuration, Util.getProjectAttribute(configuration, "cutoffdate", tab));
         return mapping.findForward("showDashboard");
     }
     

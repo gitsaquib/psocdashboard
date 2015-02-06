@@ -12,11 +12,11 @@ import org.apache.struts.action.ActionForm;
 import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Priority;
 import com.pearson.dashboard.vo.Project;
-import com.pearson.dashboard.vo.Release;
+import com.pearson.dashboard.vo.TestCase;
 
 /**
  *
- * @author Saquib
+ * @author Mohammed Saquib (mohammed.saquib)
  */
 public class DashboardForm extends ActionForm {
 	
@@ -64,6 +64,10 @@ public class DashboardForm extends ActionForm {
     private String selectedRelease;
 	private String cutoffDate;
 	private String tabName;
+	
+	private List<TestCase> testCases;
+	private int testCasesCount;
+    private List<Priority> testCasesPriorities;
     
     public String getSelectedRelease() {
 		return selectedRelease;
@@ -270,5 +274,23 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setTabName(String tabName) {
 		this.tabName = tabName;
-	}	
+	}
+	public List<TestCase> getTestCases() {
+		return testCases;
+	}
+	public void setTestCases(List<TestCase> testCases) {
+		this.testCases = testCases;
+	}
+	public int getTestCasesCount() {
+		return testCasesCount;
+	}
+	public void setTestCasesCount(int testCasesCount) {
+		this.testCasesCount = testCasesCount;
+	}
+	public List<Priority> getTestCasesPriorities() {
+		return testCasesPriorities;
+	}
+	public void setTestCasesPriorities(List<Priority> testCasesPriorities) {
+		this.testCasesPriorities = testCasesPriorities;
+	}
 }

@@ -20,7 +20,7 @@ import com.pearson.dashboard.util.Util;
 
 /**
  *
- * @author Dell
+ * @author Mohammed Saquib (mohammed.saquib)
  */
 public class LoginAction extends Action {
 

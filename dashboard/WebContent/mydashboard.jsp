@@ -74,6 +74,8 @@
 									<div style="width: 100%; height: 1em"></div>
 									<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
 									<div style="width: 100%; height: 1em"></div>
+									<%@include file="jsp/testcases/testcases.jsp" %>
+									<div style="width: 100%; height: 1em"></div>
 								</div>
 								<div class="clr"></div>
 							</div>		
@@ -94,6 +96,8 @@
 									<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
 									<div style="width: 100%; height: 1em"></div>
 									<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+									<div style="width: 100%; height: 1em"></div>
+									<%@include file="jsp/testcases/testcases.jsp" %>
 									<div style="width: 100%; height: 1em"></div>
 								</div>
 								<div class="clr"></div>
@@ -123,6 +127,23 @@
 				    	<div id="tab3" class="tabbertab">
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>Older [2.0]</h3>
+				        	<div class="siteWidth">
+								<div id="section">
+									<%@include file="jsp/defects/submitted_defects.jsp" %>
+									<div style="width: 100%; height: 1em"></div>
+									<%@include file="jsp/defects/open_defects.jsp" %>
+									<div style="width: 100%; height: 1em"></div>
+									<%@include file="jsp/defects/fixed_defects.jsp" %>
+									<div style="width: 100%; height: 1em"></div>
+									<%@include file="jsp/defects/closed_defects.jsp" %>
+									<div style="width: 100%; height: 1em"></div>
+								</div>
+								<div class="clr"></div>
+							</div>		
+				    	</div>
+				    	<div id="tab3" class="tabbertab">
+				    		<%@include file="jsp/common/left_nav.jsp" %>
+				        	<h3>Authering [2.0]</h3>
 				        	<div class="siteWidth">
 								<div id="section">
 									<%@include file="jsp/defects/submitted_defects.jsp" %>

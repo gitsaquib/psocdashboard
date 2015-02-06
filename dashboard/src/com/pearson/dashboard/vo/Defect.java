@@ -6,12 +6,13 @@
 package com.pearson.dashboard.vo;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  *
- * @author Dell
+ * @author Mohammed Saquib (mohammed.saquib)
  */
-public class Defect implements Serializable{
+public class Defect implements Serializable, Comparable<Defect> {
     private String defectId;
     private String defectDesc;
     private String state;
@@ -62,4 +63,15 @@ public class Defect implements Serializable{
 	public void setLastUpdateDateOriginal(String lastUpdateDateOriginal) {
 		this.lastUpdateDateOriginal = lastUpdateDateOriginal;
 	}
+	
+	public int compareTo(Defect defect){
+		return (this.defectId).compareTo(defect.getDefectId());
+	}
+	
+	public static Comparator<Defect> DefectComparator = new Comparator<Defect>() {
+		//descending
+		public int compare(Defect defect1, Defect defect2) {
+			return defect2.compareTo(defect1);
+		}
+	};
 }
