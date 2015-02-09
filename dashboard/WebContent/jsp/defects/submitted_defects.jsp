@@ -29,14 +29,39 @@
 	</div>
 	<div style="width:55%; float:right;">
 		<table style="width:100%">
-			<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status" begin="0" end="9">
-                <tr class="${loop.index % 2 == 0 ? 'even' : 'odd'}">
-                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font></td>
-                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
-                </tr>
-            </c:forEach>
+			<c:choose>
+				<c:when test="${DashboardForm.expandType != null && DashboardForm.expandType == 'Submitted'}">
+					<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status">
+						<tr class="${loop.index % 2 == 0 ? 'even' : 'odd'}">
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font></td>
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                </tr>
+		            </c:forEach>
+		            <tr>
+		            	<a href="dashboard.do?collapse=true&tab=${DashboardForm.tabIndex}">
+		            		<font color="grey" size="2" face="Tahoma">Collapse</font>
+		            	</a>
+		            </tr>
+				</c:when>
+				<c:otherwise>
+					<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status" begin="0" end="9">
+						<tr class="${loop.index % 2 == 0 ? 'even' : 'odd'}">
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font></td>
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                </tr>
+		            </c:forEach>	
+		            <tr>
+		            	<a href="dashboard.do?expandType=Submitted&tab=${DashboardForm.tabIndex}">
+		            		<font color="grey" size="2" face="Tahoma">Expand</font>
+		            	</a>
+		            </tr>
+				</c:otherwise>
+			</c:choose>
+            
 		</table>
 	</div>
 	<div style="width: 100%; height: 1em; clear:both"></div>

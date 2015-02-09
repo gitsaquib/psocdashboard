@@ -141,7 +141,7 @@
 								<div class="clr"></div>
 							</div>		
 				    	</div>
-				    	<div id="tab3" class="tabbertab">
+				    	<div id="tab4" class="tabbertab">
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>Authering [2.0]</h3>
 				        	<div class="siteWidth">

@@ -65,7 +65,9 @@ public class Defect implements Serializable, Comparable<Defect> {
 	}
 	
 	public int compareTo(Defect defect){
-		return (this.defectId).compareTo(defect.getDefectId());
+		Integer defectIdFromParam = Integer.parseInt(defect.getDefectId().replace("DE", ""));
+		Integer defectId = Integer.parseInt(this.defectId.replace("DE", "")); 
+		return defectIdFromParam.compareTo(defectId);
 	}
 	
 	public static Comparator<Defect> DefectComparator = new Comparator<Defect>() {

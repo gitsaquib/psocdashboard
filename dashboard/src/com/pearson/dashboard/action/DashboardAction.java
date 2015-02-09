@@ -5,10 +5,7 @@
  */
 package com.pearson.dashboard.action;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -22,10 +19,7 @@ import org.apache.struts.action.ActionMapping;
 import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.util.Util;
 import com.pearson.dashboard.vo.Configuration;
-import com.pearson.dashboard.vo.Defect;
-import com.pearson.dashboard.vo.Priority;
 import com.pearson.dashboard.vo.Project;
-import com.pearson.dashboard.vo.Release;
 
 /**
  *
@@ -36,6 +30,17 @@ public class DashboardAction extends Action {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	DashboardForm dashboardForm = (DashboardForm) form;
+    	
+    	if(null != request.getParameter("expandType")) {
+    		dashboardForm.setExpandType(request.getParameter("expandType"));
+    		return mapping.findForward("expandDashboard");
+    	} else {
+    		dashboardForm.setExpandType(null);
+    	}
+    	if(null != request.getParameter("collapse")) {
+    		dashboardForm.setExpandType(null);
+    		return mapping.findForward("showDashboard");
+    	}
     	
     	if(null != request.getParameter("export")) {
     		request.getSession().setAttribute("dashboardForm", dashboardForm);
@@ -63,6 +68,7 @@ public class DashboardAction extends Action {
     	int tab = 0;
     	if(null != request.getParameter("tab")) {
     		tab = Integer.parseInt(request.getParameter("tab"));
+    		dashboardForm.setTabIndex(tab+"");
     	}
     	dashboardForm.setCutoffDate(Util.getProjectAttribute(configuration, "cutoffdate", tab));
     	dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));

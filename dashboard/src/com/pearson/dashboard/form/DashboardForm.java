@@ -64,10 +64,13 @@ public class DashboardForm extends ActionForm {
     private String selectedRelease;
 	private String cutoffDate;
 	private String tabName;
+	private String tabIndex;
 	
 	private List<TestCase> testCases;
 	private int testCasesCount;
     private List<Priority> testCasesPriorities;
+    
+    private String expandType;
     
     public String getSelectedRelease() {
 		return selectedRelease;
@@ -292,5 +295,17 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setTestCasesPriorities(List<Priority> testCasesPriorities) {
 		this.testCasesPriorities = testCasesPriorities;
+	}
+	public String getExpandType() {
+		return expandType;
+	}
+	public void setExpandType(String expandType) {
+		this.expandType = expandType;
+	}
+	public String getTabIndex() {
+		return tabIndex;
+	}
+	public void setTabIndex(String tabIndex) {
+		this.tabIndex = tabIndex;
 	}
 }

@@ -123,6 +123,7 @@ public class Util {
 	            defects.add(defect);
             }
         }
+    	Collections.sort(defects);
     	allDefects.put(typeCategory, defects);
 	}
     
@@ -740,6 +741,7 @@ public class Util {
     		olderDefects = new ArrayList<Defect>();
     	}
     	olderDefects.addAll(defects);
+    	Collections.sort(olderDefects);
     	allDefects.put(typeCategory, olderDefects);
 	}
     
