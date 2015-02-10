@@ -757,7 +757,7 @@ public class Util {
 	            
 	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
 	            
-	            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty()) {
+	            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty() && !object.get("Priority").getAsString().startsWith("No")) {
 	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
 	            } else {
 	                defect.setPriority("TBD");
