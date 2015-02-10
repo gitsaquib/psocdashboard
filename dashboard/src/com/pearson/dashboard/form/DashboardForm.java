@@ -70,6 +70,9 @@ public class DashboardForm extends ActionForm {
 	private int testCasesCount;
     private List<Priority> testCasesPriorities;
     
+    private List<Project> subProjects;
+    private String subProject;
+    
     private String expandType;
     
     public String getSelectedRelease() {
@@ -307,5 +310,17 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setTabIndex(String tabIndex) {
 		this.tabIndex = tabIndex;
+	}
+	public List<Project> getSubProjects() {
+		return subProjects;
+	}
+	public void setSubProjects(List<Project> subProjects) {
+		this.subProjects = subProjects;
+	}
+	public String getSubProject() {
+		return subProject;
+	}
+	public void setSubProject(String subProject) {
+		this.subProject = subProject;
 	}
 }

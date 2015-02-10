@@ -20,6 +20,7 @@ public class Defect implements Serializable, Comparable<Defect> {
     private String project;
     private String lastUpdateDate;
     private String lastUpdateDateOriginal;
+    private String defectUrl;
     
 	public String getDefectId() {
 		return defectId;
@@ -63,17 +64,15 @@ public class Defect implements Serializable, Comparable<Defect> {
 	public void setLastUpdateDateOriginal(String lastUpdateDateOriginal) {
 		this.lastUpdateDateOriginal = lastUpdateDateOriginal;
 	}
-	
+	public String getDefectUrl() {
+		return defectUrl;
+	}
+	public void setDefectUrl(String defectUrl) {
+		this.defectUrl = defectUrl;
+	}
 	public int compareTo(Defect defect){
 		Integer defectIdFromParam = Integer.parseInt(defect.getDefectId().replace("DE", ""));
 		Integer defectId = Integer.parseInt(this.defectId.replace("DE", "")); 
 		return defectIdFromParam.compareTo(defectId);
 	}
-	
-	public static Comparator<Defect> DefectComparator = new Comparator<Defect>() {
-		//descending
-		public int compare(Defect defect1, Defect defect2) {
-			return defect2.compareTo(defect1);
-		}
-	};
 }

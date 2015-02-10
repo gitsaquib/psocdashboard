@@ -54,19 +54,19 @@ public class Util {
     public static Map<String, List<Defect>> getDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
     	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
     	RallyRestApi  restApi = loginRally(configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);    	
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);    	
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration);
     	restApi.close();
     	return allDefects;
     }
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects, Configuration configuration) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -103,6 +103,14 @@ public class Util {
 	            Defect defect =  new Defect();
 	            defect.setDefectId(object.get("FormattedID").getAsString());
 
+	            if(null != object.get("_ref")) {
+	            	String defectRef = object.get("_ref").getAsString();
+	            	if(null != defectRef) {
+	            		String url = configuration.getRallyURL()+"#/"+projectId+"ud/detail/defect"+defectRef.substring(defectRef.lastIndexOf("/"));
+	            		defect.setDefectUrl(url);
+	            	}
+	            }
+	            
 	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
 	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
 	            Date date = (Date) formatter1.parse(strFormat1);
@@ -111,7 +119,7 @@ public class Util {
 	            
 	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
 	            
-	            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty()) {
+	            if(null != object.get("Priority") && !object.get("Priority").getAsString().isEmpty() && !object.get("Priority").getAsString().startsWith("No")) {
 	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
 	            } else {
 	                defect.setPriority("TBD");
@@ -127,11 +135,18 @@ public class Util {
     	allDefects.put(typeCategory, defects);
 	}
     
-    public static Project getSelectedProject(String projectKey, Configuration configuration) {
+    public static Project getSelectedProject(String projectKey, Configuration configuration, String tabName) {
     	if(null == projectKey) {
     		projectKey = "21028059357";
     	}
     	List<Project> projects = configuration.getProjects();
+    	if(tabName.startsWith("Authering")) {
+    		for(Project project:projects) {
+        		if(project.getProjectKey().startsWith("Authering")) {
+        			return project;
+        		}
+        	}
+		}
     	for(Project project:projects) {
     		if(project.getProjectId().equalsIgnoreCase(projectKey)) {
     			return project;
@@ -203,6 +218,9 @@ public class Util {
 					project.setRelease(param[3]);
 					if(null != param[4] && !"null".equals(param[4])) {
 						project.setCutoffDate(param[4]);
+					}
+					if(null != param[5] && !"null".equals(param[5])) {
+						project.setParentTab(param[5]);
 					}
 					projectList.add(project);
 				}
@@ -597,7 +615,7 @@ public class Util {
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setOpenYesterdayP1AndP2Count(p1np2cnt);
 		
-		Project project = Util.getSelectedProject(dashboardForm.getProjectId(), configuration);
+		Project project = Util.getSelectedProject(dashboardForm.getProjectId(), configuration, dashboardForm.getTabName());
 		dashboardForm.setProjectId(project.getProjectId());
 		dashboardForm.setProjectName(project.getProjectKey());
 	}
@@ -652,35 +670,35 @@ public class Util {
     		//Retrieve V team data
 	    	String projectId = getProjectAttribute(configuration, "project", 4);
 	    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 4);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=");
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=");
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=");    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	
 	    	//Retrieve A team data
 	    	projectId = getProjectAttribute(configuration, "project", 3);
 	    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 3);    
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=");
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=");
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=");  	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=");
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);  	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	
     	} else {
 	    	//Retrieve 2-12 old data
 	    	String projectId = getProjectAttribute(configuration, "project", 0);
 	    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 0);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<");
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<");
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<");    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
 	    	
 	    	//Retrieve K1 old data
 	    	projectId = getProjectAttribute(configuration, "project", 1);
 	    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 1);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<");
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<");
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<");    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<");
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
     	}	
     	restApi.close();
     	return allDefects;
@@ -688,7 +706,7 @@ public class Util {
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, String cutoffDate, String comparisonOperator) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, String comparisonOperator, Configuration configuration) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -715,7 +733,15 @@ public class Util {
             if(!object.get("Release").isJsonNull()) {
 	            Defect defect =  new Defect();
 	            defect.setDefectId(object.get("FormattedID").getAsString());
-
+	            
+	            if(null != object.get("_ref")) {
+	            	String defectRef = object.get("_ref").getAsString();
+	            	if(null != defectRef) {
+	            		String url = configuration.getRallyURL()+"#/"+projectId+"ud/detail/defect"+defectRef.substring(defectRef.lastIndexOf("/"));
+	            		defect.setDefectUrl(url);
+	            	}
+	            }
+	            
 	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
 	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
 	            Date date = (Date) formatter1.parse(strFormat1);

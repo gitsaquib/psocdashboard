@@ -31,12 +31,15 @@ public class LoginAction extends Action {
     	} else {
 	    	LoginForm loginForm = (LoginForm) form;
 	    	if(null != loginForm.getUsername()) {
-	    		String password = Util.readUserFile(loginForm.getUsername());
+	    		String userDetails = Util.readUserFile(loginForm.getUsername());
+	    		String attributes[] = userDetails.split(":");
+	    		String password = attributes[0];
+	    		String displayName = attributes[1];
 	    		if(null != password && password.equals(loginForm.getPassword())) {
 	    			HttpSession session = request.getSession();
-					session.setAttribute("user", loginForm.getUsername());
+					session.setAttribute("user", displayName);
 					session.setMaxInactiveInterval(30*60);
-					Cookie userName = new Cookie("user", loginForm.getUsername());
+					Cookie userName = new Cookie("user", displayName);
 					userName.setMaxAge(30*60);
 					response.addCookie(userName);
 					return mapping.findForward("loginsuccess");

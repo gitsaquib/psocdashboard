@@ -17,11 +17,6 @@
 	 				e.preventDefault();
 				});
 			});
-			
-			function submitForm() {
-				document.dashboardForm.action = "dashboard.do?release="+document.getElementById("selectedRelease").value+"&proj="+document.getElementById("projectId").value;
-				document.dashboardForm.submit();
-			}
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>

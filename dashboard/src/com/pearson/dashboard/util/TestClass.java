@@ -42,7 +42,7 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException {
 
     	RallyRestApi restApi = loginRally(); 
-    	retrieveTestCases(restApi);
+    	retrieveDefects(restApi);
     	restApi.close();
     	//postJenkinsJob();
     }
@@ -94,7 +94,7 @@ public class TestClass {
 	private static void retrieveDefects(RallyRestApi restApi)
 			throws IOException {
 		
-		QueryFilter queryFilter = new QueryFilter("State", "=", "Closed");//.and(new QueryFilter("Release.Name", "=", "1.5"));
+		QueryFilter queryFilter = new QueryFilter("State", "=", "Submitted").and(new QueryFilter("FormattedID", "=", "DE10013"));
     	QueryRequest defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
     	defectRequest.setFetch(new Fetch("State", "Platform", "Release", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
@@ -106,7 +106,9 @@ public class TestClass {
     	for(int i=0; i<defectsArray.size(); i++) {
     		JsonElement elements =  defectsArray.get(i);
             JsonObject object = elements.getAsJsonObject();
-            System.out.println(i+": "+object.get("Environment"));
+            
+            String defectRef = object.get("_ref").getAsString();
+            System.out.println(defectRef.substring(defectRef.lastIndexOf("/")+1));
     	}
 	}
     

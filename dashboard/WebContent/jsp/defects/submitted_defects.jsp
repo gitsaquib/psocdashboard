@@ -33,7 +33,11 @@
 				<c:when test="${DashboardForm.expandType != null && DashboardForm.expandType == 'Submitted'}">
 					<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status">
 						<tr class="${loop.index % 2 == 0 ? 'even' : 'odd'}">
-		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font></td>
+		                    <td>
+		                    	<a href="${defect.defectUrl}" target="_blank">
+	                    			<font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+		                    	</a>
+		                    </td>
 		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
@@ -48,7 +52,11 @@
 				<c:otherwise>
 					<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status" begin="0" end="9">
 						<tr class="${loop.index % 2 == 0 ? 'even' : 'odd'}">
-		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font></td>
+		                    <td>
+	                    		<a href="${defect.defectUrl}" target="_blank">
+	                    			<font color="red" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+		                    	</a>
+		                    </td>
 		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td><font color="red" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>

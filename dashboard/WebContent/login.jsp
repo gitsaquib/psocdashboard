@@ -17,14 +17,15 @@
 					<div style="width: 100%; height: 1em"></div>
 					<table>
 	                    <tr>
-	                        <td><font size="2" face="Tahoma">Username  : </font></td><td> <input name="username" size=15 type="text" /> </td> 
+	                        <td><font size="2" face="Tahoma">Username  : </font></td><td> <input name="username" id="username" size=15 type="text" /> </td> 
 	                    </tr>
 	                    <tr>
-	                        <td><font size="2" face="Tahoma">Password  : </font></td><td> <input name="password" size=15 type="password" /> </td> 
+	                        <td><font size="2" face="Tahoma">Password  : </font></td><td> <input name="password" id="password" size=15 type="password" /> </td> 
 	                    </tr>
 	                </table>
 	                <div style="width: 100%; height: 1em"></div>
 	                <input type="submit" value="Login" />
+	                <input type="reset" value="Reset"/>
 	                <div style="width: 100%; height: 1em"></div>
                 </div>
                 <div style="width: 100%; height: 100px;"></div>

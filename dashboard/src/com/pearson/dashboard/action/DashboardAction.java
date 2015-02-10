@@ -5,6 +5,8 @@
  */
 package com.pearson.dashboard.action;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -59,7 +61,7 @@ public class DashboardAction extends Action {
 					userName = cookie.getValue();
 			}
 		}
-		dashboardForm.setLoginUser(userName.toUpperCase());
+		dashboardForm.setLoginUser(userName);
 		Configuration configuration = Util.readConfigFile();
         List<Project> projects = configuration.getProjects();
     	
@@ -70,13 +72,32 @@ public class DashboardAction extends Action {
     		tab = Integer.parseInt(request.getParameter("tab"));
     		dashboardForm.setTabIndex(tab+"");
     	}
+    	
+    	if(tab == 2) {
+    		List<Project> childProjects = new ArrayList<>();
+    		for(Project project:projects) {
+    			if("RUN".equalsIgnoreCase(project.getParentTab())) {
+    				childProjects.add(project);
+    			}
+    		}
+    		Collections.sort(childProjects);
+    		dashboardForm.setSubProjects(childProjects);
+    	} else {
+    		dashboardForm.setSubProjects(null);
+    		dashboardForm.setSubProject(null);
+    	}
+    	if(null != dashboardForm.getSubProject()) {
+    		tab = Integer.parseInt(dashboardForm.getSubProject());
+    	}
     	dashboardForm.setCutoffDate(Util.getProjectAttribute(configuration, "cutoffdate", tab));
     	dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
     	dashboardForm.setSelectedRelease(Util.getProjectAttribute(configuration, "release", tab));
     	dashboardForm.setTabName(Util.getProjectAttribute(configuration, "tabname", tab));
-		Util.populateDefectData(dashboardForm, configuration);
+		
+    	Util.populateDefectData(dashboardForm, configuration);
 		Util.retrieveTestCases(dashboardForm, configuration, Util.getProjectAttribute(configuration, "cutoffdate", tab));
-        return mapping.findForward("showDashboard");
+        
+		return mapping.findForward("showDashboard");
     }
     
     

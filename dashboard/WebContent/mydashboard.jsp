@@ -18,15 +18,17 @@
 				});
 			});
 			
-			function submitForm() {
-				document.dashboardForm.action = "dashboard.do?release="+document.getElementById("selectedRelease").value+"&proj="+document.getElementById("projectId").value;
+			function retrieveSubProject() {
+				document.getElementById("tab2").style.display="none";
+				document.getElementById("loading").style.display="block";
+				document.dashboardForm.action = "dashboard.do?tab=2";
 				document.dashboardForm.submit();
 			}
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>
 	<body>
-		<form name="dashboardForm" method="post" id="dashboardForm">
+		<form>
 			<input type="hidden" name="dashboard" value="${DashboardForm}" />
 			<div id="container">
 				<%@include file="jsp/common/header.jsp" %>

@@ -1,17 +1,20 @@
 package com.pearson.dashboard.vo;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Mohammed Saquib (mohammed.saquib)
  *
  */
-public class Project {
+public class Project implements Serializable, Comparable<Project> {
 
 	private int tabIndex;
 	private String projectId;
 	private String projectKey;
 	private String release;
 	private String cutoffDate;
+	private String parentTab;
 	
 	public int getTabIndex() {
 		return tabIndex;
@@ -42,5 +45,16 @@ public class Project {
 	}
 	public void setCutoffDate(String cutoffDate) {
 		this.cutoffDate = cutoffDate;
+	}
+	public String getParentTab() {
+		return parentTab;
+	}
+	public void setParentTab(String parentTab) {
+		this.parentTab = parentTab;
+	}
+	
+	@Override
+	public int compareTo(Project project) {
+		return this.getProjectKey().compareTo(project.getProjectKey());
 	}
 }
