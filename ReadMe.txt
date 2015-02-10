@@ -1,0 +1,1 @@
+1. config folder must be placed under user directory of the machine.

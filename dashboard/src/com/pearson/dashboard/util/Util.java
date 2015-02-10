@@ -5,6 +5,9 @@
  */
 package com.pearson.dashboard.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -190,10 +193,12 @@ public class Util {
     	return new RallyRestApi(new URI(configuration.getRallyURL()), configuration.getRallyUser(), configuration.getRallyPassword());
     }
     
-    public static Configuration readConfigFile(){
+    public static Configuration readConfigFile() throws FileNotFoundException{
     	Properties prop = new Properties();
-    	ClassLoader loader = Thread.currentThread().getContextClassLoader();           
-    	InputStream stream = loader.getResourceAsStream("/config.properties");
+    	
+    	File file = new File(System.getProperty("user.home"), "config/config.properties");
+    	InputStream stream = new FileInputStream(file);
+    	
     	try {
     		Configuration configuration = new Configuration();
 			prop.load(stream);
@@ -201,7 +206,9 @@ public class Util {
 			configuration.setRallyUser(prop.getProperty("rallyUser"));
 			configuration.setRallyPassword(prop.getProperty("rallyPassword"));
 			
-			InputStream streamProject = loader.getResourceAsStream("/project.properties");
+			file = new File(System.getProperty("user.home"), "config/project.properties");
+	    	InputStream streamProject = new FileInputStream(file);
+			
 			Properties projectProperties = new Properties();
 			projectProperties.load(streamProject);
 			
@@ -649,10 +656,10 @@ public class Util {
     	return dateFormat.format(cal.getTime());
     }
     
-    public static String readUserFile(String username){
+    public static String readUserFile(String username) throws FileNotFoundException{
     	Properties prop = new Properties();
-    	ClassLoader loader = Thread.currentThread().getContextClassLoader();           
-    	InputStream stream = loader.getResourceAsStream("/users.properties");
+    	File file = new File(System.getProperty("user.home"), "config/users.properties");
+    	InputStream stream = new FileInputStream(file);
     	try {
     		prop.load(stream);
 			return prop.getProperty(username);
