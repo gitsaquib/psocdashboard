@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -16,90 +17,158 @@
 				<div id="subheader" style="border-radius: 15px;">
 					<font color="white" size="2" face="Tahoma"><b>${DashboardForm.expandType} Defects</b></font>
 				</div>
-				<div style="width:90%;">
-					<table style="width:100%">
+				<div style="width: 100%; height: 1em; clear:both"></div>
+				<div style="width:100%;">
+					<table style="width:95%; border-collapse:collapse;" border="1" align="center">
+						<tr>
+					    	<td width="8%"><font color="black" size="2" face="Tahoma">Defect Id</font></td>
+					    	<td><font color="black" size="2" face="Tahoma">Description</font></td>
+					    	<td width="5%"><font color="black" size="2" face="Tahoma">Priority</font></td>
+					    	<td width="5%"><font color="black" size="2" face="Tahoma">Project</font></td>
+					    	<td width="15%"><font color="black" size="2" face="Tahoma">Modify Date</font></td>
+					    </tr>
 						<c:choose>
 							<c:when test="${DashboardForm.expandType == 'Submitted' }">
 								<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status">
 									<tr>
-					                    <td>
+					                    <td width="8%">
 					                    	<a href="${defect.defectUrl}" target="_blank">
-					                   			<font color="blue" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+					                   			<font color="red" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 					                    	</a>
 					                    </td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+					                    <td>
+					                    	<font color="red" size="2" face="Tahoma">
+						                    	<span title="${defect.defectDesc}">
+						                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
+						                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+						                    			...
+						                    		</c:if>
+						                    	</span>
+					                    	</font>
+					                    </td>
+					                    <td width="5%"><font color="red" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+					                    <td width="5%"><font color="red" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+					                    <td width="15%"><font color="red" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 					                </tr>
 					            </c:forEach>
 							</c:when>					           
 							<c:when test="${DashboardForm.expandType == 'Open' }">
 								<c:forEach var="defect" items="${DashboardForm.openDefects}" varStatus="status">
 									<tr>
-					                    <td>
+					                    <td width="8%">
 					                    	<a href="${defect.defectUrl}" target="_blank">
-					                   			<font color="blue" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+					                   			<font color="orange" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 					                    	</a>
 					                    </td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+					                    <td>
+											<font color="orange" size="2" face="Tahoma">
+						                    	<span title="${defect.defectDesc}">
+						                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
+													<c:if test="${fn:length(defect.defectDesc) > 75}">
+						                    			...
+						                    		</c:if>
+						                    	</span>
+					                    	</font>
+										</td>
+					                    <td width="5%"><font color="orange" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+					                    <td width="5%"><font color="orange" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+					                    <td width="15%"><font color="orange" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 					                </tr>
 					            </c:forEach>
 							</c:when>
 							<c:when test="${DashboardForm.expandType == 'Fixed' }">
 								<c:forEach var="defect" items="${DashboardForm.fixedDefects}" varStatus="status">
 									<tr>
-					                    <td>
+					                    <td width="8%">
 					                    	<a href="${defect.defectUrl}" target="_blank">
-					                   			<font color="blue" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+					                   			<font color="green" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 					                    	</a>
 					                    </td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+					                    <td>
+					                    	<font color="green" size="2" face="Tahoma">
+						                    	<span title="${defect.defectDesc}">
+						                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
+						                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+						                    			...
+						                    		</c:if>
+						                    	</span>
+					                    	</font>
+					                    </td>
+					                    <td width="5%"><font color="green" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+					                    <td width="5%"><font color="green" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+					                    <td width="15%"><font color="green" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 					                </tr>
 					            </c:forEach>
 							</c:when>
 							<c:when test="${DashboardForm.expandType == 'Closed' }">
 								<c:forEach var="defect" items="${DashboardForm.closedDefects}" varStatus="status">
 									<tr>
-					                    <td>
+					                    <td width="8%">
 					                    	<a href="${defect.defectUrl}" target="_blank">
-					                   			<font color="blue" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+					                   			<font color="blue" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 					                    	</a>
 					                    </td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+					                    <td>
+					                    	<font color="blue" size="2" face="Tahoma">
+						                    	<span title="${defect.defectDesc}">
+						                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
+						                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+						                    			...
+						                    		</c:if>
+						                    	</span>
+					                    	</font>
+					                    </td>
+					                    <td width="5%"><font color="blue" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+					                    <td width="5%"><font color="blue" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+					                    <td width="15%"><font color="blue" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 					                </tr>
 					            </c:forEach>
 							</c:when>
 							<c:when test="${DashboardForm.expandType == 'OpenY' }">
 								<c:forEach var="defect" items="${DashboardForm.openYesterdayDefects}" varStatus="status">
 									<tr>
-					                    <td>
+					                    <td width="8%">
 					                    	<a href="${defect.defectUrl}" target="_blank">
-					                   			<font color="blue" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+					                   			<font color="orange" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 					                    	</a>
 					                    </td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+					                    <td>
+					                    	<font color="orange" size="2" face="Tahoma">
+						                    	<span title="${defect.defectDesc}">
+						                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
+						                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+						                    			...
+						                    		</c:if>
+						                    	</span>
+					                    	</font>
+					                    </td>
+					                    <td width="5%"><font color="orange" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+					                    <td width="5%"><font color="orange" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+					                    <td width="15%"><font color="orange" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 					                </tr>
 					            </c:forEach>
 							</c:when>
 							<c:when test="${DashboardForm.expandType == 'ClosedY' }">
 								<c:forEach var="defect" items="${DashboardForm.closedYesterdayDefects}" varStatus="status">
 									<tr>
-					                    <td>
+					                    <td width="8%">
 					                    	<a href="${defect.defectUrl}" target="_blank">
-					                   			<font color="blue" size="3" face="Tahoma"><c:out value="${defect.defectId}"/></font>
+					                   			<font color="blue" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 					                    	</a>
 					                    </td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-					                    <td><font color="blue" size="3" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+					                    <td>
+					                    	<font color="blue" size="2" face="Tahoma">
+						                    	<span title="${defect.defectDesc}">
+						                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
+						                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+						                    			...
+						                    		</c:if>
+						                    	</span>
+					                    	</font>
+					                    </td>
+					                    <td width="5%"><font color="blue" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+					                    <td width="5%"><font color="blue" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+					                    <td width="15%"><font color="blue" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 					                </tr>
 					            </c:forEach>
 							</c:when>

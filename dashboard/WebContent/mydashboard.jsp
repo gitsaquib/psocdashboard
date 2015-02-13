@@ -30,7 +30,7 @@
 			}
 			
 			function expandDefects(type, index) {
-				$.colorbox({iframe:true, width:"100%", height:"100%", 
+				$.colorbox({iframe:true, width:"95%", height:"95%", 
 					title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 			}
 		</script>	
