@@ -20,7 +20,7 @@
         </action>
    
         <action path="/dashboard" type="com.pearson.dashboard.action.DashboardAction" scope="session" name="DashboardForm">
-			<forward name="expandDashboard" path="/expandDashboard.jsp"/>
+			<forward name="expandDashboard" path="/jsp/defects/defects.jsp"/>
 			<forward name="showDashboard" path="/showDashboard.do"/>
 			<forward name="login" path="/login.jsp"/>
         </action>

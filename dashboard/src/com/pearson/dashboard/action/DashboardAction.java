@@ -39,10 +39,6 @@ public class DashboardAction extends Action {
     	} else {
     		dashboardForm.setExpandType(null);
     	}
-    	if(null != request.getParameter("collapse")) {
-    		dashboardForm.setExpandType(null);
-    		return mapping.findForward("showDashboard");
-    	}
     	
     	if(null != request.getParameter("export")) {
     		request.getSession().setAttribute("dashboardForm", dashboardForm);

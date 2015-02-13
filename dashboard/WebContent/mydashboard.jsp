@@ -6,8 +6,12 @@
 		<link rel="stylesheet" href="css/dashboard.css" type="text/css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
+		<script language="javascript" type="text/javascript" src='js/jquery.js'></script>
 		<script type="text/javascript" src="js/tabber.js"></script>
 		<link rel="stylesheet" href="css/tabber.css" TYPE="text/css" MEDIA="screen">
+		<script language="javascript" type="text/javascript" src="js/jquery.colorbox.js"></script>
+		<link href="css/colorbox.css" type="text/css" rel="stylesheet" />
+		<link href="css/jqModal.css" rel="stylesheet" type="text/css"/>
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
 				jQuery('.tabs .tab-links a').on('click', function(e)  {
@@ -23,6 +27,11 @@
 				document.getElementById("loading").style.display="block";
 				document.dashboardForm.action = "dashboard.do?tab=2";
 				document.dashboardForm.submit();
+			}
+			
+			function expandDefects(type, index) {
+				$.colorbox({iframe:true, width:"100%", height:"100%", 
+					title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 			}
 		</script>	
 		<title>::: Dashboard :::</title>
@@ -63,22 +72,40 @@
 				 			<%@include file="jsp/common/left_nav.jsp" %>
 				    		<h3>2-12 [2.0]</h3>
 				        	<div class="siteWidth">
-								<div id="section">
-									<%@include file="jsp/defects/submitted_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/fixed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/testcases/testcases.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-								</div>
+								<table>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/submitted_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/testcases/testcases.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/open_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/fixed_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/closed_defects.jsp" %>
+										</td>
+										<td>
+											&nbsp;
+										</td>
+									</tr>
+								</table>
 								<div class="clr"></div>
 							</div>		
 				    	</div>

@@ -3,7 +3,7 @@
 		<table align="center">
 			<tr>
 				<td align="center">
-					<h1>Pearson System of Courses</h1>
+					<h3>Pearson System of Courses</31>
 				</td>
 			</tr>
 		</table>

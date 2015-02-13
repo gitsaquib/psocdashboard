@@ -23,7 +23,7 @@
 	#section {
 	    float:left;
 	    padding:10px;
-	    width: 1000px;
+	    width: 440px;
 	    margin-left: 10px; 
 	}
 	#footer {
@@ -92,7 +92,7 @@
 	table.myTable { border-collapse:collapse; }
 	table.myTable td, table.myTable th { border:1px solid #d3d3d3;padding:5px; }
 	
-	.gauge{position:relative; width:200px; height:12px; background:#d0cfcf;}
+	.gauge{position:relative; width:200px; height:9px; background:#d0cfcf;}
 	.orange{position:absolute; top:0; left:0; height:100%; background:orange; margin:0; padding:0; z-index:0;}
 	.red{position:absolute; top:0; left:0; height:100%; background:red; margin:0; padding:0; z-index:0;}
 	.green{position:absolute; top:0; left:0; height:100%; background:green; margin:0; padding:0; z-index:0;}
