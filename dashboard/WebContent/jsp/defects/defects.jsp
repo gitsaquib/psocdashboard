@@ -20,13 +20,15 @@
 				<div style="width: 100%; height: 1em; clear:both"></div>
 				<div style="width:100%;">
 					<table style="width:95%; border-collapse:collapse;" border="1" align="center">
-						<tr>
-					    	<td width="8%"><font color="black" size="2" face="Tahoma">Defect Id</font></td>
-					    	<td><font color="black" size="2" face="Tahoma">Description</font></td>
-					    	<td width="5%"><font color="black" size="2" face="Tahoma">Priority</font></td>
-					    	<td width="5%"><font color="black" size="2" face="Tahoma">Project</font></td>
-					    	<td width="15%"><font color="black" size="2" face="Tahoma">Modify Date</font></td>
-					    </tr>
+						<thead>
+							<tr>
+						    	<th width="8%"><font color="black" size="2" face="Tahoma">Defect Id</font></th>
+						    	<th><font color="black" size="2" face="Tahoma">Description</font></th>
+						    	<th width="5%"><font color="black" size="2" face="Tahoma">Priority</font></th>
+						    	<th width="5%"><font color="black" size="2" face="Tahoma">Project</font></th>
+						    	<th width="15%"><font color="black" size="2" face="Tahoma">Modify Date</font></th>
+						    </tr>
+					    </thead>
 						<c:choose>
 							<c:when test="${DashboardForm.expandType == 'Submitted' }">
 								<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status">
