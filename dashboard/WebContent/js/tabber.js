@@ -257,3 +257,27 @@ if (typeof tabberOptions == 'undefined') {
     tabberAutomaticOnLoad(tabberOptions);
   }
 }
+
+function GetXmlHttpObject() {
+	if (window.XMLHttpRequest){
+ 		return new XMLHttpRequest();
+	}
+	if (window.ActiveXObject) {
+		return new ActiveXObject("Microsoft.XMLHTTP");
+	}	
+	return null;
+}
+var httpObject = GetXmlHttpObject(); 
+
+function sortDefects(sort) {
+	$.ajax({
+		type: "GET",
+		cache:false,
+		url: "/dashboard/dashboard.do?sort="+sort,
+		async: true,
+		data: "ajaxParam=sort",
+		success: function(data){
+			$("#tableDiv").html(data);
+		}
+	});
+}

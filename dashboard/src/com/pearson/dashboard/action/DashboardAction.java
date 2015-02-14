@@ -21,6 +21,7 @@ import org.apache.struts.action.ActionMapping;
 import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.util.Util;
 import com.pearson.dashboard.vo.Configuration;
+import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Project;
 
 /**
@@ -32,6 +33,45 @@ public class DashboardAction extends Action {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	DashboardForm dashboardForm = (DashboardForm) form;
+    	
+    	if(null != request.getParameter("sort")) {
+    		dashboardForm.setSort(request.getParameter("sort"));
+    		String expandType = dashboardForm.getExpandType();
+    		if("Submitted".equalsIgnoreCase(expandType)) {
+    			for(Defect defect:dashboardForm.getSubmittedDefects()) {
+    				defect.setSort(dashboardForm.getSort());
+    			}
+    			Collections.sort(dashboardForm.getSubmittedDefects());
+    		} else if("Open".equalsIgnoreCase(expandType)) {
+    			for(Defect defect:dashboardForm.getOpenDefects()) {
+    				defect.setSort(dashboardForm.getSort());
+    			}
+    			Collections.sort(dashboardForm.getOpenDefects());
+    		} else if("Fixed".equalsIgnoreCase(expandType)) {
+    			for(Defect defect:dashboardForm.getFixedDefects()) {
+    				defect.setSort(dashboardForm.getSort());
+    			}
+    			Collections.sort(dashboardForm.getFixedDefects());
+    		} else if("Closed".equalsIgnoreCase(expandType)) {
+    			for(Defect defect:dashboardForm.getClosedDefects()) {
+    				defect.setSort(dashboardForm.getSort());
+    			}
+    			Collections.sort(dashboardForm.getClosedDefects());
+    		} else if("OpenY".equalsIgnoreCase(expandType)) {
+    			for(Defect defect:dashboardForm.getOpenYesterdayDefects()) {
+    				defect.setSort(dashboardForm.getSort());
+    			}
+    			Collections.sort(dashboardForm.getOpenYesterdayDefects());
+    		} else if("ClosedY".equalsIgnoreCase(expandType)) {
+    			for(Defect defect:dashboardForm.getClosedYesterdayDefects()) {
+    				defect.setSort(dashboardForm.getSort());
+    			}
+    			Collections.sort(dashboardForm.getClosedYesterdayDefects());
+    		}
+    		return mapping.findForward("sortDefect");
+    	} else {
+    		dashboardForm.setSort(null);
+    	}
     	
     	if(null != request.getParameter("expandType")) {
     		dashboardForm.setExpandType(request.getParameter("expandType"));

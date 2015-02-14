@@ -21,6 +21,7 @@ public class Defect implements Serializable, Comparable<Defect> {
     private String lastUpdateDate;
     private String lastUpdateDateOriginal;
     private String defectUrl;
+    private String sort; 
     
 	public String getDefectId() {
 		return defectId;
@@ -70,9 +71,29 @@ public class Defect implements Serializable, Comparable<Defect> {
 	public void setDefectUrl(String defectUrl) {
 		this.defectUrl = defectUrl;
 	}
+	public String getSort() {
+		return sort;
+	}
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
 	public int compareTo(Defect defect){
-		Integer defectIdFromParam = Integer.parseInt(defect.getDefectId().replace("DE", ""));
-		Integer defectId = Integer.parseInt(this.defectId.replace("DE", "")); 
-		return defectIdFromParam.compareTo(defectId);
+		if(null == sort) {
+			sort = "defectId desc";
+		}
+		if(sort.equalsIgnoreCase("defectId desc")) {
+			Integer defectIdFromParam = Integer.parseInt(defect.getDefectId().replace("DE", ""));
+			Integer defectId = Integer.parseInt(this.defectId.replace("DE", ""));
+			return defectIdFromParam.compareTo(defectId);
+		} else if(sort.equalsIgnoreCase("defectId asc")) {
+			Integer defectIdFromParam = Integer.parseInt(defect.getDefectId().replace("DE", ""));
+			Integer defectId = Integer.parseInt(this.defectId.replace("DE", ""));
+			return defectId.compareTo(defectIdFromParam);
+		} else if(sort.equalsIgnoreCase("priority desc")) {
+			return this.defectId.compareTo(defect.getPriority());
+		} else if(sort.equalsIgnoreCase("priority asc")) {
+			return defect.getPriority().compareTo(this.defectId);
+		}
+		return -1;
 	}
 }

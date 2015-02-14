@@ -3,12 +3,12 @@
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<link rel="stylesheet" href="css/dashboard.css" type="text/css">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
+		<link rel="stylesheet" href="css/dashboard.css" type="text/css"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
 		<script language="javascript" type="text/javascript" src='js/jquery.js'></script>
 		<script type="text/javascript" src="js/tabber.js"></script>
-		<link rel="stylesheet" href="css/tabber.css" TYPE="text/css" MEDIA="screen">
+		<link rel="stylesheet" href="css/tabber.css" TYPE="text/css" MEDIA="screen"/>
 		<script language="javascript" type="text/javascript" src="js/jquery.colorbox.js"></script>
 		<link href="css/colorbox.css" type="text/css" rel="stylesheet" />
 		<link href="css/jqModal.css" rel="stylesheet" type="text/css"/>
@@ -30,7 +30,7 @@
 			}
 			
 			function expandDefects(type, index) {
-				$.colorbox({iframe:true, width:"95%", height:"95%", 
+				$.colorbox({iframe:true, width:"95%", overlayClose: false, escKey: false, height:"95%", 
 					title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 			}
 		</script>	

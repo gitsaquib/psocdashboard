@@ -75,6 +75,8 @@ public class DashboardForm extends ActionForm {
     
     private String expandType;
     
+    private String sort;
+    
     public String getSelectedRelease() {
 		return selectedRelease;
 	}
@@ -322,5 +324,11 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setSubProject(String subProject) {
 		this.subProject = subProject;
+	}
+	public String getSort() {
+		return sort;
+	}
+	public void setSort(String sort) {
+		this.sort = sort;
 	}
 }
