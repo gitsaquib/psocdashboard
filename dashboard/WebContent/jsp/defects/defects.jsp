@@ -135,6 +135,10 @@
 				<div style="width:100%;" id="tableDiv">
 					<%@include file="defectsTable.jsp" %>
 				</div>
+				<div id="loading" style="display: none;margin: auto;" align="center" class="loadingDiv">
+		    		<img src="loading.gif" alt="loading..."/>
+		    		<div class="clr"></div>
+		    	</div>
 				<div style="width: 100%; height: 1em; clear:both"></div>
 			</div>
 		</form>

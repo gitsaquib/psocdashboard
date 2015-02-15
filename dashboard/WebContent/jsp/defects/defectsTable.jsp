@@ -49,7 +49,7 @@
 				border-bottom: 1px solid #333;
 				box-shadow: inset 0 1px 0 #999;
 				color: #fff;
-			  font-weight: bold;
+			  	font-weight: bold;
 				padding: 10px 15px;
 				position: relative;
 				text-shadow: 0 1px 0 #000;	
@@ -130,19 +130,35 @@
 		<table style="width:95%;">
 			<thead>
 				<tr>
-			    	<th width="8%">
-			    		<font color="black" size="2" face="Tahoma">Defect Id</font>
-			    		<a href="javascript: sortDefects('defectId asc');">Asc</a>
-			    		<a href="javascript: sortDefects('defectId desc');">Desc</a> 
+			    	<th width="12%">
+			    		<c:choose>
+			    			<c:when test="${DashboardForm.sort == 'defectId asc'}">
+			    				<a href="javascript: sortDefects('defectId desc');"><font color="white" size="2" face="Tahoma">Defect Id (asc)</font></a>		
+			    			</c:when>
+			    			<c:when test="${DashboardForm.sort == 'defectId desc'}">
+			    				<a href="javascript: sortDefects('defectId asc');"><font color="white" size="2" face="Tahoma">Defect Id (desc)</font></a>		
+			    			</c:when>
+			    			<c:otherwise>
+			    				<a href="javascript: sortDefects('defectId desc');"><font color="white" size="2" face="Tahoma">Defect Id</font></a>	
+			    			</c:otherwise>
+			    		</c:choose>
 			    	</th>
-			    	<th><font color="black" size="2" face="Tahoma">Description</font></th>
-			    	<th width="5%">
-			    		<font color="black" size="2" face="Tahoma">Priority</font>
-			    		<a href="javascript: sortDefects('priority asc');">Asc</a>
-			    		<a href="javascript: sortDefects('priority desc');">Desc</a>
+			    	<th><font color="white" size="2" face="Tahoma">Description</font></th>
+			    	<th width="15%">
+			    		<c:choose>
+			    			<c:when test="${DashboardForm.sort == 'priority asc'}">
+			    				<a href="javascript: sortDefects('priority desc');"><font color="white" size="2" face="Tahoma">Priority (asc)</font></a>
+			    			</c:when>
+			    			<c:when test="${DashboardForm.sort == 'priority desc'}">
+			    				<a href="javascript: sortDefects('priority asc');"><font color="white" size="2" face="Tahoma">Priority (desc)</font></a>
+			    			</c:when>
+			    			<c:otherwise>
+			    				<a href="javascript: sortDefects('priority desc');"><font color="white" size="2" face="Tahoma">Priority</font></a>	
+			    			</c:otherwise>
+			    		</c:choose>
 			    	</th>
-			    	<th width="5%"><font color="black" size="2" face="Tahoma">Project</font></th>
-			    	<th width="15%"><font color="black" size="2" face="Tahoma">Modify Date</font></th>
+			    	<th width="5%"><font color="white" size="2" face="Tahoma">Project</font></th>
+			    	<th width="15%"><font color="white" size="2" face="Tahoma">Modify Date</font></th>
 			    </tr>
 		    </thead>
 		    <tbody>
@@ -150,7 +166,7 @@
 				<c:when test="${DashboardForm.expandType == 'Submitted' }">
 					<c:forEach var="defect" items="${DashboardForm.submittedDefects}" varStatus="status">
 						<tr>
-		                    <td width="8%">
+		                    <td width="15%">
 		                    	<a href="${defect.defectUrl}" target="_blank">
 		                   			<font color="black" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 		                    	</a>
@@ -165,7 +181,7 @@
 			                    	</span>
 		                    	</font>
 		                    </td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
@@ -174,7 +190,7 @@
 				<c:when test="${DashboardForm.expandType == 'Open' }">
 					<c:forEach var="defect" items="${DashboardForm.openDefects}" varStatus="status">
 						<tr>
-		                    <td width="8%">
+		                    <td width="15%">
 		                    	<a href="${defect.defectUrl}" target="_blank">
 		                   			<font color="black" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 		                    	</a>
@@ -189,7 +205,7 @@
 			                    	</span>
 		                    	</font>
 							</td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
@@ -198,7 +214,7 @@
 				<c:when test="${DashboardForm.expandType == 'Fixed' }">
 					<c:forEach var="defect" items="${DashboardForm.fixedDefects}" varStatus="status">
 						<tr>
-		                    <td width="8%">
+		                    <td width="15%">
 		                    	<a href="${defect.defectUrl}" target="_blank">
 		                   			<font color="black" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 		                    	</a>
@@ -213,7 +229,7 @@
 			                    	</span>
 		                    	</font>
 		                    </td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
@@ -222,7 +238,7 @@
 				<c:when test="${DashboardForm.expandType == 'Closed' }">
 					<c:forEach var="defect" items="${DashboardForm.closedDefects}" varStatus="status">
 						<tr>
-		                    <td width="8%">
+		                    <td width="15%">
 		                    	<a href="${defect.defectUrl}" target="_blank">
 		                   			<font color="black" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 		                    	</a>
@@ -237,7 +253,7 @@
 			                    	</span>
 		                    	</font>
 		                    </td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
@@ -246,7 +262,7 @@
 				<c:when test="${DashboardForm.expandType == 'OpenY' }">
 					<c:forEach var="defect" items="${DashboardForm.openYesterdayDefects}" varStatus="status">
 						<tr>
-		                    <td width="8%">
+		                    <td width="15%">
 		                    	<a href="${defect.defectUrl}" target="_blank">
 		                   			<font color="black" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 		                    	</a>
@@ -261,7 +277,7 @@
 			                    	</span>
 		                    	</font>
 		                    </td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
@@ -270,7 +286,7 @@
 				<c:when test="${DashboardForm.expandType == 'ClosedY' }">
 					<c:forEach var="defect" items="${DashboardForm.closedYesterdayDefects}" varStatus="status">
 						<tr>
-		                    <td width="8%">
+		                    <td width="15%">
 		                    	<a href="${defect.defectUrl}" target="_blank">
 		                   			<font color="black" size="2" face="Tahoma"><c:out value="${defect.defectId}"/></font>
 		                    	</a>
@@ -285,7 +301,7 @@
 			                    	</span>
 		                    	</font>
 		                    </td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>

@@ -161,7 +161,7 @@ tabberObj.prototype.navClick = function(event) {
     rVal = self.onClick(onClickArgs);
     if (rVal === false) { return false; }
   }
-  document.forms["dashboardForm"].action = "/dashboard/dashboard.do?tab="+tabberIndex;
+  document.forms["dashboardForm"].action = "/dashboard/dashboard.do?subTab="+tabberIndex+"&tab="+tabberIndex;
   document.forms["dashboardForm"].submit();
   self.tabShow(tabberIndex);
   document.getElementById("tab"+tabberIndex).style.display="none";
@@ -270,6 +270,8 @@ function GetXmlHttpObject() {
 var httpObject = GetXmlHttpObject(); 
 
 function sortDefects(sort) {
+	document.getElementById("tableDiv").style.display="none";
+	document.getElementById("loading").style.display="block";
 	$.ajax({
 		type: "GET",
 		cache:false,
@@ -277,7 +279,21 @@ function sortDefects(sort) {
 		async: true,
 		data: "ajaxParam=sort",
 		success: function(data){
+			document.getElementById("tableDiv").style.display="block";
+			document.getElementById("loading").style.display="none";
 			$("#tableDiv").html(data);
 		}
 	});
+}
+
+function retrieveSubProject(tab, subTab) {
+	document.getElementById("tab"+tab).style.display="none";
+	document.getElementById("loading").style.display="block";
+	document.dashboardForm.action = "dashboard.do?tab="+tab+"&subTab="+subTab;
+	document.dashboardForm.submit();
+}
+
+function expandDefects(type, index) {
+	$.colorbox({iframe:true, width:"95%", overlayClose: false, escKey: false, height:"95%", 
+		title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 }

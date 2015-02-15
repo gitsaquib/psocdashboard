@@ -70,7 +70,7 @@ public class DashboardAction extends Action {
     		}
     		return mapping.findForward("sortDefect");
     	} else {
-    		dashboardForm.setSort(null);
+    		dashboardForm.setSort("defectId desc");
     	}
     	
     	if(null != request.getParameter("expandType")) {
@@ -109,31 +109,32 @@ public class DashboardAction extends Action {
     		dashboardForm.setTabIndex(tab+"");
     	}
     	
-    	if(tab == 2) {
-    		List<Project> childProjects = new ArrayList<>();
-    		for(Project project:projects) {
-    			if("RUN".equalsIgnoreCase(project.getParentTab())) {
-    				childProjects.add(project);
-    			}
-    		}
-    		Collections.sort(childProjects);
-    		dashboardForm.setSubProjects(childProjects);
-    	} else {
-    		dashboardForm.setSubProjects(null);
-    		dashboardForm.setSubProject(null);
-    	}
+    	dashboardForm.setSubProject(request.getParameter("subTab"));
+    	
+		List<Project> childProjects = new ArrayList<>();
+		String tabName = Util.getProjectAttribute(configuration, "tabname", tab);
+		for(Project project:projects) {
+			if(tabName.equalsIgnoreCase(project.getParentTab())) {
+				childProjects.add(project);
+			}
+		}
+		Collections.sort(childProjects);
+		dashboardForm.setSubProjects(childProjects);
+		
+		dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
+		Util.retrieveTestCases(dashboardForm, configuration, Util.getProjectAttribute(configuration, "cutoffdate", tab));
+		
     	if(null != dashboardForm.getSubProject()) {
     		tab = Integer.parseInt(dashboardForm.getSubProject());
-    	}
+    	}	
     	dashboardForm.setCutoffDate(Util.getProjectAttribute(configuration, "cutoffdate", tab));
     	dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
     	dashboardForm.setSelectedRelease(Util.getProjectAttribute(configuration, "release", tab));
-    	dashboardForm.setTabName(Util.getProjectAttribute(configuration, "tabname", tab));
+    	dashboardForm.setTabName(tabName);
 		
     	Util.populateDefectData(dashboardForm, configuration);
-		Util.retrieveTestCases(dashboardForm, configuration, Util.getProjectAttribute(configuration, "cutoffdate", tab));
-        
-		return mapping.findForward("showDashboard");
+		
+    	return mapping.findForward("showDashboard");
     }
     
     

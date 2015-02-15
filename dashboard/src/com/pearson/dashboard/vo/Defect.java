@@ -90,9 +90,9 @@ public class Defect implements Serializable, Comparable<Defect> {
 			Integer defectId = Integer.parseInt(this.defectId.replace("DE", ""));
 			return defectId.compareTo(defectIdFromParam);
 		} else if(sort.equalsIgnoreCase("priority desc")) {
-			return this.defectId.compareTo(defect.getPriority());
+			return this.priority.compareTo(defect.getPriority());
 		} else if(sort.equalsIgnoreCase("priority asc")) {
-			return defect.getPriority().compareTo(this.defectId);
+			return defect.getPriority().compareTo(this.priority);
 		}
 		return -1;
 	}

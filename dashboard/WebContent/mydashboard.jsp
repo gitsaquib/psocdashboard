@@ -22,23 +22,12 @@
 				});
 			});
 			
-			function retrieveSubProject() {
-				document.getElementById("tab2").style.display="none";
-				document.getElementById("loading").style.display="block";
-				document.dashboardForm.action = "dashboard.do?tab=2";
-				document.dashboardForm.submit();
-			}
 			
-			function expandDefects(type, index) {
-				$.colorbox({iframe:true, width:"95%", overlayClose: false, escKey: false, height:"95%", 
-					title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
-			}
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>
 	<body>
-		<form>
-			<input type="hidden" name="dashboard" value="${DashboardForm}" />
+		<form id="dashboardForm" name="dashboardForm" method="post">
 			<div id="container">
 				<%@include file="jsp/common/header.jsp" %>
 				<div style="width: 100%; height: 1em; clear:both"></div>
@@ -113,22 +102,40 @@
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>K1 [2.0]</h3>
 				        	<div class="siteWidth">
-								<div id="section">
-									<%@include file="jsp/defects/submitted_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/fixed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/testcases/testcases.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-								</div>
+								<table>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/submitted_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/testcases/testcases.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/open_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/fixed_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/closed_defects.jsp" %>
+										</td>
+										<td>
+											&nbsp;
+										</td>
+									</tr>
+								</table>
 								<div class="clr"></div>
 							</div>		
 				    	</div>
@@ -136,20 +143,40 @@
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>Run [2.0]</h3>
 				        	<div class="siteWidth">
-								<div id="section">
-									<%@include file="jsp/defects/submitted_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/fixed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-								</div>
+								<table>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/submitted_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/open_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/fixed_defects.jsp" %>
+										</td>
+										<td>
+											&nbsp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/closed_defects.jsp" %>
+										</td>
+										<td>
+											&nbsp;
+										</td>
+									</tr>
+								</table>
 								<div class="clr"></div>
 							</div>		
 				    	</div>
@@ -157,16 +184,32 @@
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>Older [2.0]</h3>
 				        	<div class="siteWidth">
-								<div id="section">
-									<%@include file="jsp/defects/submitted_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/fixed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-								</div>
+								<table>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/submitted_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/open_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/fixed_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_defects.jsp" %>
+										</td>
+									</tr>
+								</table>
 								<div class="clr"></div>
 							</div>		
 				    	</div>
@@ -174,16 +217,32 @@
 				    		<%@include file="jsp/common/left_nav.jsp" %>
 				        	<h3>Authering [2.0]</h3>
 				        	<div class="siteWidth">
-								<div id="section">
-									<%@include file="jsp/defects/submitted_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/open_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/fixed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-									<%@include file="jsp/defects/closed_defects.jsp" %>
-									<div style="width: 100%; height: 1em"></div>
-								</div>
+								<table>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/submitted_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/open_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/fixed_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_defects.jsp" %>
+										</td>
+									</tr>
+								</table>
 								<div class="clr"></div>
 							</div>		
 				    	</div>
