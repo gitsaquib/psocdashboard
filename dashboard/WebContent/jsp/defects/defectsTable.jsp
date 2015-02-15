@@ -130,7 +130,7 @@
 		<table style="width:95%;">
 			<thead>
 				<tr>
-			    	<th width="12%">
+			    	<th width="15%">
 			    		<c:choose>
 			    			<c:when test="${DashboardForm.sort == 'defectId asc'}">
 			    				<a href="javascript: sortDefects('defectId desc');"><font color="white" size="2" face="Tahoma">Defect Id (asc)</font></a>		
@@ -157,7 +157,19 @@
 			    			</c:otherwise>
 			    		</c:choose>
 			    	</th>
-			    	<th width="5%"><font color="white" size="2" face="Tahoma">Project</font></th>
+			    	<th width="15%">
+			    		<c:choose>
+			    			<c:when test="${DashboardForm.sort == 'project asc'}">
+			    				<a href="javascript: sortDefects('project desc');"><font color="white" size="2" face="Tahoma">Project (asc)</font></a>		
+			    			</c:when>
+			    			<c:when test="${DashboardForm.sort == 'project desc'}">
+			    				<a href="javascript: sortDefects('project asc');"><font color="white" size="2" face="Tahoma">Project (desc)</font></a>		
+			    			</c:when>
+			    			<c:otherwise>
+			    				<a href="javascript: sortDefects('project desc');"><font color="white" size="2" face="Tahoma">Project</font></a>	
+			    			</c:otherwise>
+			    		</c:choose>
+			    	</th>
 			    	<th width="15%"><font color="white" size="2" face="Tahoma">Modify Date</font></th>
 			    </tr>
 		    </thead>
@@ -174,15 +186,15 @@
 		                    <td>
 		                    	<font color="black" size="2" face="Tahoma">
 			                    	<span title="${defect.defectDesc}">
-			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
-			                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 50)}"/>
+			                    		<c:if test="${fn:length(defect.defectDesc) > 50}">
 			                    			...
 			                    		</c:if>
 			                    	</span>
 		                    	</font>
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
 		            </c:forEach>
@@ -198,15 +210,15 @@
 		                    <td>
 								<font color="black" size="2" face="Tahoma">
 			                    	<span title="${defect.defectDesc}">
-			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
-										<c:if test="${fn:length(defect.defectDesc) > 75}">
+			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 50)}"/>
+										<c:if test="${fn:length(defect.defectDesc) > 50}">
 			                    			...
 			                    		</c:if>
 			                    	</span>
 		                    	</font>
 							</td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
 		            </c:forEach>
@@ -222,15 +234,15 @@
 		                    <td>
 		                    	<font color="black" size="2" face="Tahoma">
 			                    	<span title="${defect.defectDesc}">
-			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
-			                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 50)}"/>
+			                    		<c:if test="${fn:length(defect.defectDesc) > 50}">
 			                    			...
 			                    		</c:if>
 			                    	</span>
 		                    	</font>
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
 		            </c:forEach>
@@ -246,15 +258,15 @@
 		                    <td>
 		                    	<font color="black" size="2" face="Tahoma">
 			                    	<span title="${defect.defectDesc}">
-			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
-			                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 50)}"/>
+			                    		<c:if test="${fn:length(defect.defectDesc) > 50}">
 			                    			...
 			                    		</c:if>
 			                    	</span>
 		                    	</font>
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
 		            </c:forEach>
@@ -270,15 +282,15 @@
 		                    <td>
 		                    	<font color="black" size="2" face="Tahoma">
 			                    	<span title="${defect.defectDesc}">
-			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
-			                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 50)}"/>
+			                    		<c:if test="${fn:length(defect.defectDesc) > 50}">
 			                    			...
 			                    		</c:if>
 			                    	</span>
 		                    	</font>
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
 		            </c:forEach>
@@ -294,15 +306,15 @@
 		                    <td>
 		                    	<font color="black" size="2" face="Tahoma">
 			                    	<span title="${defect.defectDesc}">
-			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 75)}"/>
-			                    		<c:if test="${fn:length(defect.defectDesc) > 75}">
+			                    		<c:out value="${fn:substring(defect.defectDesc, 0, 50)}"/>
+			                    		<c:if test="${fn:length(defect.defectDesc) > 50}">
 			                    			...
 			                    		</c:if>
 			                    	</span>
 		                    	</font>
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
-		                    <td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
+		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                </tr>
 		            </c:forEach>

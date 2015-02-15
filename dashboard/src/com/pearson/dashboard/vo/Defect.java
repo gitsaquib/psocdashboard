@@ -93,6 +93,10 @@ public class Defect implements Serializable, Comparable<Defect> {
 			return this.priority.compareTo(defect.getPriority());
 		} else if(sort.equalsIgnoreCase("priority asc")) {
 			return defect.getPriority().compareTo(this.priority);
+		} else if(sort.equalsIgnoreCase("project asc")) {
+			return this.project.compareTo(defect.getProject());
+		} else if(sort.equalsIgnoreCase("project desc")) {
+			return defect.getProject().compareTo(this.project);
 		}
 		return -1;
 	}
