@@ -92,7 +92,7 @@ public class Util {
     	}
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Platform", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(2000);
@@ -131,6 +131,15 @@ public class Util {
 	            JsonObject project = object.get("Project").getAsJsonObject();
 	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
 	            defect.setDefectDesc(object.get("Name").getAsString());
+	            String platform = "Undefined";
+	            if(null != object.get("c_Platform")) {
+	            	if(object.get("c_Platform").getAsString().startsWith("iOS")) {
+	            		platform = "Apple";
+	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
+	            		platform = "Windows";
+	            	}
+	            }
+	            defect.setPlatform(platform);
 	            defects.add(defect);
             }
         }
@@ -726,7 +735,7 @@ public class Util {
 		}
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Platform", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
     	defectRequest.setScopedDown(true);
@@ -766,6 +775,15 @@ public class Util {
 	            JsonObject project = object.get("Project").getAsJsonObject();
 	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
 	            defect.setDefectDesc(object.get("Name").getAsString());
+	            String platform = "Undefined";
+	            if(null != object.get("c_Platform")) {
+	            	if(object.get("c_Platform").getAsString().startsWith("iOS")) {
+	            		platform = "Apple";
+	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
+	            		platform = "Windows";
+	            	}
+	            }
+	            defect.setPlatform(platform);
 	            defects.add(defect);
             }
         }

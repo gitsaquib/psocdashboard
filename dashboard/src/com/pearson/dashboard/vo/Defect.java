@@ -22,6 +22,7 @@ public class Defect implements Serializable, Comparable<Defect> {
     private String lastUpdateDateOriginal;
     private String defectUrl;
     private String sort; 
+    private String platform;
     
 	public String getDefectId() {
 		return defectId;
@@ -77,6 +78,12 @@ public class Defect implements Serializable, Comparable<Defect> {
 	public void setSort(String sort) {
 		this.sort = sort;
 	}
+	public String getPlatform() {
+		return platform;
+	}
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
 	public int compareTo(Defect defect){
 		if(null == sort) {
 			sort = "defectId desc";
@@ -97,6 +104,10 @@ public class Defect implements Serializable, Comparable<Defect> {
 			return this.project.compareTo(defect.getProject());
 		} else if(sort.equalsIgnoreCase("project desc")) {
 			return defect.getProject().compareTo(this.project);
+		} else if(sort.equalsIgnoreCase("platform asc")) {
+			return this.platform.compareTo(defect.getPlatform());
+		} else if(sort.equalsIgnoreCase("platform desc")) {
+			return defect.getPlatform().compareTo(this.platform);
 		}
 		return -1;
 	}

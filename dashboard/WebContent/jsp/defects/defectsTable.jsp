@@ -171,6 +171,19 @@
 			    		</c:choose>
 			    	</th>
 			    	<th width="15%"><font color="white" size="2" face="Tahoma">Modify Date</font></th>
+			    	<th width="5%">
+			    		<c:choose>
+			    			<c:when test="${DashboardForm.sort == 'platform asc'}">
+			    				<a href="javascript: sortDefects('platform desc');"><font color="white" size="2" face="Tahoma">Platform (asc)</font></a>
+			    			</c:when>
+			    			<c:when test="${DashboardForm.sort == 'platform desc'}">
+			    				<a href="javascript: sortDefects('platform asc');"><font color="white" size="2" face="Tahoma">Platform (desc)</font></a>
+			    			</c:when>
+			    			<c:otherwise>
+			    				<a href="javascript: sortDefects('platform desc');"><font color="white" size="2" face="Tahoma">Platform</font></a>	
+			    			</c:otherwise>
+			    		</c:choose>
+			    	</th>
 			    </tr>
 		    </thead>
 		    <tbody>
@@ -196,6 +209,14 @@
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                    <c:choose>
+								<c:when test="${defect.platform == 'Undefined' }">
+									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
+								</c:when>
+								<c:otherwise>
+									<td width="5%"><img src="images/${defect.platform}.png" alt="${defect.platform}"/></td>
+								</c:otherwise> 
+							</c:choose>
 		                </tr>
 		            </c:forEach>
 				</c:when>					           
@@ -220,6 +241,14 @@
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                    <c:choose>
+								<c:when test="${defect.platform == 'Undefined' }">
+									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
+								</c:when>
+								<c:otherwise>
+									<td width="5%"><img src="images/${defect.platform}.png" alt="${defect.platform}"/></td>
+								</c:otherwise> 
+							</c:choose>
 		                </tr>
 		            </c:forEach>
 				</c:when>
@@ -244,6 +273,14 @@
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                    <c:choose>
+								<c:when test="${defect.platform == 'Undefined' }">
+									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
+								</c:when>
+								<c:otherwise>
+									<td width="5%"><img src="images/${defect.platform}.png" alt="${defect.platform}"/></td>
+								</c:otherwise> 
+							</c:choose>
 		                </tr>
 		            </c:forEach>
 				</c:when>
@@ -268,6 +305,14 @@
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                    <c:choose>
+								<c:when test="${defect.platform == 'Undefined' }">
+									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
+								</c:when>
+								<c:otherwise>
+									<td width="5%"><img src="images/${defect.platform}.png" alt="${defect.platform}"/></td>
+								</c:otherwise> 
+							</c:choose>
 		                </tr>
 		            </c:forEach>
 				</c:when>
@@ -292,6 +337,14 @@
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                    <c:choose>
+								<c:when test="${defect.platform == 'Undefined' }">
+									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
+								</c:when>
+								<c:otherwise>
+									<td width="5%"><img src="images/${defect.platform}.png" alt="${defect.platform}"/></td>
+								</c:otherwise> 
+							</c:choose>
 		                </tr>
 		            </c:forEach>
 				</c:when>
@@ -316,6 +369,14 @@
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
+		                    <c:choose>
+								<c:when test="${defect.platform == 'Undefined' }">
+									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
+								</c:when>
+								<c:otherwise>
+									<td width="5%"><img src="images/${defect.platform}.png" alt="${defect.platform}"/></td>
+								</c:otherwise> 
+							</c:choose>
 		                </tr>
 		            </c:forEach>
 				</c:when>
