@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 
 import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.vo.Defect;
@@ -35,30 +38,36 @@ public class ExportServlet extends HttpServlet {
 	    	response.setHeader("Content-Disposition","attachment; filename="+dashboardForm.getProjectName()+"-"+dashboardForm.getSelectedRelease()+".xls");
 	    	out = response.getOutputStream();
 	    	HSSFWorkbook wb = new HSSFWorkbook();
+	    	short columnIndex = 1;
+	    	short columnWidth = 10000;
 	    	
 	    	List<Defect> submittedDefects = dashboardForm.getSubmittedDefects();
 	    	HSSFSheet sheet = wb.createSheet();
+	    	sheet.setColumnWidth(columnIndex, columnWidth);
 	    	wb.setSheetName(0, "Submitted");
-	    	createSheetHeader(sheet);
-	    	createSheetData(sheet, submittedDefects);
+	    	createSheetHeader(sheet, wb);
+	    	createSheetData(sheet, submittedDefects, wb);
 	    	
 	    	List<Defect> openDefects = dashboardForm.getOpenDefects();
 	    	sheet = wb.createSheet();
+	    	sheet.setColumnWidth(columnIndex, columnWidth);
 	    	wb.setSheetName(1, "Open");
-	    	createSheetHeader(sheet);
-	    	createSheetData(sheet, openDefects);
+	    	createSheetHeader(sheet, wb);
+	    	createSheetData(sheet, openDefects, wb);
 	    	
 	    	List<Defect> fixedDefects = dashboardForm.getFixedDefects();
 	    	sheet = wb.createSheet();
+	    	sheet.setColumnWidth(columnIndex, columnWidth);
 	    	wb.setSheetName(2, "Fixed");
-	    	createSheetHeader(sheet);
-	    	createSheetData(sheet, fixedDefects);
+	    	createSheetHeader(sheet, wb);
+	    	createSheetData(sheet, fixedDefects, wb);
 	    	
 	    	List<Defect> closedDefects = dashboardForm.getClosedDefects();
 	    	sheet = wb.createSheet();
+	    	sheet.setColumnWidth(columnIndex, columnWidth);
 	    	wb.setSheetName(3, "Closed");
-	    	createSheetHeader(sheet);
-	    	createSheetData(sheet, closedDefects);
+	    	createSheetHeader(sheet, wb);
+	    	createSheetData(sheet, closedDefects, wb);
 	    	
 	    	wb.write(out);
 	    } catch (Exception e) {
@@ -69,49 +78,93 @@ public class ExportServlet extends HttpServlet {
 	    }
 	}
 
-	private void createSheetHeader(HSSFSheet sheet) {
+	private void createSheetHeader(HSSFSheet sheet, HSSFWorkbook wb) {
 		HSSFRow row = sheet.createRow(0);
 		
-		short cellNum = 0;
+		HSSFFont font = wb.createFont();
+		font.setFontName("Veranda");
+		HSSFCellStyle style = wb.createCellStyle();
+        style.setFillForegroundColor(HSSFColor.AQUA.index);
+        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFont(font);
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        
+        short cellNum = 0;
 		
 		HSSFCell cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
 		cell.setCellValue("Defect Id");
 		cellNum++;
 		
 		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
 		cell.setCellValue("Description");
 		cellNum++;
 		
 		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
 		cell.setCellValue("Priority");
 		cellNum++;
 		
 		cell = row.createCell(cellNum);
-		cell.setCellValue("Last Update Date");
+		cell.setCellStyle(style);
+		cell.setCellValue("Project");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("Platform");
 		cellNum++;
 	}
 	
-	private void createSheetData(HSSFSheet sheet, List<Defect> defects) {
+	private void createSheetData(HSSFSheet sheet, List<Defect> defects, HSSFWorkbook wb) {
 		int rowNum = 1;
+		
+		HSSFFont font = wb.createFont();
+		font.setFontName("Veranda");
+		HSSFCellStyle style = wb.createCellStyle();
+        style.setFont(font);
+        style.setWrapText(true);
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        
 		for(Defect defect:defects) {
 			HSSFRow row = sheet.createRow(rowNum);
 			
 			short cellNum = 0;
 			
 			HSSFCell cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
 			cell.setCellValue(defect.getDefectId());
 			cellNum++;
 			
 			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
 			cell.setCellValue(defect.getDefectDesc());
 			cellNum++;
 			
 			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
 			cell.setCellValue(defect.getPriority());
 			cellNum++;
 			
 			cell = row.createCell(cellNum);
-			cell.setCellValue(defect.getLastUpdateDateOriginal());
+			cell.setCellStyle(style);
+			cell.setCellValue(defect.getProject());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(defect.getPlatform());
 			cellNum++;
 			
 			rowNum++;

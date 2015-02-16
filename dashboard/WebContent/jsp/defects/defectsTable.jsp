@@ -170,7 +170,6 @@
 			    			</c:otherwise>
 			    		</c:choose>
 			    	</th>
-			    	<th width="15%"><font color="white" size="2" face="Tahoma">Modify Date</font></th>
 			    	<th width="5%">
 			    		<c:choose>
 			    			<c:when test="${DashboardForm.sort == 'platform asc'}">
@@ -208,7 +207,6 @@
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                    <c:choose>
 								<c:when test="${defect.platform == 'Undefined' }">
 									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
@@ -240,7 +238,6 @@
 							</td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                    <c:choose>
 								<c:when test="${defect.platform == 'Undefined' }">
 									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
@@ -272,7 +269,6 @@
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                    <c:choose>
 								<c:when test="${defect.platform == 'Undefined' }">
 									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
@@ -304,7 +300,6 @@
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                    <c:choose>
 								<c:when test="${defect.platform == 'Undefined' }">
 									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
@@ -336,7 +331,6 @@
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                    <c:choose>
 								<c:when test="${defect.platform == 'Undefined' }">
 									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
@@ -368,7 +362,6 @@
 		                    </td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.priority}"/></font></td>
 		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.project}"/></font></td>
-		                    <td width="15%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.lastUpdateDate}"/></font></td>
 		                    <c:choose>
 								<c:when test="${defect.platform == 'Undefined' }">
 									<td width="5%"><font color="black" size="2" face="Tahoma"><c:out value="${defect.platform}"/></font></td>
