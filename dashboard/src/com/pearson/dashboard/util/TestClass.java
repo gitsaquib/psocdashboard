@@ -42,19 +42,47 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException {
 
     	RallyRestApi restApi = loginRally(); 
-    	retrieveDefects(restApi);
+    	retrieveTestSets(restApi);
+    	//retrieveTestCases(restApi);
     	restApi.close();
     	//postJenkinsJob();
     }
     
+    private static void retrieveTestSets(RallyRestApi restApi)
+			throws IOException, URISyntaxException {
+
+        QueryRequest testSetRequest = new QueryRequest("TestSet");
+        testSetRequest.setProject("/project/23240411122");
+        String wsapiVersion = "1.43";
+        restApi.setWsapiVersion(wsapiVersion);
+        
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "FormattedID"}));
+        testSetRequest.setQueryFilter(new QueryFilter("ObjectID", "=", "29426036743"));
+        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        System.out.println("Successful: " + testSetQueryResponse.wasSuccessful());
+        System.out.println("Size: " + testSetQueryResponse.getTotalResultCount());
+        for (int i=0; i<testSetQueryResponse.getResults().size();i++){
+            JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
+            System.out.println("Name: " + testSetJsonObject.get("Name") + " ref: " + testSetJsonObject.get("_ref").getAsString() + " Test Cases: " + testSetJsonObject.get("TestCases"));
+            int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
+            System.out.println(numberOfTestCases);
+            if(numberOfTestCases>0){
+                  for (int j=0;j<numberOfTestCases;j++){
+                  System.out.println(testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject().get("FormattedID"));
+                 }
+            }
+        }
+
+	}
+    
     private static void retrieveTestCases(RallyRestApi restApi)
 			throws IOException {
 		
-		QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", "2014-09-16").and(new QueryFilter("Type", "=", "Regression"));
+		QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", "2014-09-16").and(new QueryFilter("Type", "=", "Regression")).and(new QueryFilter("TestSets.ObjectID", "=", "29426036743"));
     	QueryRequest defectRequest = new QueryRequest("testcases");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict"));
-    	defectRequest.setProject("/project/21028059357"); 
+    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict", "TestSets"));
+    	defectRequest.setProject("/project/23240411122"); 
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(10000);
     	QueryResponse projectDefects = restApi.query(defectRequest);
@@ -62,8 +90,10 @@ public class TestClass {
     
     	for(int i=0; i<defectsArray.size(); i++) {
     		JsonElement elements =  defectsArray.get(i);
-            JsonObject object = elements.getAsJsonObject();
+    		JsonObject object = elements.getAsJsonObject();
             System.out.println(i+" "+object);
+            JsonObject testSets = object.get("TestSets").getAsJsonObject();
+            System.out.println(testSets.get("_ref"));
     	}
 	}
     
