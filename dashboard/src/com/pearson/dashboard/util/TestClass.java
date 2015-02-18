@@ -3,7 +3,11 @@ package com.pearson.dashboard.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -39,7 +43,7 @@ import com.rallydev.rest.util.Fetch;
 import com.rallydev.rest.util.QueryFilter;
 
 public class TestClass {
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
     	retrieveTestSets(restApi);
@@ -49,26 +53,31 @@ public class TestClass {
     }
     
     private static void retrieveTestSets(RallyRestApi restApi)
-			throws IOException, URISyntaxException {
+			throws IOException, URISyntaxException, ParseException {
 
         QueryRequest testSetRequest = new QueryRequest("TestSet");
         testSetRequest.setProject("/project/23240411122");
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
         
-        testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "FormattedID"}));
-        testSetRequest.setQueryFilter(new QueryFilter("ObjectID", "=", "29426036743"));
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "FormattedID", "LastVerdict", "LastRun"}));
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS277").or(new QueryFilter("FormattedID", "=", "TS278")).or(new QueryFilter("FormattedID", "=", "TS279")));
         QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
-        System.out.println("Successful: " + testSetQueryResponse.wasSuccessful());
-        System.out.println("Size: " + testSetQueryResponse.getTotalResultCount());
         for (int i=0; i<testSetQueryResponse.getResults().size();i++){
             JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
-            System.out.println("Name: " + testSetJsonObject.get("Name") + " ref: " + testSetJsonObject.get("_ref").getAsString() + " Test Cases: " + testSetJsonObject.get("TestCases"));
             int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
-            System.out.println(numberOfTestCases);
             if(numberOfTestCases>0){
                   for (int j=0;j<numberOfTestCases;j++){
-                  System.out.println(testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject().get("FormattedID"));
+                	  	JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
+                	  	DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
+                	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
+                	  		Date date = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
+          	            	DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
+          	            	String dateStr = formatter2.format(date);
+          	            	System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr);
+                	  	} else {
+                	  		System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "");
+                	  	}
                  }
             }
         }

@@ -7,30 +7,50 @@
 		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
 		<title>::: Dashboard :::</title>
+		<script type="javascript/text">
+			function validateLoginFields() {
+				if(document.getElementById("username").value == "" || ) {
+
+				}
+			}
+		</script>
 	</head>
 	<body>
-		<form name="loginForm" method="post" action="login.do">
+		<form name="loginForm" method="post" action="login.do" onsubmit="validate">
 			<div id="container" align="center">
 				<%@include file="jsp/common/header.jsp" %>
 				<div style="width: 100%; height: 100px;"></div>
 				<div style="border:1px solid #46464f; width: 40%; border-style: dotted; border-radius: 15px;" align="center">
 					<div style="width: 100%; height: 1em"></div>
+					<img src="images/pearson.gif" alt="Always Learning" height=150" width="250">
 					<table>
 	                    <tr>
-	                        <td><font size="2" face="Tahoma">Username  : </font></td><td> <input name="username" id="username" size=15 type="text" /> </td> 
+	                        <td><font size="2" face="Tahoma"><b>Username  : </b></font></td><td> <input name="username" id="username" size=15 type="text" /> </td> 
 	                    </tr>
 	                    <tr>
-	                        <td><font size="2" face="Tahoma">Password  : </font></td><td> <input name="password" id="password" size=15 type="password" /> </td> 
+	                        <td><font size="2" face="Tahoma"><b>Password  : </b></font></td><td> <input name="password" id="password" size=15 type="password" /> </td> 
+	                    </tr>
+	                    <tr>
+	                        <td>&nbsp;</td>
+	                        <td> 
+	                        	<div style="width: 100%; height: 1em"></div>
+	                			<input type="submit" value="Login" />
+	                			<input type="reset" value="Reset"/>
+	                		</td> 
 	                    </tr>
 	                </table>
-	                <div style="width: 100%; height: 1em"></div>
-	                <input type="submit" value="Login" />
-	                <input type="reset" value="Reset"/>
+	               
 	                <div style="width: 100%; height: 1em"></div>
                 </div>
                 <div style="width: 100%; height: 100px;"></div>
-				<div id="footer">
-			 		&nbsp;
+				<div id="footer" >
+					<table align="center">
+						<tr>
+							<td align="center">
+								©Pearson Education
+							</td>
+						</tr>
+					</table>
 				</div>
 			</div>
 		</form>
