@@ -7,16 +7,19 @@
 		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
 		<title>::: Dashboard :::</title>
-		<script type="javascript/text">
+		<script type="text/javascript">
 			function validateLoginFields() {
-				if(document.getElementById("username").value == "" || ) {
-
+				if(document.getElementById("username").value == "" || document.getElementById("username").value == "password") {
+					alert("Username and Password fields are mandatory");
+					return false;
+				} else {
+					document.loginForm.submit();
 				}
 			}
 		</script>
 	</head>
 	<body>
-		<form name="loginForm" method="post" action="login.do" onsubmit="validate">
+		<form name="loginForm" method="post" action="login.do" onsubmit="return validateLoginFields();">
 			<div id="container" align="center">
 				<%@include file="jsp/common/header.jsp" %>
 				<div style="width: 100%; height: 100px;"></div>
@@ -25,10 +28,18 @@
 					<img src="images/pearson.gif" alt="Always Learning" height=150" width="250">
 					<table>
 	                    <tr>
-	                        <td><font size="2" face="Tahoma"><b>Username  : </b></font></td><td> <input name="username" id="username" size=15 type="text" /> </td> 
+	                        <td>
+	                        	<font size="2" face="Tahoma" color="red">*</font>
+	                        	<font size="2" face="Tahoma"><b>Username  : </b></font>
+	                        </td>
+	                        <td> <input name="username" id="username" size=15 type="text" /> </td> 
 	                    </tr>
 	                    <tr>
-	                        <td><font size="2" face="Tahoma"><b>Password  : </b></font></td><td> <input name="password" id="password" size=15 type="password" /> </td> 
+	                        <td>
+	                        	<font size="2" face="Tahoma" color="red">*</font>
+	                        	<font size="2" face="Tahoma"><b>Password  : </b></font>
+	                        </td>
+	                        <td> <input name="password" id="password" size=15 type="password" /> </td> 
 	                    </tr>
 	                    <tr>
 	                        <td>&nbsp;</td>
@@ -47,7 +58,7 @@
 					<table align="center">
 						<tr>
 							<td align="center">
-								©Pearson Education
+								© Pearson Education
 							</td>
 						</tr>
 					</table>
