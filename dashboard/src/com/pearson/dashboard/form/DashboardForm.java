@@ -77,6 +77,13 @@ public class DashboardForm extends ActionForm {
     
     private String sort;
     
+    private String submittedMsg;
+    private String openMsg;
+    private String fixedMsg;
+    private String closedMsg;
+    private String closedYMsg;
+    private String openYMsg;
+    
     public String getSelectedRelease() {
 		return selectedRelease;
 	}
@@ -330,5 +337,41 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setSort(String sort) {
 		this.sort = sort;
+	}
+	public String getSubmittedMsg() {
+		return submittedMsg;
+	}
+	public void setSubmittedMsg(String submittedMsg) {
+		this.submittedMsg = submittedMsg;
+	}
+	public String getOpenMsg() {
+		return openMsg;
+	}
+	public void setOpenMsg(String openMsg) {
+		this.openMsg = openMsg;
+	}
+	public String getFixedMsg() {
+		return fixedMsg;
+	}
+	public void setFixedMsg(String fixedMsg) {
+		this.fixedMsg = fixedMsg;
+	}
+	public String getClosedMsg() {
+		return closedMsg;
+	}
+	public void setClosedMsg(String closedMsg) {
+		this.closedMsg = closedMsg;
+	}
+	public String getClosedYMsg() {
+		return closedYMsg;
+	}
+	public void setClosedYMsg(String closedYMsg) {
+		this.closedYMsg = closedYMsg;
+	}
+	public String getOpenYMsg() {
+		return openYMsg;
+	}
+	public void setOpenYMsg(String openYMsg) {
+		this.openYMsg = openYMsg;
 	}
 }

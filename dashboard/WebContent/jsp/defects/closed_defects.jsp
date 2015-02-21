@@ -7,7 +7,9 @@
 		<p align="center">
 			<a href="javascript: expandDefects('Closed', ${DashboardForm.tabIndex});">
 				<font color="blue" size="4" face="Tahoma">
-					<c:out value="${DashboardForm.closedDefectCount}"/>
+					<span title="${DashboardForm.closedMsg}">
+						<c:out value="${DashboardForm.closedDefectCount}"/>
+					</span>
 				</font>
 			</a>
 			<font color="blue" size="2" face="Tahoma">

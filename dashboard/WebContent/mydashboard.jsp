@@ -246,6 +246,39 @@
 								<div class="clr"></div>
 							</div>		
 				    	</div>
+				    	<div id="tab5" class="tabbertab">
+				    		<%@include file="jsp/common/left_nav.jsp" %>
+				        	<h3>Assessment</h3>
+				        	<div class="siteWidth">
+								<table>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/submitted_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/open_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<%@include file="jsp/defects/fixed_defects.jsp" %>
+										</td>
+										<td>
+											<%@include file="jsp/defects/closed_defects.jsp" %>
+										</td>
+									</tr>
+								</table>
+								<div class="clr"></div>
+							</div>		
+				    	</div>
 				    	<div id="loading" style="display: none;margin: auto;" align="center" class="loadingDiv">
 				    		<img src="loading.gif" alt="loading..."/>
 				    		<div class="clr"></div>

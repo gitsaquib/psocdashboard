@@ -7,7 +7,9 @@
 		<p align="center">
 			<a href="javascript: expandDefects('OpenY', ${DashboardForm.tabIndex});">
 				<font color="orange" size="4" face="Tahoma">
-					<c:out value="${DashboardForm.openYesterdayDefectCount}"/>
+					<span title="${DashboardForm.openYMsg}">
+						<c:out value="${DashboardForm.openYesterdayDefectCount}"/>
+					</span>
 				</font>
 			</a>
 			<font color="orange" size="2" face="Tahoma">

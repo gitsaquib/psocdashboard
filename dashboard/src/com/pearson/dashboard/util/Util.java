@@ -257,6 +257,10 @@ public class Util {
 			allDefects = Util.getDataFromRally(dashboardForm, configuration);
 		}
 		
+		int winCount = 0;
+		int iOSCount = 0;
+		int undefined = 0;
+		
 		//Open defects
 		List<Defect> openDefects = allDefects.get("Open");
 		List<Priority> priorities = new ArrayList<Priority>();
@@ -313,11 +317,23 @@ public class Util {
 		priorities.add(priority2);
 		priorities.add(priority3);
 		priorities.add(priority4);
+		
+		for(Defect defect:openDefects) {
+			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+		    	iOSCount++;
+		    } else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+		    	winCount++;
+		    } else {
+		    	undefined++;
+		    }
+		}
+		
 		dashboardForm.setOpenDefects(openDefects);
 		dashboardForm.setOpenPriorities(priorities);
 		dashboardForm.setOpenDefectCount(openDefects.size());
 		int p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setOpenP1AndP2Count(p1np2cnt);
+		dashboardForm.setOpenMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		
 		//Submitted defects
 		List<Defect> submittedDefects = allDefects.get("Submitted");
@@ -375,11 +391,26 @@ public class Util {
 		priorities.add(priority2);
 		priorities.add(priority3);
 		priorities.add(priority4);
+		
+		iOSCount = 0;
+		winCount = 0;
+		undefined = 0;
+		for(Defect defect:submittedDefects) {
+			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+		    	iOSCount++;
+		    } else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+		    	winCount++;
+		    } else {
+		    	undefined++;
+		    }
+		}
+		
 		dashboardForm.setSubmittedDefects(submittedDefects);
 		dashboardForm.setSubmittedPriorities(priorities);
 		dashboardForm.setSubmittedDefectCount(submittedDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setSubmittedP1AndP2Count(p1np2cnt);
+		dashboardForm.setSubmittedMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		
 		//Fixed defects
 		List<Defect> fixedDefects = allDefects.get("Fixed");
@@ -437,10 +468,25 @@ public class Util {
 		priorities.add(priority2);
 		priorities.add(priority3);
 		priorities.add(priority4);
+		
+		iOSCount = 0;
+		winCount = 0;
+		undefined = 0;
+		for(Defect defect:fixedDefects) {
+			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+				iOSCount++;
+			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+				winCount++;
+			} else {
+				undefined++;
+			}
+		}
+		
 		dashboardForm.setFixedDefects(fixedDefects);
 		dashboardForm.setFixedPriorities(priorities);
 		dashboardForm.setFixedDefectCount(fixedDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
+		dashboardForm.setFixedMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		dashboardForm.setFixedP1AndP2Count(p1np2cnt);
 		
 		//Closed defects
@@ -499,10 +545,25 @@ public class Util {
 		priorities.add(priority2);
 		priorities.add(priority3);
 		priorities.add(priority4);
+		
+		iOSCount = 0;
+		winCount = 0;
+		undefined = 0;
+		for(Defect defect:closedDefects) {
+			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+				iOSCount++;
+			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+				winCount++;
+			} else {
+				undefined++;
+			}
+		}
+		
 		dashboardForm.setClosedDefects(closedDefects);
 		dashboardForm.setClosedPriorities(priorities);
 		dashboardForm.setClosedDefectCount(closedDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
+		dashboardForm.setClosedMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		dashboardForm.setClosedP1AndP2Count(p1np2cnt);
 		
 		//Closed Yesterday
@@ -562,10 +623,25 @@ public class Util {
 		priorities.add(priority2);
 		priorities.add(priority3);
 		priorities.add(priority4);
+		
+		iOSCount = 0;
+		winCount = 0;
+		undefined = 0;
+		for(Defect defect:closedYesterdayDefects) {
+			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+				iOSCount++;
+			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+				winCount++;
+			} else {
+				undefined++;
+			}
+		}
+		
 		dashboardForm.setClosedYesterdayDefects(closedYesterdayDefects);
 		dashboardForm.setClosedYesterdayPriorities(priorities);
 		dashboardForm.setClosedYesterdayDefectCount(null == closedYesterdayDefects ? 0 : closedYesterdayDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
+		dashboardForm.setClosedYMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		dashboardForm.setClosedYesterdayP1AndP2Count(p1np2cnt);
 		
 		//Open Yesterday
@@ -625,10 +701,24 @@ public class Util {
 		priorities.add(priority2);
 		priorities.add(priority3);
 		priorities.add(priority4);
+		
+		iOSCount = 0;
+		winCount = 0;
+		undefined = 0;
+		for(Defect defect:submittedDefects) {
+			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+				iOSCount++;
+			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+				winCount++;
+			} else {
+				undefined++;
+			}
+		}
 		dashboardForm.setOpenYesterdayDefects(openYesterdayDefects);
 		dashboardForm.setOpenYesterdayPriorities(priorities);
 		dashboardForm.setOpenYesterdayDefectCount(null == openYesterdayDefects ? 0 : openYesterdayDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
+		dashboardForm.setOpenYMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		dashboardForm.setOpenYesterdayP1AndP2Count(p1np2cnt);
 		
 		Project project = Util.getSelectedProject(dashboardForm.getProjectId(), configuration, dashboardForm.getTabName());
