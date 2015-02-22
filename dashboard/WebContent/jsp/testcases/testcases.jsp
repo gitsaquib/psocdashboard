@@ -13,18 +13,22 @@
 			<c:forEach var="priority" items="${DashboardForm.testCasesPriorities}">
 				<tr>
 					<td><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityName}"/></font></td>
-					<td><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityCount}"/></font></td>
-					<td>
-						<div class="gauge">
-							<span class="text"></span>
-							<span class="color" style="width: ${priority.pxSize}%"></span>
-						</div>
-					</td>
+					<td><span id="${priority.priorityName}"><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityCount}"/></font></span></td>
 				</tr>
 			</c:forEach>
+			<tr>
+				<div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>		
+			</tr>
 		</table>
 		<div style="width: 100%; height: 1em"></div>
 	</div>
 	<div style="width: 100%; height: 1em; clear:both"></div>
 </div>
 </div>
+<div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
+<script class="include" type="text/javascript" src="syntaxhighlighter/scripts/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
+<script type="text/javascript" src="syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
+<script type="text/javascript" src="syntaxhighlighter/scripts/shBrushXml.min.js"></script>
+<script class="include" type="text/javascript" src="syntaxhighlighter/scripts/jqplot.pieRenderer.min.js"></script>
+<script type="text/javascript" src="syntaxhighlighter/scripts/example.min.js"></script>

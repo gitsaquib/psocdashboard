@@ -3,6 +3,11 @@
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
+		<link class="include" rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/jquery.jqplot.min.css" />
+    	<link rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/examples.min.css" />
+    	<link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
+    	<link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
+    	<script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="css/dashboard.css" type="text/css"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
@@ -22,11 +27,36 @@
 				});
 			});
 			
+			function drawPie()
+			{
+				var plot1 = $.jqplot('pie1', [[['Pass',document.getElementById('Pass').value],
+				                               ['Fail',document.getElementById('Fail').value],
+				                               ['Blocked',document.getElementById('Blocked').value],
+				                               ['NotAttempted',document.getElementById('NotAttempted').value],
+				                               ['Error',document.getElementById('Error').value],
+				                               ['Inconclusive',document.getElementById('Inconclusive').value]]], {
+				gridPadding: {top:0, bottom:38, left:0, right:0},
+				seriesDefaults:{
+					renderer:$.jqplot.PieRenderer, 
+					trendline:{ show:false }, 
+					rendererOptions: { padding: 8, showDataLabels: true }
+				},
+				legend:{
+					show:false, 
+					placement: 'outside', 
+					rendererOptions: {
+						numberRows: 1
+					}, 
+					location:'s',
+					marginTop: '15px'
+				}       
+				});
+			}
 			
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>
-	<body>
+	<body onload="drawPie();">
 		<form id="dashboardForm" name="dashboardForm" method="post">
 			<div id="container">
 				<%@include file="jsp/common/header.jsp" %>
