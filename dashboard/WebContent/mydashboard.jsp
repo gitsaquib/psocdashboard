@@ -69,7 +69,7 @@
 											</td>
 											<td>
 												<c:choose>
-													<c:when test="${DashboardForm.regressionData}">
+													<c:when test="${!DashboardForm.regressionData}">
 														<%@include file="jsp/testcases/testcases.jsp" %>
 													</c:when>
 													<c:otherwise>
@@ -95,7 +95,7 @@
 											</td>
 										</tr>
 										<c:choose>
-											<c:when test="${!DashboardForm.regressionData}">
+											<c:when test="${DashboardForm.regressionData}">
 												<tr>
 													<td>
 														<%@include file="jsp/defects/closed_defects.jsp" %>
