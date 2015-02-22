@@ -32,8 +32,8 @@ import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.vo.Configuration;
 import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Priority;
-import com.pearson.dashboard.vo.Project;
 import com.pearson.dashboard.vo.Release;
+import com.pearson.dashboard.vo.Tab;
 import com.pearson.dashboard.vo.TestCase;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.QueryRequest;
@@ -147,24 +147,23 @@ public class Util {
     	allDefects.put(typeCategory, defects);
 	}
     
-    public static Project getSelectedProject(String projectKey, Configuration configuration, String tabName) {
-    	if(null == projectKey) {
-    		projectKey = "21028059357";
-    	}
-    	List<Project> projects = configuration.getProjects();
-    	if(tabName.startsWith("Authering")) {
-    		for(Project project:projects) {
-        		if(project.getProjectKey().startsWith("Authering")) {
-        			return project;
-        		}
-        	}
-		}
-    	for(Project project:projects) {
-    		if(project.getProjectId().equalsIgnoreCase(projectKey)) {
-    			return project;
+    public static Tab getSelectedProject(int tabIndex, int subTabIndex, Configuration configuration) {
+    	List<Tab> tabs = configuration.getTabs();
+    	Tab selectedTab = new Tab();
+    	for(Tab tab:tabs) {
+    		if(tabIndex == tab.getTabIndex()) {
+    			List<Tab> subTabs = tab.getSubTabs();
+    			selectedTab = tab;
+    			if(null != subTabs) {
+    				for(Tab subTab:subTabs) {
+    					if(subTab.getTabIndex() == subTabIndex) {
+    						selectedTab = subTab;
+    					}
+    				}
+    			}
     		}
     	}
-    	return null;
+    	return selectedTab;
     }
     
     private static boolean isReleaseAlreadyAdded(List<Release> releases, String releaseName) {
@@ -215,33 +214,37 @@ public class Util {
 			configuration.setRallyUser(prop.getProperty("rallyUser"));
 			configuration.setRallyPassword(prop.getProperty("rallyPassword"));
 			
-			file = new File(System.getProperty("user.home"), "config/project.properties");
+			file = new File(System.getProperty("user.home"), "config/tab.properties");
 	    	InputStream streamProject = new FileInputStream(file);
 			
-			Properties projectProperties = new Properties();
-			projectProperties.load(streamProject);
+			Properties tabProperties = new Properties();
+			tabProperties.load(streamProject);
 			
-			List<Project> projectList = new ArrayList<Project>();  
-			for(Enumeration<String> en = (Enumeration<String>) projectProperties.propertyNames();en.hasMoreElements();) {
+			List<Tab> tabs = new ArrayList<Tab>();  
+			for(Enumeration<String> en = (Enumeration<String>) tabProperties.propertyNames();en.hasMoreElements();) {
 				String key = (String) en.nextElement();
-				String params = projectProperties.getProperty(key);
+				String params = tabProperties.getProperty(key);
 				if(null != params) {
 					String param[] = params.split(":");
-					Project project = new Project();
-					project.setTabIndex(Integer.parseInt(param[0]));
-					project.setProjectKey(param[1]);
-					project.setProjectId(param[2]);
-					project.setRelease(param[3]);
+					Tab tab = new Tab();
+					tab.setTabIndex(Integer.parseInt(param[0]));
+					tab.setTabDisplayName(param[1]);
+					tab.setTabUniqueId(param[2]);
+					tab.setRelease(param[3]);
 					if(null != param[4] && !"null".equals(param[4])) {
-						project.setCutoffDate(param[4]);
+						tab.setCutoffDate(param[4]);
 					}
-					if(null != param[5] && !"null".equals(param[5])) {
-						project.setParentTab(param[5]);
+					if(null != param[5] && !"true".equals(param[5])) {
+						tab.setRegressionData(true);
+					} else {
+						tab.setRegressionData(false);
 					}
-					projectList.add(project);
+					tab.setTabType("Parent");
+					tab.setSubTabs(getSubTabs(param[2]));
+					tabs.add(tab);
 				}
 			}
-			configuration.setProjects(projectList);			
+			configuration.setTabs(tabs);			
 			return configuration;
 		} catch (IOException e) {
 			return null;
@@ -627,16 +630,17 @@ public class Util {
 		iOSCount = 0;
 		winCount = 0;
 		undefined = 0;
-		for(Defect defect:closedYesterdayDefects) {
-			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
-				iOSCount++;
-			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
-				winCount++;
-			} else {
-				undefined++;
+		if(null != closedYesterdayDefects) {
+			for(Defect defect:closedYesterdayDefects) {
+				if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+					iOSCount++;
+				} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+					winCount++;
+				} else {
+					undefined++;
+				}
 			}
 		}
-		
 		dashboardForm.setClosedYesterdayDefects(closedYesterdayDefects);
 		dashboardForm.setClosedYesterdayPriorities(priorities);
 		dashboardForm.setClosedYesterdayDefectCount(null == closedYesterdayDefects ? 0 : closedYesterdayDefects.size());
@@ -705,13 +709,15 @@ public class Util {
 		iOSCount = 0;
 		winCount = 0;
 		undefined = 0;
-		for(Defect defect:submittedDefects) {
-			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
-				iOSCount++;
-			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
-				winCount++;
-			} else {
-				undefined++;
+		if(null != openYesterdayDefects) {
+			for(Defect defect:openYesterdayDefects) {
+				if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+					iOSCount++;
+				} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
+					winCount++;
+				} else {
+					undefined++;
+				}
 			}
 		}
 		dashboardForm.setOpenYesterdayDefects(openYesterdayDefects);
@@ -721,27 +727,36 @@ public class Util {
 		dashboardForm.setOpenYMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
 		dashboardForm.setOpenYesterdayP1AndP2Count(p1np2cnt);
 		
-		Project project = Util.getSelectedProject(dashboardForm.getProjectId(), configuration, dashboardForm.getTabName());
-		dashboardForm.setProjectId(project.getProjectId());
-		dashboardForm.setProjectName(project.getProjectKey());
+		Tab tab = Util.getSelectedProject(Integer.parseInt(dashboardForm.getTabIndex()), Integer.parseInt(dashboardForm.getSubProject()), configuration);
+		dashboardForm.setProjectId(tab.getTabUniqueId());
+		dashboardForm.setProjectName(tab.getTabDisplayName());
 	}
     
-    public static String getProjectAttribute(Configuration configuration, String key, int tab) {
-    	List<Project> projects = configuration.getProjects();
-    	for(Project project:projects) {
-    		if(tab == project.getTabIndex()) {
-    			if(key.equals("release")) {
-    				return project.getRelease();
-				} else if(key.equals("cutoffdate")) {
-    				return project.getCutoffDate();
-				} else if(key.equals("tabname")) {
-    				return project.getProjectKey();
-    			} else {
-    				return project.getProjectId();
+    public static String getTabAttribute(Configuration configuration, String key, int tabInt, int subTabInt) {
+    	List<Tab> tabs = configuration.getTabs();
+    	Tab selectedTab = new Tab();
+    	for(Tab tab:tabs) {
+    		if(tabInt == tab.getTabIndex()) {
+    			selectedTab = tab;
+    			List<Tab> subTabs = tab.getSubTabs();
+    			if(null != subTabs) {
+    				for(Tab subTab:subTabs) {
+    					if(subTab.getTabIndex() == subTabInt) {
+    						selectedTab = subTab;
+    					}
+    				}
     			}
     		}
     	}
-    	return null;
+    	if(key.equals("release")) {
+			return selectedTab.getRelease();
+		} else if(key.equals("cutoffdate")) {
+			return selectedTab.getCutoffDate();
+		} else if(key.equals("tabname")) {
+			return selectedTab.getTabDisplayName();
+		} else {
+			return selectedTab.getTabUniqueId();
+		}
     }
     
     private static String getDate(String day) {
@@ -774,16 +789,16 @@ public class Util {
     	if(dashboard.getTabName().startsWith("Authering")) {
     		
     		//Retrieve V team data
-	    	String projectId = getProjectAttribute(configuration, "project", 4);
-	    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 4);    	
+	    	String projectId = getTabAttribute(configuration, "project", 4, 4);
+	    	String cutoffDate = getTabAttribute(configuration, "cutoffdate", 4, 4);    	
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);    	
 	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	
 	    	//Retrieve A team data
-	    	projectId = getProjectAttribute(configuration, "project", 3);
-	    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 3);    
+	    	projectId = getTabAttribute(configuration, "project", 3, 3);
+	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 3, 3);    
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);  	
@@ -791,16 +806,16 @@ public class Util {
 	    	
     	} else {
 	    	//Retrieve 2-12 old data
-	    	String projectId = getProjectAttribute(configuration, "project", 0);
-	    	String cutoffDate = getProjectAttribute(configuration, "cutoffdate", 0);    	
+	    	String projectId = getTabAttribute(configuration, "project", 0, 0);
+	    	String cutoffDate = getTabAttribute(configuration, "cutoffdate", 0, 0);    	
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);    	
 	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
 	    	
 	    	//Retrieve K1 old data
-	    	projectId = getProjectAttribute(configuration, "project", 1);
-	    	cutoffDate = getProjectAttribute(configuration, "cutoffdate", 1);    	
+	    	projectId = getTabAttribute(configuration, "project", 1, 1);
+	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 1, 1);    	
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);    	
@@ -979,5 +994,40 @@ public class Util {
 		
 		dashboardForm.setTestCasesCount(testCases.size());
 		dashboardForm.setTestCasesPriorities(priorities);
+	}
+	
+	private static List<Tab> getSubTabs(String tabUniqueId) throws IOException {
+		File file = new File(System.getProperty("user.home"), "config/subtab.properties");
+    	InputStream streamSubTab = new FileInputStream(file);
+		
+		Properties subTabProperties = new Properties();
+		subTabProperties.load(streamSubTab);
+		
+		List<Tab> subTabs = new ArrayList<Tab>();  
+		for(Enumeration<String> enSub = (Enumeration<String>) subTabProperties.propertyNames();enSub.hasMoreElements();) {
+			String keySub = (String) enSub.nextElement();
+			String paramsSub = subTabProperties.getProperty(keySub);
+			if(null != paramsSub) {
+				String paramSub[] = paramsSub.split(":");
+				if(null != paramSub[6] && paramSub[6].equalsIgnoreCase(tabUniqueId)) {
+					Tab subTtab = new Tab();
+					subTtab.setTabIndex(Integer.parseInt(paramSub[0]));
+					subTtab.setTabDisplayName(paramSub[1]);
+					subTtab.setTabUniqueId(paramSub[2]);
+					subTtab.setRelease(paramSub[3]);
+					if(null != paramSub[4] && !"null".equals(paramSub[4])) {
+						subTtab.setCutoffDate(paramSub[4]);
+					}
+					if(null != paramSub[5] && !"true".equals(paramSub[5])) {
+						subTtab.setRegressionData(true);
+					} else {
+						subTtab.setRegressionData(false);
+					}
+					subTtab.setTabType("Child");
+					subTabs.add(subTtab);
+				}
+			}
+		}
+		return subTabs;
 	}
 }

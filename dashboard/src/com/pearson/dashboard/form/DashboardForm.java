@@ -11,7 +11,7 @@ import org.apache.struts.action.ActionForm;
 
 import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Priority;
-import com.pearson.dashboard.vo.Project;
+import com.pearson.dashboard.vo.Tab;
 import com.pearson.dashboard.vo.TestCase;
 
 /**
@@ -52,7 +52,7 @@ public class DashboardForm extends ActionForm {
     private int fixedP1AndP2Count;
     private List<Priority> fixedPriorities;
     
-    private List<Project> projects;
+    private List<Tab> tabs;
     
     private String projectName;
 	private String projectId;
@@ -70,7 +70,7 @@ public class DashboardForm extends ActionForm {
 	private int testCasesCount;
     private List<Priority> testCasesPriorities;
     
-    private List<Project> subProjects;
+    private List<Tab> subTabs;
     private String subProject;
     
     private String expandType;
@@ -108,12 +108,6 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setProjectRelease(String projectRelease) {
 		this.projectRelease = projectRelease;
-	}
-	public List<Project> getProjects() {
-		return projects;
-	}
-	public void setProjects(List<Project> projects) {
-		this.projects = projects;
 	}
 	public String getLatestBuild() {
 		return latestBuild;
@@ -320,12 +314,6 @@ public class DashboardForm extends ActionForm {
 	public void setTabIndex(String tabIndex) {
 		this.tabIndex = tabIndex;
 	}
-	public List<Project> getSubProjects() {
-		return subProjects;
-	}
-	public void setSubProjects(List<Project> subProjects) {
-		this.subProjects = subProjects;
-	}
 	public String getSubProject() {
 		return subProject;
 	}
@@ -373,5 +361,17 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setOpenYMsg(String openYMsg) {
 		this.openYMsg = openYMsg;
+	}
+	public List<Tab> getTabs() {
+		return tabs;
+	}
+	public void setTabs(List<Tab> tabs) {
+		this.tabs = tabs;
+	}
+	public List<Tab> getSubTabs() {
+		return subTabs;
+	}
+	public void setSubTabs(List<Tab> subTabs) {
+		this.subTabs = subTabs;
 	}
 }

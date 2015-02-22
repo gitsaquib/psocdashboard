@@ -22,7 +22,7 @@ import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.util.Util;
 import com.pearson.dashboard.vo.Configuration;
 import com.pearson.dashboard.vo.Defect;
-import com.pearson.dashboard.vo.Project;
+import com.pearson.dashboard.vo.Tab;
 
 /**
  *
@@ -99,9 +99,9 @@ public class DashboardAction extends Action {
 		}
 		dashboardForm.setLoginUser(userName);
 		Configuration configuration = Util.readConfigFile();
-        List<Project> projects = configuration.getProjects();
+        List<Tab> tabs = configuration.getTabs();
     	
-    	dashboardForm.setProjects(projects);
+    	dashboardForm.setTabs(tabs);
     	
     	int tab = 0;
     	if(null != request.getParameter("tab")) {
@@ -111,25 +111,22 @@ public class DashboardAction extends Action {
     	
     	dashboardForm.setSubProject(request.getParameter("subTab"));
     	
-		List<Project> childProjects = new ArrayList<>();
-		String tabName = Util.getProjectAttribute(configuration, "tabname", tab);
-		for(Project project:projects) {
-			if(tabName.equalsIgnoreCase(project.getParentTab())) {
-				childProjects.add(project);
+    	int subTab = Integer.parseInt(dashboardForm.getSubProject());
+    	
+		String tabName = Util.getTabAttribute(configuration, "tabname", tab, subTab);
+		for(Tab selectedTab:tabs) {
+			if(selectedTab.getTabIndex() ==  tab) {
+				dashboardForm.setSubTabs(selectedTab.getSubTabs());
 			}
 		}
-		Collections.sort(childProjects);
-		dashboardForm.setSubProjects(childProjects);
 		
-		dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
-		Util.retrieveTestCases(dashboardForm, configuration, Util.getProjectAttribute(configuration, "cutoffdate", tab));
 		
-    	if(null != dashboardForm.getSubProject()) {
-    		tab = Integer.parseInt(dashboardForm.getSubProject());
-    	}	
-    	dashboardForm.setCutoffDate(Util.getProjectAttribute(configuration, "cutoffdate", tab));
-    	dashboardForm.setProjectId(Util.getProjectAttribute(configuration, "project", tab));
-    	dashboardForm.setSelectedRelease(Util.getProjectAttribute(configuration, "release", tab));
+		dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
+		Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+		
+    	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
+    	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
+    	dashboardForm.setSelectedRelease(Util.getTabAttribute(configuration, "release", tab, subTab));
     	dashboardForm.setTabName(tabName);
 		
     	Util.populateDefectData(dashboardForm, configuration);

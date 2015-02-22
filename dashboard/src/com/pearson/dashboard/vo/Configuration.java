@@ -12,7 +12,7 @@ public class Configuration {
 	private String rallyURL;
 	private String rallyUser;
 	private String rallyPassword;
-	private List<Project> projects;
+	private List<Tab> tabs;
 	
 	public String getRallyURL() {
 		return rallyURL;
@@ -32,10 +32,10 @@ public class Configuration {
 	public void setRallyPassword(String rallyPassword) {
 		this.rallyPassword = rallyPassword;
 	}
-	public List<Project> getProjects() {
-		return projects;
+	public List<Tab> getTabs() {
+		return tabs;
 	}
-	public void setProjects(List<Project> projects) {
-		this.projects = projects;
+	public void setTabs(List<Tab> tabs) {
+		this.tabs = tabs;
 	}
 }

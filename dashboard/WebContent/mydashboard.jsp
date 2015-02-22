@@ -57,229 +57,50 @@
 						</div>
 				 	</div>
 				 	<div class="tabber">
-				 		<div id="tab0" class="tabbertab">
-				 			<%@include file="jsp/common/left_nav.jsp" %>
-				    		<h3>2-12 [2.0]</h3>
-				        	<div class="siteWidth">
-								<table>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/submitted_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/testcases/testcases.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/open_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/fixed_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/closed_defects.jsp" %>
-										</td>
-										<td>
-											&nbsp;
-										</td>
-									</tr>
-								</table>
-								<div class="clr"></div>
-							</div>		
-				    	</div>
-				    	<div id="tab1" class="tabbertab">
-				    		<%@include file="jsp/common/left_nav.jsp" %>
-				        	<h3>K1 [2.0]</h3>
-				        	<div class="siteWidth">
-								<table>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/submitted_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/testcases/testcases.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/open_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/fixed_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/closed_defects.jsp" %>
-										</td>
-										<td>
-											&nbsp;
-										</td>
-									</tr>
-								</table>
-								<div class="clr"></div>
-							</div>		
-				    	</div>
-				    	<div id="tab2" class="tabbertab">
-				    		<%@include file="jsp/common/left_nav.jsp" %>
-				        	<h3>Run [2.0]</h3>
-				        	<div class="siteWidth">
-								<table>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/submitted_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/open_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/fixed_defects.jsp" %>
-										</td>
-										<td>
-											&nbsp;
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/closed_defects.jsp" %>
-										</td>
-										<td>
-											&nbsp;
-										</td>
-									</tr>
-								</table>
-								<div class="clr"></div>
-							</div>		
-				    	</div>
-				    	<div id="tab3" class="tabbertab">
-				    		<%@include file="jsp/common/left_nav.jsp" %>
-				        	<h3>Older [2.0]</h3>
-				        	<div class="siteWidth">
-								<table>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/submitted_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/open_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/fixed_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_defects.jsp" %>
-										</td>
-									</tr>
-								</table>
-								<div class="clr"></div>
-							</div>		
-				    	</div>
-				    	<div id="tab4" class="tabbertab">
-				    		<%@include file="jsp/common/left_nav.jsp" %>
-				        	<h3>Authering [2.0]</h3>
-				        	<div class="siteWidth">
-								<table>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/submitted_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/open_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/fixed_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_defects.jsp" %>
-										</td>
-									</tr>
-								</table>
-								<div class="clr"></div>
-							</div>		
-				    	</div>
-				    	<div id="tab5" class="tabbertab">
-				    		<%@include file="jsp/common/left_nav.jsp" %>
-				        	<h3>Assessment</h3>
-				        	<div class="siteWidth">
-								<table>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/submitted_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/open_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<%@include file="jsp/defects/fixed_defects.jsp" %>
-										</td>
-										<td>
-											<%@include file="jsp/defects/closed_defects.jsp" %>
-										</td>
-									</tr>
-								</table>
-								<div class="clr"></div>
-							</div>		
-				    	</div>
-				    	<div id="loading" style="display: none;margin: auto;" align="center" class="loadingDiv">
+				 		<c:forEach var="tab" items="${DashboardForm.tabs}" varStatus="tabVarStatus">
+				 			<div id="tab${tab.tabIndex}" class="tabbertab">
+					 			<%@include file="jsp/common/left_nav.jsp" %>
+					    		<h3>${tab.tabDisplayName}</h3>
+					        	<div class="siteWidth">
+									<table>
+										<tr>
+											<td>
+												<%@include file="jsp/defects/submitted_defects.jsp" %>
+											</td>
+											<td>
+												<%@include file="jsp/testcases/testcases.jsp" %>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<%@include file="jsp/defects/open_defects.jsp" %>
+											</td>
+											<td>
+												<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<%@include file="jsp/defects/fixed_defects.jsp" %>
+											</td>
+											<td>
+												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<%@include file="jsp/defects/closed_defects.jsp" %>
+											</td>
+											<td>
+												&nbsp;
+											</td>
+										</tr>
+									</table>
+									<div class="clr"></div>
+								</div>		
+				    		</div>
+				 		</c:forEach>
+				 		<div id="loading" style="display: none;margin: auto;" align="center" class="loadingDiv">
 				    		<img src="loading.gif" alt="loading..."/>
 				    		<div class="clr"></div>
 				    	</div>
