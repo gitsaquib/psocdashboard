@@ -13,7 +13,7 @@
 			<c:forEach var="priority" items="${DashboardForm.testCasesPriorities}">
 				<tr>
 					<td><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityName}"/></font></td>
-					<td><span id="${priority.priorityName}"><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityCount}"/></font></span></td>
+					<td><font color="#3d838a" size="2" face="Tahoma"><span id="${priority.priorityName}"><c:out value="${priority.priorityCount}"/></span></font></td>
 				</tr>
 			</c:forEach>
 			<tr>
