@@ -48,10 +48,10 @@
 					rendererOptions: { padding: 8, showDataLabels: true }
 				},
 				legend:{
-					show:false, 
+					show:true, 
 					placement: 'outside', 
 					rendererOptions: {
-						numberRows: 1
+						numberRows: 2
 					}, 
 					location:'s',
 					marginTop: '15px'
