@@ -68,7 +68,14 @@
 												<%@include file="jsp/defects/submitted_defects.jsp" %>
 											</td>
 											<td>
-												<%@include file="jsp/testcases/testcases.jsp" %>
+												<c:choose>
+													<c:when test="${DashboardForm.regressionData}">
+														<%@include file="jsp/testcases/testcases.jsp" %>
+													</c:when>
+													<c:otherwise>
+														<%@include file="jsp/defects/closed_defects.jsp" %>
+													</c:otherwise>
+												</c:choose>
 											</td>
 										</tr>
 										<tr>
@@ -87,14 +94,18 @@
 												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
 											</td>
 										</tr>
-										<tr>
-											<td>
-												<%@include file="jsp/defects/closed_defects.jsp" %>
-											</td>
-											<td>
-												&nbsp;
-											</td>
-										</tr>
+										<c:choose>
+											<c:when test="${!DashboardForm.regressionData}">
+												<tr>
+													<td>
+														<%@include file="jsp/defects/closed_defects.jsp" %>
+													</td>
+													<td>
+														&nbsp;
+													</td>
+												</tr>
+											</c:when>
+										</c:choose>	
 									</table>
 									<div class="clr"></div>
 								</div>		

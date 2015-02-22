@@ -68,7 +68,7 @@ public class Tab implements Serializable, Comparable<Tab> {
 	}
 	@Override
 	public int compareTo(Tab tab) {
-		Integer tabIndexFromParam = Integer.valueOf(tab.getTabIndex());
-		return tabIndexFromParam.compareTo(this.tabIndex);
+		Integer tabIndex = Integer.valueOf(this.tabIndex);
+		return tabIndex.compareTo(tab.getTabIndex());
 	}
 }

@@ -83,6 +83,7 @@ public class DashboardForm extends ActionForm {
     private String closedMsg;
     private String closedYMsg;
     private String openYMsg;
+    private boolean regressionData;
     
     public String getSelectedRelease() {
 		return selectedRelease;
@@ -373,5 +374,11 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setSubTabs(List<Tab> subTabs) {
 		this.subTabs = subTabs;
+	}
+	public boolean getRegressionData() {
+		return regressionData;
+	}
+	public void setRegressionData(boolean regressionData) {
+		this.regressionData = regressionData;
 	}
 }

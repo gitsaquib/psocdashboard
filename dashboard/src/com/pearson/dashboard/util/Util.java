@@ -244,6 +244,7 @@ public class Util {
 					tabs.add(tab);
 				}
 			}
+			Collections.sort(tabs);
 			configuration.setTabs(tabs);			
 			return configuration;
 		} catch (IOException e) {
@@ -730,6 +731,7 @@ public class Util {
 		Tab tab = Util.getSelectedProject(Integer.parseInt(dashboardForm.getTabIndex()), Integer.parseInt(dashboardForm.getSubProject()), configuration);
 		dashboardForm.setProjectId(tab.getTabUniqueId());
 		dashboardForm.setProjectName(tab.getTabDisplayName());
+		dashboardForm.setRegressionData(tab.isRegressionData());
 	}
     
     public static String getTabAttribute(Configuration configuration, String key, int tabInt, int subTabInt) {
@@ -1028,6 +1030,7 @@ public class Util {
 				}
 			}
 		}
+		Collections.sort(subTabs);
 		return subTabs;
 	}
 }
