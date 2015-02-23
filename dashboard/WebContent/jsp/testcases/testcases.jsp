@@ -9,17 +9,10 @@
 				<c:out value="${DashboardForm.testCasesCount}"/>
 			</font>
 		</p>
-		<table align="center" width="80%" class="myTable">
-			<c:forEach var="priority" items="${DashboardForm.testCasesPriorities}">
-				<tr>
-					<td><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityName}"/></font></td>
-					<td><font color="#3d838a" size="2" face="Tahoma"><span id="${priority.priorityName}"><c:out value="${priority.priorityCount}"/></span></font></td>
-				</tr>
-			</c:forEach>
-			<tr>
-				<div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>		
-			</tr>
-		</table>
+		<c:forEach var="priority" items="${DashboardForm.testCasesPriorities}">
+			<input type="hidden" id="${priority.priorityName}" value="${priority.priorityCount}">
+		</c:forEach>
+		<div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
 		<div style="width: 100%; height: 1em"></div>
 	</div>
 	<div style="width: 100%; height: 1em; clear:both"></div>

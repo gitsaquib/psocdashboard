@@ -29,18 +29,18 @@
 			
 			function drawPie()
 			{
-				alert(document.getElementById('Pass').innerHTML);
-				alert(document.getElementById('Blocked').innerHTML);
-				alert(document.getElementById('Error').innerHTML);
-				alert(document.getElementById('Fail').innerHTML);
-				alert(document.getElementById('Inconclusive').innerHTML);
-				alert(document.getElementById('NotAttempted').innerHTML);
-				var plot1 = $.jqplot('pie1', [[['Pass',649],
-				                               ['Blocked',5],
-				                               ['Error',0],
-				                               ['Fail',35],
-				                               ['Inconclusive',26],
-				                               ['NotAttempted',68]]], {
+				var pass = parseInt(document.getElementById('Pass').value);
+				var blocked = parseInt(document.getElementById('Blocked').value);
+				var error = parseInt(document.getElementById('Error').value);
+				var fail = parseInt(document.getElementById('Fail').value);
+				var inconclusive = parseInt(document.getElementById('Inconclusive').value);
+				var notAttempted = parseInt(document.getElementById('NotAttempted').value);
+				var plot1 = $.jqplot('pie1', [[['Pass',pass],
+				                               ['Blocked',blocked],
+				                               ['Error',error],
+				                               ['Fail',fail],
+				                               ['Inconclusive',inconclusive],
+				                               ['NotAttempted',notAttempted]]], {
 				gridPadding: {top:0, bottom:38, left:0, right:0},
 				seriesDefaults:{
 					renderer:$.jqplot.PieRenderer, 
