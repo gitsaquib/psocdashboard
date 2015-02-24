@@ -297,3 +297,18 @@ function expandDefects(type, index) {
 	$.colorbox({iframe:true, width:"95%", overlayClose: false, escKey: false, height:"95%", 
 		title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 }
+
+function showTestCases(queryStr) {
+	$.ajax({
+	    type: "post",
+	    url: "/dashboard/chart",
+	    dataType: 'html',
+	    data:{
+	    	ajaxParam:"chart",
+	    	query:queryStr
+	    },
+	    success: function(response){
+	         $('#ajaxServletResponse').html(response); 
+	    } 
+	});
+}

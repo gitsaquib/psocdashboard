@@ -20,39 +20,6 @@
 	 				e.preventDefault();
 				});
 			});
-			
-			function drawPie()
-			{
-				var pass = parseInt(document.getElementById('Pass').value);
-				var blocked = parseInt(document.getElementById('Blocked').value);
-				var error = parseInt(document.getElementById('Error').value);
-				var fail = parseInt(document.getElementById('Fail').value);
-				var inconclusive = parseInt(document.getElementById('Inconclusive').value);
-				var notAttempted = parseInt(document.getElementById('NotAttempted').value);
-				var plot1 = $.jqplot('pie1', [[['Pass',pass],
-				                               ['Blocked',blocked],
-				                               ['Error',error],
-				                               ['Fail',fail],
-				                               ['Inconclusive',inconclusive],
-				                               ['NotAttempted',notAttempted]]], {
-				gridPadding: {top:0, bottom:38, left:200, right:0},
-				seriesDefaults:{
-					renderer:$.jqplot.PieRenderer, 
-					trendline:{ show:false }, 
-					rendererOptions: { padding: 8, showDataLabels: true }
-				},
-				legend:{
-					show:true, 
-					placement: 'outside', 
-					rendererOptions: {
-						numberRows: 2
-					}, 
-					location:'s',
-					marginTop: '15px'
-				}       
-				});
-			}
-			
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>
@@ -100,6 +67,8 @@
 											<td>
 												<%@include file="jsp/defects/open_defects.jsp" %>
 											</td>
+										</tr>
+										<tr>
 											<td>
 												<%@include file="jsp/defects/fixed_defects.jsp" %>
 											</td>
@@ -113,17 +82,14 @@
 												<%@include file="jsp/testcases/testcases.jsp" %>
 											</td>
 											</c:if>
+										</tr>
+										<tr>
 											<td>
 												<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
 											</td>
 											<td>
 												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
 											</td>
-											<c:if test="${!DashboardForm.regressionData}">
-											<td colspan="2">
-												&nbsp;
-											</td>
-											</c:if>
 										</tr>
 									</table>
 									<div class="clr"></div>

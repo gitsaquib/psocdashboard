@@ -139,10 +139,10 @@ public class DashboardAction extends Action {
 				if(regressionStr.equals("")) {
 					regressionStr  = testCase.getPriorityName() + ": " + testCase.getPriorityCount();
 				} else {
-					regressionStr  = regressionStr + "\n" + testCase.getPriorityName() + ": " + testCase.getPriorityCount();
+					regressionStr  = regressionStr + ", " + testCase.getPriorityName() + ": " + testCase.getPriorityCount();
 				}
 			}
-			regressionStr = "Total: " + dashboardForm.getTestCasesCount() + "\n" + regressionStr;
+			regressionStr = "Total: " + dashboardForm.getTestCasesCount() + ", " + regressionStr;
 			dashboardForm.setRegressionMsg(regressionStr);
 		}
 		

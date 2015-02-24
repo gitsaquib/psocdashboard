@@ -8,20 +8,7 @@
 				<c:out value="${DashboardForm.testCasesCount}"/>
 			</font>
 		</p>
-		<table align="center" width="80%" class="myTable">
-			<c:forEach var="priority" items="${DashboardForm.testCasesPriorities}">
-				<tr>
-					<td><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityName}"/></font></td>
-					<td><font color="#3d838a" size="2" face="Tahoma"><c:out value="${priority.priorityCount}"/></font></td>
-					<td>
-						<div class="gauge">
-							<span class="text"></span>
-							<span class="color" style="width: ${priority.pxSize}%"></span>
-						</div>
-					</td>
-				</tr>
-			</c:forEach>
-		</table>
+		<img src="/dashboard/chart?query=${DashboardForm.regressionMsg}"></img>
 		<div style="width: 100%; height: 1em"></div>
 	</div>
 	<div style="width: 100%; height: 1em; clear:both"></div>

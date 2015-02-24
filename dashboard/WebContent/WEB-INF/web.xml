@@ -29,6 +29,14 @@
     <servlet-name>action</servlet-name>
     <url-pattern>*.do</url-pattern>
   </servlet-mapping>
+  <servlet>
+	<servlet-name>ChartServlet</servlet-name>
+	<servlet-class>com.pearson.dashboard.util.ChartServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>ChartServlet</servlet-name>
+	<url-pattern>/chart</url-pattern>
+  </servlet-mapping>
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>

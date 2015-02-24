@@ -255,7 +255,7 @@ public class Util {
     public static void populateDefectData(DashboardForm dashboardForm, Configuration configuration) throws Exception {
 		Map<String, List<Defect>> allDefects = null;
 		
-		if(dashboardForm.getTabName().startsWith("Older") || dashboardForm.getTabName().startsWith("Authering")) {
+		if(dashboardForm.getTabName().startsWith("Older") || dashboardForm.getTabName().startsWith("Authoring")) {
 			allDefects = Util.getMultiProjectDataFromRally(dashboardForm, configuration);
 		} else {
 			allDefects = Util.getDataFromRally(dashboardForm, configuration);
@@ -788,7 +788,7 @@ public class Util {
     	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
     	RallyRestApi  restApi = loginRally(configuration);
     	
-    	if(dashboard.getTabName().startsWith("Authering")) {
+    	if(dashboard.getTabName().startsWith("Authoring")) {
     		
     		//Retrieve V team data
 	    	String projectId = getTabAttribute(configuration, "project", 4, 4);
