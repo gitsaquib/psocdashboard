@@ -56,7 +56,7 @@
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>
-	<body  onload="drawPie();">
+	<body>
 		<form id="dashboardForm" name="dashboardForm" method="post">
 			<div id="container">
 				<%@include file="jsp/common/header.jsp" %>
@@ -108,7 +108,7 @@
 										</tr>
 										<tr>
 											<c:if test="${DashboardForm.regressionData}">
-											<td colspan="2">
+											<td colspan="1">
 												<%@include file="jsp/testcases/testcases.jsp" %>
 											</td>
 											</c:if>
@@ -117,6 +117,9 @@
 											</td>
 											<td>
 												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+											</td>
+											<td colspan="1">
+												&nbsp;
 											</td>
 											<c:if test="${!DashboardForm.regressionData}">
 											<td colspan="2">
