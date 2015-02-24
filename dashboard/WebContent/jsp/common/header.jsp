@@ -1,4 +1,4 @@
-<div id="header">
+<div id="psocheader">
 	<div class="siteWidth">
 		<table align="center">
 			<tr>

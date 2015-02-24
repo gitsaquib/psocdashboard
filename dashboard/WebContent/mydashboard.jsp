@@ -1,4 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -41,7 +40,7 @@
 				                               ['Fail',fail],
 				                               ['Inconclusive',inconclusive],
 				                               ['NotAttempted',notAttempted]]], {
-				gridPadding: {top:0, bottom:38, left:0, right:0},
+				gridPadding: {top:0, bottom:38, left:200, right:0},
 				seriesDefaults:{
 					renderer:$.jqplot.PieRenderer, 
 					trendline:{ show:false }, 

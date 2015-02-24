@@ -22,6 +22,7 @@ import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.util.Util;
 import com.pearson.dashboard.vo.Configuration;
 import com.pearson.dashboard.vo.Defect;
+import com.pearson.dashboard.vo.Priority;
 import com.pearson.dashboard.vo.Tab;
 
 /**
@@ -123,6 +124,19 @@ public class DashboardAction extends Action {
 		
 		dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
 		Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+		
+		if(dashboardForm.getRegressionData()) {
+			List<Priority> testCases =  dashboardForm.getTestCasesPriorities();
+			String regressionStr = "";
+			for(Priority testCase : testCases) {
+				if(regressionStr.equals("")) {
+					regressionStr  = testCase.getPriorityName() + ": " + testCase.getPriorityCount();
+				} else {
+					regressionStr  = regressionStr + "\n" + testCase.getPriorityName() + ": " + testCase.getPriorityCount();
+				}
+			}
+			regressionStr = "Total: " + dashboardForm.getTestCasesCount() + "\n" + regressionStr;
+		}
 		
     	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
     	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
