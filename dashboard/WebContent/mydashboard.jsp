@@ -89,6 +89,7 @@
 				 	<div class="tabber">
 				 		<c:forEach var="tab" items="${DashboardForm.tabs}" varStatus="tabVarStatus">
 				 			<div id="tab${tab.tabIndex}" class="tabbertab">
+				 				<%@include file="jsp/common/left_nav.jsp" %>
 					 			<h3>${tab.tabDisplayName}</h3>
 					        	<div class="siteWidth">
 									<table>
@@ -108,7 +109,7 @@
 										</tr>
 										<tr>
 											<c:if test="${DashboardForm.regressionData}">
-											<td colspan="1">
+											<td colspan="2">
 												<%@include file="jsp/testcases/testcases.jsp" %>
 											</td>
 											</c:if>
@@ -117,9 +118,6 @@
 											</td>
 											<td>
 												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
-											</td>
-											<td colspan="1">
-												&nbsp;
 											</td>
 											<c:if test="${!DashboardForm.regressionData}">
 											<td colspan="2">

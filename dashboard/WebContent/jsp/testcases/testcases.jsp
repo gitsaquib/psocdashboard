@@ -4,7 +4,7 @@
 	</div>
 	<div style="width:45%; float:left;">
 		<p align="center">
-			<font color="#3d838a" size="8" face="Tahoma">
+			<font color="#3d838a" size="2" face="Tahoma">
 				<c:out value="${DashboardForm.testCasesCount}"/>
 			</font>
 		</p>

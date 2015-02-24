@@ -1020,7 +1020,7 @@ public class Util {
 					if(null != paramSub[4] && !"null".equals(paramSub[4])) {
 						subTtab.setCutoffDate(paramSub[4]);
 					}
-					if(null != paramSub[5] && !"true".equals(paramSub[5])) {
+					if(null != paramSub[5] && "true".equals(paramSub[5])) {
 						subTtab.setRegressionData(true);
 					} else {
 						subTtab.setRegressionData(false);
