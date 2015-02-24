@@ -234,7 +234,7 @@ public class Util {
 					if(null != param[4] && !"null".equals(param[4])) {
 						tab.setCutoffDate(param[4]);
 					}
-					if(null != param[5] && !"true".equals(param[5])) {
+					if(null != param[5] && "true".equals(param[5])) {
 						tab.setRegressionData(true);
 					} else {
 						tab.setRegressionData(false);

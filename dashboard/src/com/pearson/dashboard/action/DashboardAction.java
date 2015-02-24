@@ -125,7 +125,14 @@ public class DashboardAction extends Action {
 		dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
 		Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
 		
-		if(dashboardForm.getRegressionData()) {
+    	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
+    	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
+    	dashboardForm.setSelectedRelease(Util.getTabAttribute(configuration, "release", tab, subTab));
+    	dashboardForm.setTabName(tabName);
+		
+    	Util.populateDefectData(dashboardForm, configuration);
+    	
+    	if(dashboardForm.getRegressionData()) {
 			List<Priority> testCases =  dashboardForm.getTestCasesPriorities();
 			String regressionStr = "";
 			for(Priority testCase : testCases) {
@@ -136,14 +143,9 @@ public class DashboardAction extends Action {
 				}
 			}
 			regressionStr = "Total: " + dashboardForm.getTestCasesCount() + "\n" + regressionStr;
+			dashboardForm.setRegressionMsg(regressionStr);
 		}
 		
-    	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
-    	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
-    	dashboardForm.setSelectedRelease(Util.getTabAttribute(configuration, "release", tab, subTab));
-    	dashboardForm.setTabName(tabName);
-		
-    	Util.populateDefectData(dashboardForm, configuration);
 		
     	return mapping.findForward("showDashboard");
     }

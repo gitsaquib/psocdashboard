@@ -2,11 +2,6 @@
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<link class="include" rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/jquery.jqplot.min.css" />
-    	<link rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/examples.min.css" />
-    	<link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
-    	<link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
-    	<script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="css/dashboard.css" type="text/css"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
@@ -61,7 +56,7 @@
 		</script>	
 		<title>::: Dashboard :::</title>
 	</head>
-	<body onload="drawPie();">
+	<body  onload="drawPie();">
 		<form id="dashboardForm" name="dashboardForm" method="post">
 			<div id="container">
 				<%@include file="jsp/common/header.jsp" %>
@@ -94,8 +89,7 @@
 				 	<div class="tabber">
 				 		<c:forEach var="tab" items="${DashboardForm.tabs}" varStatus="tabVarStatus">
 				 			<div id="tab${tab.tabIndex}" class="tabbertab">
-					 			<%@include file="jsp/common/left_nav.jsp" %>
-					    		<h3>${tab.tabDisplayName}</h3>
+					 			<h3>${tab.tabDisplayName}</h3>
 					        	<div class="siteWidth">
 									<table>
 										<tr>
@@ -103,44 +97,33 @@
 												<%@include file="jsp/defects/submitted_defects.jsp" %>
 											</td>
 											<td>
-												<c:choose>
-													<c:when test="${!DashboardForm.regressionData}">
-														<%@include file="jsp/testcases/testcases.jsp" %>
-													</c:when>
-													<c:otherwise>
-														<%@include file="jsp/defects/closed_defects.jsp" %>
-													</c:otherwise>
-												</c:choose>
-											</td>
-										</tr>
-										<tr>
-											<td>
 												<%@include file="jsp/defects/open_defects.jsp" %>
 											</td>
-											<td>
-												<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
-											</td>
-										</tr>
-										<tr>
 											<td>
 												<%@include file="jsp/defects/fixed_defects.jsp" %>
 											</td>
 											<td>
-												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+												<%@include file="jsp/defects/closed_defects.jsp" %>
 											</td>
 										</tr>
-										<c:choose>
-											<c:when test="${DashboardForm.regressionData}">
-												<tr>
-													<td>
-														<%@include file="jsp/defects/closed_defects.jsp" %>
-													</td>
-													<td>
-														&nbsp;
-													</td>
-												</tr>
-											</c:when>
-										</c:choose>	
+										<tr>
+											<c:if test="${DashboardForm.regressionData}">
+											<td colspan="2">
+												<%@include file="jsp/testcases/testcases.jsp" %>
+											</td>
+											</c:if>
+											<td>
+												<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+											</td>
+											<td>
+												<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+											</td>
+											<c:if test="${!DashboardForm.regressionData}">
+											<td colspan="2">
+												&nbsp;
+											</td>
+											</c:if>
+										</tr>
 									</table>
 									<div class="clr"></div>
 								</div>		
