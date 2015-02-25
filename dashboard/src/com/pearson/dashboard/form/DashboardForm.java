@@ -85,6 +85,9 @@ public class DashboardForm extends ActionForm {
     private String openYMsg;
     private boolean regressionData;
     private String regressionMsg;
+    private List<String> operatingSystems;
+    private String operatingSystem;
+    private String filterInfo;
     
     public String getSelectedRelease() {
 		return selectedRelease;
@@ -387,5 +390,23 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setRegressionMsg(String regressionMsg) {
 		this.regressionMsg = regressionMsg;
+	}
+	public List<String> getOperatingSystems() {
+		return operatingSystems;
+	}
+	public void setOperatingSystems(List<String> operatingSystems) {
+		this.operatingSystems = operatingSystems;
+	}
+	public String getOperatingSystem() {
+		return operatingSystem;
+	}
+	public void setOperatingSystem(String operatingSystem) {
+		this.operatingSystem = operatingSystem;
+	}
+	public String getFilterInfo() {
+		return filterInfo;
+	}
+	public void setFilterInfo(String filterInfo) {
+		this.filterInfo = filterInfo;
 	}
 }

@@ -164,11 +164,7 @@ public class ExportServlet extends HttpServlet {
 			
 			cell = row.createCell(cellNum);
 			cell.setCellStyle(style);
-			if(null != defect.getPlatform() && defect.getPlatform().equalsIgnoreCase("Apple")) {
-				cell.setCellValue("iOS");
-			} else {
-				cell.setCellValue(defect.getPlatform());
-			}
+			cell.setCellValue(defect.getPlatform());
 			cellNum++;
 			
 			rowNum++;

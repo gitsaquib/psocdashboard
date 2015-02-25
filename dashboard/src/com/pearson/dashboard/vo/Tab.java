@@ -17,6 +17,7 @@ public class Tab implements Serializable, Comparable<Tab> {
 	private String cutoffDate;
 	private String release;
 	private List<Tab> subTabs;
+	private String information;
 
 	public int getTabIndex() {
 		return tabIndex;
@@ -65,6 +66,12 @@ public class Tab implements Serializable, Comparable<Tab> {
 	}
 	public void setSubTabs(List<Tab> subTabs) {
 		this.subTabs = subTabs;
+	}
+	public String getInformation() {
+		return information;
+	}
+	public void setInformation(String information) {
+		this.information = information;
 	}
 	@Override
 	public int compareTo(Tab tab) {

@@ -8,8 +8,10 @@ package com.pearson.dashboard.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -57,19 +59,19 @@ public class Util {
     public static Map<String, List<Defect>> getDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
     	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
     	RallyRestApi  restApi = loginRally(configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);    	
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration);
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());    	
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem());
     	restApi.close();
     	return allDefects;
     }
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects, Configuration configuration) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects, Configuration configuration, String operatingSystem) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -134,13 +136,15 @@ public class Util {
 	            String platform = "Undefined";
 	            if(null != object.get("c_Platform")) {
 	            	if(object.get("c_Platform").getAsString().startsWith("iOS")) {
-	            		platform = "Apple";
+	            		platform = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
 	            		platform = "Windows";
 	            	}
 	            }
 	            defect.setPlatform(platform);
-	            defects.add(defect);
+	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
+	            	defects.add(defect);	
+	            }
             }
         }
     	Collections.sort(defects);
@@ -240,6 +244,7 @@ public class Util {
 						tab.setRegressionData(false);
 					}
 					tab.setTabType("Parent");
+					tab.setInformation(param[6]);
 					tab.setSubTabs(getSubTabs(param[2]));
 					tabs.add(tab);
 				}
@@ -732,6 +737,7 @@ public class Util {
 		dashboardForm.setProjectId(tab.getTabUniqueId());
 		dashboardForm.setProjectName(tab.getTabDisplayName());
 		dashboardForm.setRegressionData(tab.isRegressionData());
+		dashboardForm.setFilterInfo(tab.getInformation());
 	}
     
     public static String getTabAttribute(Configuration configuration, String key, int tabInt, int subTabInt) {
@@ -793,35 +799,35 @@ public class Util {
     		//Retrieve V team data
 	    	String projectId = getTabAttribute(configuration, "project", 4, 4);
 	    	String cutoffDate = getTabAttribute(configuration, "cutoffdate", 4, 4);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	
 	    	//Retrieve A team data
 	    	projectId = getTabAttribute(configuration, "project", 3, 3);
 	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 3, 3);    
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);  	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());  	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	
     	} else {
 	    	//Retrieve 2-12 old data
 	    	String projectId = getTabAttribute(configuration, "project", 0, 0);
 	    	String cutoffDate = getTabAttribute(configuration, "cutoffdate", 0, 0);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
 	    	
 	    	//Retrieve K1 old data
 	    	projectId = getTabAttribute(configuration, "project", 1, 1);
 	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 1, 1);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration);
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
     	}	
     	restApi.close();
     	return allDefects;
@@ -829,7 +835,7 @@ public class Util {
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, String cutoffDate, String comparisonOperator, Configuration configuration) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, String comparisonOperator, Configuration configuration, String operatingSystem) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -885,12 +891,15 @@ public class Util {
 	            String platform = "Undefined";
 	            if(null != object.get("c_Platform")) {
 	            	if(object.get("c_Platform").getAsString().startsWith("iOS")) {
-	            		platform = "Apple";
+	            		platform = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
 	            		platform = "Windows";
 	            	}
 	            }
 	            defect.setPlatform(platform);
+	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
+	            	defects.add(defect);	
+	            }
 	            defects.add(defect);
             }
         }
@@ -1026,11 +1035,35 @@ public class Util {
 						subTtab.setRegressionData(false);
 					}
 					subTtab.setTabType("Child");
+					subTtab.setInformation(paramSub[7]);
 					subTabs.add(subTtab);
 				}
 			}
 		}
 		Collections.sort(subTabs);
 		return subTabs;
+	}
+	
+	public void configureTestSet() {
+	    try {
+	        Properties props = new Properties();
+	        props.setProperty("ServerAddress", "");
+	        props.setProperty("ServerPort", ""+"");
+	        props.setProperty("ThreadCount", ""+"");
+	        File f = new File("server.properties");
+	        OutputStream out = new FileOutputStream( f );
+	        props.store(out, "This is an optional header comment string");
+	    }
+	    catch (Exception e ) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public static void setOperatingSystems(DashboardForm dashboardForm) {
+		List<String> operatingSystems = new ArrayList<String>();
+		operatingSystems.add("iOS");
+		operatingSystems.add("Windows");
+		operatingSystems.add("All");
+		dashboardForm.setOperatingSystems(operatingSystems);
 	}
 }

@@ -286,10 +286,17 @@ function sortDefects(sort) {
 	});
 }
 
-function retrieveSubProject(tab, subTab) {
+function retrieveSubProject(tab, subTab, os) {
 	document.getElementById("tab"+tab).style.display="none";
 	document.getElementById("loading").style.display="block";
-	document.dashboardForm.action = "dashboard.do?tab="+tab+"&subTab="+subTab;
+	document.dashboardForm.action = "dashboard.do?tab="+tab+"&subTab="+subTab+"&os="+os;
+	document.dashboardForm.submit();
+}
+
+function retrieveOSDashboard(tab, subTab, os) {
+	document.getElementById("tab"+tab).style.display="none";
+	document.getElementById("loading").style.display="block";
+	document.dashboardForm.action = "dashboard.do?tab="+tab+"&subTab="+subTab+"&os="+os;
 	document.dashboardForm.submit();
 }
 

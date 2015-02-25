@@ -35,6 +35,13 @@ public class DashboardAction extends Action {
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	DashboardForm dashboardForm = (DashboardForm) form;
     	
+    	Util.setOperatingSystems(dashboardForm);
+    	if(null != request.getParameter("os")) {
+    		dashboardForm.setOperatingSystem(request.getParameter("os"));
+    	} else {
+    		dashboardForm.setOperatingSystem("All");
+    	}
+    	
     	if(null != request.getParameter("sort")) {
     		dashboardForm.setSort(request.getParameter("sort"));
     		String expandType = dashboardForm.getExpandType();

@@ -57,7 +57,7 @@
 					<table align="center">
 						<tr>
 							<td align="center">
-								© Pearson Education
+								<font color="white" face="Tahoma">© Pearson Education</font>
 							</td>
 						</tr>
 					</table>
