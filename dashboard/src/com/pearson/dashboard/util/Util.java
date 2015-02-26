@@ -805,8 +805,8 @@ public class Util {
 	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	
 	    	//Retrieve A team data
-	    	projectId = getTabAttribute(configuration, "project", 3, 3);
-	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 3, 3);    
+	    	projectId = getTabAttribute(configuration, "project", 4, 3);
+	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 4, 3);    
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());  	

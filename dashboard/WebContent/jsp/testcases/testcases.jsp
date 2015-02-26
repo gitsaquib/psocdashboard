@@ -3,8 +3,11 @@
 		<font color="white" size="2" face="Tahoma"><b>Regression Test Cases</b></font>
 	</div>
 	<div style="width:45%; float:left;">
-		<img src="/dashboard/chart?query=${DashboardForm.regressionMsg}"></img>
-		<div style="width: 100%; height: 1em"></div>
+		<table width="100%" height="100%" align="center" valign="center">
+   			<tr><td>
+   				<img src="/dashboard/chart?query=${DashboardForm.regressionMsg}"></img>
+   			</td></tr>
+   		</table>
 	</div>
 	<div style="width: 100%; height: 1em; clear:both"></div>
 </div>
