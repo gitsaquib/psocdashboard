@@ -35,9 +35,9 @@ public class ChartServlet extends HttpServlet {
 		boolean legend = true;
 		boolean tooltips = true;
 		boolean urls = false;
-		JFreeChart chart = ChartFactory.createPieChart("", dataset, legend, tooltips, urls);
+		JFreeChart chart = ChartFactory.createPieChart(""+getCount(query, "Total"), dataset, legend, tooltips, urls);
 		int width = 500;
-		int height = 350;
+		int height = 200;
 		BufferedImage bi = chart.createBufferedImage(width, height);
 		OutputStream out = response.getOutputStream();
 		ImageIO.write(bi, "png", out);

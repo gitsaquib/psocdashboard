@@ -36,7 +36,18 @@
 				    		<td>
 				    			<font color="white" size="2" face="Tahoma"><b>Welcome ${DashboardForm.loginUser}!!!</b></font>
 				    		</td>
-				    		<td width="55%" align="right">
+				    		<td width="10%" align="right">
+								<c:if test="${DashboardForm.subTabs != null && !(empty DashboardForm.subTabs)}">
+									<select name="subProject" id="subProject" style="width: 120px;" onchange="retrieveSubProject('${DashboardForm.tabIndex}', this.value);">
+									    <c:forEach items="${DashboardForm.subTabs}" var="project">
+									        <option value="${project.tabIndex}" ${project.tabIndex == DashboardForm.subProject ? 'selected' : ''}>
+									        	<font color="gray" size="2" face="Tahoma">${project.tabDisplayName}</font>
+									        </option>
+									    </c:forEach>
+									</select>&nbsp;
+								</c:if>
+							</td>
+				    		<td width="45%" align="right">
 								<c:if test="${DashboardForm.projectId != null}">
 									<a href="dashboard.do?export=true">
 										<font color="white" size="2" face="Tahoma">Export to Excel</font>
@@ -67,6 +78,11 @@
 											<td>
 												<%@include file="jsp/defects/open_defects.jsp" %>
 											</td>
+											<c:if test="${DashboardForm.regressionData}">
+											<td colspan="2">
+												<%@include file="jsp/testcases/testcases.jsp" %>
+											</td>
+											</c:if>
 										</tr>
 										<tr>
 											<td>
@@ -75,15 +91,6 @@
 											<td>
 												<%@include file="jsp/defects/closed_defects.jsp" %>
 											</td>
-										</tr>
-										<tr>
-											<c:if test="${DashboardForm.regressionData}">
-											<td colspan="2">
-												<%@include file="jsp/testcases/testcases.jsp" %>
-											</td>
-											</c:if>
-										</tr>
-										<tr>
 											<td>
 												<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
 											</td>
