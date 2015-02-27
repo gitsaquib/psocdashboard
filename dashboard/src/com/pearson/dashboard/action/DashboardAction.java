@@ -5,7 +5,6 @@
  */
 package com.pearson.dashboard.action;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,6 +22,7 @@ import com.pearson.dashboard.util.Util;
 import com.pearson.dashboard.vo.Configuration;
 import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Priority;
+import com.pearson.dashboard.vo.RegressionData;
 import com.pearson.dashboard.vo.Tab;
 
 /**
@@ -128,10 +128,13 @@ public class DashboardAction extends Action {
 			}
 		}
 		
-		
+		RegressionData regressionData = Util.getRegressionSetDetails(Util.getTabAttribute(configuration, "tabUniqueId", tab, subTab));
 		dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
-		Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
-		
+		if(null != regressionData) {
+			Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getTestSetsIds());
+		} else {
+			Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+		}
     	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
     	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
     	dashboardForm.setSelectedRelease(Util.getTabAttribute(configuration, "release", tab, subTab));

@@ -34,6 +34,7 @@ import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.vo.Configuration;
 import com.pearson.dashboard.vo.Defect;
 import com.pearson.dashboard.vo.Priority;
+import com.pearson.dashboard.vo.RegressionData;
 import com.pearson.dashboard.vo.Release;
 import com.pearson.dashboard.vo.Tab;
 import com.pearson.dashboard.vo.TestCase;
@@ -1065,5 +1066,139 @@ public class Util {
 		operatingSystems.add("Windows");
 		operatingSystems.add("All");
 		dashboardForm.setOperatingSystems(operatingSystems);
+	}
+	
+	public static void retrieveTestCasesUsingSets(DashboardForm dashboardForm, Configuration configuration, String cutoffDateStr, List<String> testSets)
+			throws IOException, URISyntaxException, ParseException {
+		RallyRestApi  restApi = loginRally(configuration);
+        QueryRequest testSetRequest = new QueryRequest("TestSet");
+        testSetRequest.setProject("/project/"+dashboardForm.getProjectId()); 
+        String wsapiVersion = "1.43";
+        restApi.setWsapiVersion(wsapiVersion);
+        
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "FormattedID", "LastVerdict", "LastRun"}));
+        QueryFilter queryFilter = new QueryFilter("FormattedID", "=", testSets.get(0));
+        int q = 1;
+        while(testSets.size() > q) {
+        	queryFilter = queryFilter.or(new QueryFilter("FormattedID", "=", testSets.get(q)));
+        	q++;
+        }
+        testSetRequest.setQueryFilter(queryFilter);
+        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        
+        List<Priority> priorities = new ArrayList<Priority>();
+    	Priority priority0 = new Priority();
+    	priority0.setPriorityName("Pass");
+		Priority priority1 = new Priority();
+		priority1.setPriorityName("Blocked");
+		Priority priority2 = new Priority();
+		priority2.setPriorityName("Error");
+		Priority priority3 = new Priority();
+		priority3.setPriorityName("Fail");
+		Priority priority4 = new Priority();
+		priority4.setPriorityName("Inconclusive");
+		Priority priority5 = new Priority();
+		priority5.setPriorityName("NotAttempted");
+        
+		int testCasesCount = 0;
+		for (int i=0; i<testSetQueryResponse.getResults().size();i++){
+            JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
+            int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
+            if(numberOfTestCases>0){
+            		DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
+            		Date cutoffDate = (Date) formatter1.parse(cutoffDateStr);
+                  	for (int j=0;j<numberOfTestCases;j++){
+                  		JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
+                	  	
+                	  	Date lastVerdictDate = null;
+                	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
+                	  		lastVerdictDate = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
+                	  	}
+                	  	String lastVerdict = jsonObject.get("LastVerdict").getAsString();
+                	  	if(lastVerdictDate.compareTo(cutoffDate) >= 0) {
+	                	  	if(lastVerdict.equalsIgnoreCase("Pass")) {
+	        			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
+	        			    }
+	        			    if(lastVerdict.equalsIgnoreCase("Blocked")) {
+	        			    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
+	        			    }
+	        			    if(lastVerdict.equalsIgnoreCase("Error")) {
+	        			    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
+	        			    }
+	        			    if(lastVerdict.equalsIgnoreCase("Fail")) {
+	        			    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
+	        			    }
+	        			    if(lastVerdict.equalsIgnoreCase("Inconclusive")) {
+	        			    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
+	        			    }
+	        			    if(lastVerdict.equalsIgnoreCase("")) {
+	        			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
+	        			    }
+                	  	} else {
+                	  		priority5.setPriorityCount(priority5.getPriorityCount()+1);
+                	  	}
+        			    testCasesCount++;
+                 }
+            }
+        }
+        
+		List<Integer> arrayList = new ArrayList<Integer>();
+		arrayList.add(priority0.getPriorityCount());
+		arrayList.add(priority1.getPriorityCount());
+		arrayList.add(priority2.getPriorityCount());
+		arrayList.add(priority3.getPriorityCount());
+		arrayList.add(priority4.getPriorityCount());
+		arrayList.add(priority5.getPriorityCount());
+		Integer maximumCount = Collections.max(arrayList);
+		if(maximumCount <= 0) {
+			priority0.setPxSize("0");
+		    priority1.setPxSize("0");
+		    priority2.setPxSize("0");
+		    priority3.setPxSize("0");
+		    priority4.setPxSize("0");
+		    priority5.setPxSize("0");
+		} else {
+			priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
+		    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
+		    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
+		    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
+		    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
+		    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
+		}
+		priorities.add(priority0);
+		priorities.add(priority1);
+		priorities.add(priority2);
+		priorities.add(priority3);
+		priorities.add(priority4);
+		priorities.add(priority5);
+		
+		dashboardForm.setTestCasesCount(testCasesCount);
+		dashboardForm.setTestCasesPriorities(priorities);
+	}
+
+	public static RegressionData getRegressionSetDetails(String tabUniqueId) throws IOException {
+		File file = new File(System.getProperty("user.home"), "config/regression.properties");
+    	InputStream streamProject = new FileInputStream(file);
+    	Properties regressionProperties = new Properties();
+		regressionProperties.load(streamProject);
+		for(Enumeration<String> en = (Enumeration<String>) regressionProperties.propertyNames();en.hasMoreElements();) {
+			String key = (String) en.nextElement();
+			String params = regressionProperties.getProperty(key);
+			if(null != params) {
+				String param[] = params.split(":");
+				if(param[0].equalsIgnoreCase(tabUniqueId)) {
+					RegressionData regressionData = new RegressionData();
+					regressionData.setCutoffDate(param[1]);
+					String sets[] = param[2].split(",");
+					List<String> testSets = new ArrayList<String>();
+					for(String set:sets) {
+						testSets.add(set);
+					}
+					regressionData.setTestSetsIds(testSets);
+					return regressionData;
+				}
+			}
+		}
+		return null;
 	}
 }
