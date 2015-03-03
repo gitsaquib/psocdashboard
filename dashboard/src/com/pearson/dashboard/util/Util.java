@@ -134,16 +134,20 @@ public class Util {
 	            JsonObject project = object.get("Project").getAsJsonObject();
 	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
 	            defect.setDefectDesc(object.get("Name").getAsString());
-	            String platform = "Undefined";
+	            String platform = "None";
 	            if(null != object.get("c_Platform")) {
-	            	if(object.get("c_Platform").getAsString().startsWith("iOS")) {
+	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
+	            		platform  = "Both";
+	            	} else if(object.get("c_Platform").getAsString().contains("iOS")) {
 	            		platform = "iOS";
-	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
+	            	} else if(object.get("c_Platform").getAsString().contains("Win")) {
 	            		platform = "Windows";
 	            	}
 	            }
 	            defect.setPlatform(platform);
 	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
+	            	defects.add(defect);	
+	            } else if("Both".equalsIgnoreCase(operatingSystem) && (platform.equalsIgnoreCase("iOS") || platform.contains("Win"))) {
 	            	defects.add(defect);	
 	            }
             }
@@ -329,7 +333,7 @@ public class Util {
 		priorities.add(priority4);
 		
 		for(Defect defect:openDefects) {
-			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 		    	iOSCount++;
 		    } else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 		    	winCount++;
@@ -406,7 +410,7 @@ public class Util {
 		winCount = 0;
 		undefined = 0;
 		for(Defect defect:submittedDefects) {
-			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 		    	iOSCount++;
 		    } else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 		    	winCount++;
@@ -483,7 +487,7 @@ public class Util {
 		winCount = 0;
 		undefined = 0;
 		for(Defect defect:fixedDefects) {
-			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 				iOSCount++;
 			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 				winCount++;
@@ -560,7 +564,7 @@ public class Util {
 		winCount = 0;
 		undefined = 0;
 		for(Defect defect:closedDefects) {
-			if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 				iOSCount++;
 			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 				winCount++;
@@ -639,7 +643,7 @@ public class Util {
 		undefined = 0;
 		if(null != closedYesterdayDefects) {
 			for(Defect defect:closedYesterdayDefects) {
-				if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+				if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 					iOSCount++;
 				} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 					winCount++;
@@ -718,7 +722,7 @@ public class Util {
 		undefined = 0;
 		if(null != openYesterdayDefects) {
 			for(Defect defect:openYesterdayDefects) {
-				if(defect.getPlatform().equalsIgnoreCase("Apple")) {
+				if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 					iOSCount++;
 				} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 					winCount++;
@@ -889,9 +893,11 @@ public class Util {
 	            JsonObject project = object.get("Project").getAsJsonObject();
 	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
 	            defect.setDefectDesc(object.get("Name").getAsString());
-	            String platform = "Undefined";
+	            String platform = "None";
 	            if(null != object.get("c_Platform")) {
-	            	if(object.get("c_Platform").getAsString().startsWith("iOS")) {
+	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
+	            		platform  = "Both";
+	            	} else if(object.get("c_Platform").getAsString().startsWith("iOS")) {
 	            		platform = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
 	            		platform = "Windows";
@@ -899,6 +905,8 @@ public class Util {
 	            }
 	            defect.setPlatform(platform);
 	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
+	            	defects.add(defect);	
+	            } else if("Both".equalsIgnoreCase(operatingSystem) && (platform.equalsIgnoreCase("iOS") || platform.contains("Win"))) {
 	            	defects.add(defect);	
 	            }
 	            defects.add(defect);
@@ -1064,6 +1072,8 @@ public class Util {
 		List<String> operatingSystems = new ArrayList<String>();
 		operatingSystems.add("iOS");
 		operatingSystems.add("Windows");
+		operatingSystems.add("Both");
+		operatingSystems.add("None");
 		operatingSystems.add("All");
 		dashboardForm.setOperatingSystems(operatingSystems);
 	}
