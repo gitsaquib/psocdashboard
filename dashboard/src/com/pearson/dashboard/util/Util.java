@@ -942,6 +942,11 @@ public class Util {
             JsonObject object = elements.getAsJsonObject();
             testCase.setTestCaseId(object.get("FormattedID").getAsString());
             testCase.setLastVerdict(object.get("LastVerdict")==null || object.get("LastVerdict").isJsonNull() ?"":object.get("LastVerdict").getAsString());
+            testCase.setName(object.get("Name")==null || object.get("Name").isJsonNull() ?"":object.get("Name").getAsString());
+            testCase.setDescription(object.get("Description")==null || object.get("Description").isJsonNull() ?"":object.get("Description").getAsString());
+            testCase.setLastRun(object.get("LastRun")==null || object.get("LastRun").isJsonNull() ?"":object.get("LastRun").getAsString());
+            testCase.setLastBuild(object.get("LastBuild")==null || object.get("LastBuild").isJsonNull() ?"":object.get("LastBuild").getAsString());
+            testCase.setLastBuild(object.get("Priority")==null || object.get("Priority").isJsonNull() ?"":object.get("Priority").getAsString());
             testCases.add(testCase);
     	}
     	dashboardForm.setTestCases(testCases);
@@ -1086,7 +1091,7 @@ public class Util {
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
         
-        testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "FormattedID", "LastVerdict", "LastRun"}));
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Priority",  "Description", "TestCases", "FormattedID", "LastVerdict", "LastBuild","LastRun"}));
         QueryFilter queryFilter = new QueryFilter("FormattedID", "=", testSets.get(0));
         int q = 1;
         while(testSets.size() > q) {
@@ -1117,15 +1122,20 @@ public class Util {
             if(numberOfTestCases>0){
             		DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
             		Date cutoffDate = (Date) formatter1.parse(cutoffDateStr);
+            		List<TestCase> testCases = new ArrayList<TestCase>();
                   	for (int j=0;j<numberOfTestCases;j++){
                   		JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
-                	  	
+                  		TestCase testCase = new TestCase();
+                  		testCase.setTestCaseId(jsonObject.get("FormattedID").getAsString());
                 	  	Date lastVerdictDate = null;
                 	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
                 	  		lastVerdictDate = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
                 	  	}
-                	  	String lastVerdict = jsonObject.get("LastVerdict").getAsString();
-                	  	if(lastVerdictDate.compareTo(cutoffDate) >= 0) {
+                	  	String lastVerdict = "";
+                	  	if(!jsonObject.get("LastVerdict").isJsonNull()) {
+                	  		lastVerdict = jsonObject.get("LastVerdict").getAsString();
+                	  	}
+                	  	if(null != lastVerdictDate && lastVerdictDate.compareTo(cutoffDate) >= 0) {
 	                	  	if(lastVerdict.equalsIgnoreCase("Pass")) {
 	        			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
 	        			    }
@@ -1144,11 +1154,20 @@ public class Util {
 	        			    if(lastVerdict.equalsIgnoreCase("")) {
 	        			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
 	        			    }
+	        			    
                 	  	} else {
                 	  		priority5.setPriorityCount(priority5.getPriorityCount()+1);
                 	  	}
-        			    testCasesCount++;
+                	  	testCasesCount++;
+                	  	testCase.setLastVerdict(jsonObject.get("LastVerdict")==null || jsonObject.get("LastVerdict").isJsonNull() ?"":jsonObject.get("LastVerdict").getAsString());
+        			    testCase.setName(jsonObject.get("Name")==null || jsonObject.get("Name").isJsonNull() ?"":jsonObject.get("Name").getAsString());
+        	            testCase.setDescription(jsonObject.get("Description")==null || jsonObject.get("Description").isJsonNull() ?"":jsonObject.get("Description").getAsString());
+        	            testCase.setLastRun(jsonObject.get("LastRun")==null || jsonObject.get("LastRun").isJsonNull() ?"":jsonObject.get("LastRun").getAsString());
+        	            testCase.setLastBuild(jsonObject.get("LastBuild")==null || jsonObject.get("LastBuild").isJsonNull() ?"":jsonObject.get("LastBuild").getAsString());
+        	            testCase.setPriority(jsonObject.get("Priority")==null || jsonObject.get("Priority").isJsonNull() ?"":jsonObject.get("Priority").getAsString());
+        	            testCases.add(testCase);
                  }
+                 dashboardForm.setTestCases(testCases);
             }
         }
         

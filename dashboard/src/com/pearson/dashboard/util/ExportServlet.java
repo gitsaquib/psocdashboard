@@ -19,6 +19,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 
 import com.pearson.dashboard.form.DashboardForm;
 import com.pearson.dashboard.vo.Defect;
+import com.pearson.dashboard.vo.TestCase;
 
 /**
  * 
@@ -68,6 +69,12 @@ public class ExportServlet extends HttpServlet {
 	    	wb.setSheetName(3, "Closed");
 	    	createSheetHeader(sheet, wb);
 	    	createSheetData(sheet, closedDefects, wb);
+	    	
+	    	List<TestCase> testCases = dashboardForm.getTestCases();
+	    	sheet = wb.createSheet();
+	    	wb.setSheetName(4, "Regression");
+	    	createSheetHeaderRegression(sheet, wb);
+	    	createSheetDataRegression(sheet, testCases, wb);
 	    	
 	    	wb.write(out);
 	    } catch (Exception e) {
@@ -167,6 +174,118 @@ public class ExportServlet extends HttpServlet {
 			cell.setCellValue(defect.getPlatform());
 			cellNum++;
 			
+			rowNum++;
+		}
+	}
+	
+	private void createSheetHeaderRegression(HSSFSheet sheet, HSSFWorkbook wb) {
+		HSSFRow row = sheet.createRow(0);
+		
+		HSSFFont font = wb.createFont();
+		font.setFontName("Veranda");
+		HSSFCellStyle style = wb.createCellStyle();
+        style.setFillForegroundColor(HSSFColor.AQUA.index);
+        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFont(font);
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        
+        short cellNum = 0;
+		
+		HSSFCell cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("TC#");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("Name");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("Description");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("Priority");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("LastVerdict");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("LastRun");
+		cellNum++;
+		
+		cell = row.createCell(cellNum);
+		cell.setCellStyle(style);
+		cell.setCellValue("LastBuild");
+		cellNum++;
+	}
+
+	private void createSheetDataRegression(HSSFSheet sheet, List<TestCase> testCases, HSSFWorkbook wb) {
+		int rowNum = 1;
+		
+		HSSFFont font = wb.createFont();
+		font.setFontName("Veranda");
+		HSSFCellStyle style = wb.createCellStyle();
+        style.setFont(font);
+        style.setWrapText(true);
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        
+		for(TestCase testCase:testCases) {
+			HSSFRow row = sheet.createRow(rowNum);
+			
+			short cellNum = 0;
+			
+			HSSFCell cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getTestCaseId());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getName());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getDescription());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getPriority());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getLastVerdict());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getLastRun());
+			cellNum++;
+			
+			cell = row.createCell(cellNum);
+			cell.setCellStyle(style);
+			cell.setCellValue(testCase.getLastBuild());
+			cellNum++;
 			rowNum++;
 		}
 	}

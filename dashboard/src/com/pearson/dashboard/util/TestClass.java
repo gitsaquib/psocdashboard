@@ -60,8 +60,8 @@ public class TestClass {
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
         
-        testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "FormattedID", "LastVerdict", "LastRun"}));
-        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS277").or(new QueryFilter("FormattedID", "=", "TS278")).or(new QueryFilter("FormattedID", "=", "TS279")));
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "FormattedID", "LastVerdict", "LastBuild", "LastRun"}));
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS291").or(new QueryFilter("FormattedID", "=", "TS292")));
         QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
         for (int i=0; i<testSetQueryResponse.getResults().size();i++){
             JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
@@ -74,9 +74,9 @@ public class TestClass {
                 	  		Date date = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
           	            	DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
           	            	String dateStr = formatter2.format(date);
-          	            	System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr);
+          	            	System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description")+"\t" + jsonObject.get("LastBuild"));
                 	  	} else {
-                	  		System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "");
+                	  		System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "" +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description")+"\t" + jsonObject.get("LastBuild"));
                 	  	}
                  }
             }
