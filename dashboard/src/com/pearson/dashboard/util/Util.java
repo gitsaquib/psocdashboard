@@ -134,10 +134,10 @@ public class Util {
 	            JsonObject project = object.get("Project").getAsJsonObject();
 	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
 	            defect.setDefectDesc(object.get("Name").getAsString());
-	            String platform = "None";
+	            String platform = "iOS";
 	            if(null != object.get("c_Platform")) {
 	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
-	            		platform  = "Both";
+	            		platform  = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().contains("iOS")) {
 	            		platform = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().contains("Win")) {
@@ -146,8 +146,6 @@ public class Util {
 	            }
 	            defect.setPlatform(platform);
 	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
-	            	defects.add(defect);	
-	            } else if("Both".equalsIgnoreCase(operatingSystem) && (platform.equalsIgnoreCase("iOS") || platform.contains("Win"))) {
 	            	defects.add(defect);	
 	            }
             }
@@ -273,7 +271,6 @@ public class Util {
 		
 		int winCount = 0;
 		int iOSCount = 0;
-		int undefined = 0;
 		
 		//Open defects
 		List<Defect> openDefects = allDefects.get("Open");
@@ -337,8 +334,6 @@ public class Util {
 		    	iOSCount++;
 		    } else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 		    	winCount++;
-		    } else {
-		    	undefined++;
 		    }
 		}
 		
@@ -347,7 +342,7 @@ public class Util {
 		dashboardForm.setOpenDefectCount(openDefects.size());
 		int p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setOpenP1AndP2Count(p1np2cnt);
-		dashboardForm.setOpenMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
+		dashboardForm.setOpenMsg("iOS: "+iOSCount+", Windows: "+winCount);
 		
 		//Submitted defects
 		List<Defect> submittedDefects = allDefects.get("Submitted");
@@ -408,14 +403,11 @@ public class Util {
 		
 		iOSCount = 0;
 		winCount = 0;
-		undefined = 0;
 		for(Defect defect:submittedDefects) {
 			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 		    	iOSCount++;
 		    } else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 		    	winCount++;
-		    } else {
-		    	undefined++;
 		    }
 		}
 		
@@ -424,7 +416,7 @@ public class Util {
 		dashboardForm.setSubmittedDefectCount(submittedDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
 		dashboardForm.setSubmittedP1AndP2Count(p1np2cnt);
-		dashboardForm.setSubmittedMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
+		dashboardForm.setSubmittedMsg("iOS: "+iOSCount+", Windows: "+winCount);
 		
 		//Fixed defects
 		List<Defect> fixedDefects = allDefects.get("Fixed");
@@ -485,14 +477,11 @@ public class Util {
 		
 		iOSCount = 0;
 		winCount = 0;
-		undefined = 0;
 		for(Defect defect:fixedDefects) {
 			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 				iOSCount++;
 			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 				winCount++;
-			} else {
-				undefined++;
 			}
 		}
 		
@@ -500,7 +489,7 @@ public class Util {
 		dashboardForm.setFixedPriorities(priorities);
 		dashboardForm.setFixedDefectCount(fixedDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
-		dashboardForm.setFixedMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
+		dashboardForm.setFixedMsg("iOS: "+iOSCount+", Windows: "+winCount);
 		dashboardForm.setFixedP1AndP2Count(p1np2cnt);
 		
 		//Closed defects
@@ -562,14 +551,11 @@ public class Util {
 		
 		iOSCount = 0;
 		winCount = 0;
-		undefined = 0;
 		for(Defect defect:closedDefects) {
 			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 				iOSCount++;
 			} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 				winCount++;
-			} else {
-				undefined++;
 			}
 		}
 		
@@ -577,7 +563,7 @@ public class Util {
 		dashboardForm.setClosedPriorities(priorities);
 		dashboardForm.setClosedDefectCount(closedDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
-		dashboardForm.setClosedMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
+		dashboardForm.setClosedMsg("iOS: "+iOSCount+", Windows: "+winCount);
 		dashboardForm.setClosedP1AndP2Count(p1np2cnt);
 		
 		//Closed Yesterday
@@ -640,15 +626,12 @@ public class Util {
 		
 		iOSCount = 0;
 		winCount = 0;
-		undefined = 0;
 		if(null != closedYesterdayDefects) {
 			for(Defect defect:closedYesterdayDefects) {
 				if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 					iOSCount++;
 				} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 					winCount++;
-				} else {
-					undefined++;
 				}
 			}
 		}
@@ -656,7 +639,7 @@ public class Util {
 		dashboardForm.setClosedYesterdayPriorities(priorities);
 		dashboardForm.setClosedYesterdayDefectCount(null == closedYesterdayDefects ? 0 : closedYesterdayDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
-		dashboardForm.setClosedYMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
+		dashboardForm.setClosedYMsg("iOS: "+iOSCount+", Windows: "+winCount);
 		dashboardForm.setClosedYesterdayP1AndP2Count(p1np2cnt);
 		
 		//Open Yesterday
@@ -719,15 +702,12 @@ public class Util {
 		
 		iOSCount = 0;
 		winCount = 0;
-		undefined = 0;
 		if(null != openYesterdayDefects) {
 			for(Defect defect:openYesterdayDefects) {
 				if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 					iOSCount++;
 				} else if(defect.getPlatform().equalsIgnoreCase("Windows")) {
 					winCount++;
-				} else {
-					undefined++;
 				}
 			}
 		}
@@ -735,7 +715,7 @@ public class Util {
 		dashboardForm.setOpenYesterdayPriorities(priorities);
 		dashboardForm.setOpenYesterdayDefectCount(null == openYesterdayDefects ? 0 : openYesterdayDefects.size());
 		p1np2cnt = priority1.getPriorityCount() + priority2.getPriorityCount();
-		dashboardForm.setOpenYMsg("iOS: "+iOSCount+", Windows: "+winCount+" and "+undefined+" are undefined");
+		dashboardForm.setOpenYMsg("iOS: "+iOSCount+", Windows: "+winCount);
 		dashboardForm.setOpenYesterdayP1AndP2Count(p1np2cnt);
 		
 		Tab tab = Util.getSelectedProject(Integer.parseInt(dashboardForm.getTabIndex()), Integer.parseInt(dashboardForm.getSubProject()), configuration);
@@ -893,10 +873,10 @@ public class Util {
 	            JsonObject project = object.get("Project").getAsJsonObject();
 	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
 	            defect.setDefectDesc(object.get("Name").getAsString());
-	            String platform = "None";
+	            String platform = "iOS";
 	            if(null != object.get("c_Platform")) {
 	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
-	            		platform  = "Both";
+	            		platform  = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().startsWith("iOS")) {
 	            		platform = "iOS";
 	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
@@ -904,12 +884,10 @@ public class Util {
 	            	}
 	            }
 	            defect.setPlatform(platform);
+	            
 	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
 	            	defects.add(defect);	
-	            } else if("Both".equalsIgnoreCase(operatingSystem) && (platform.equalsIgnoreCase("iOS") || platform.contains("Win"))) {
-	            	defects.add(defect);	
 	            }
-	            defects.add(defect);
             }
         }
     	List<Defect> olderDefects = allDefects.get(typeCategory);
@@ -1077,8 +1055,6 @@ public class Util {
 		List<String> operatingSystems = new ArrayList<String>();
 		operatingSystems.add("iOS");
 		operatingSystems.add("Windows");
-		operatingSystems.add("Both");
-		operatingSystems.add("None");
 		operatingSystems.add("All");
 		dashboardForm.setOperatingSystems(operatingSystems);
 	}
@@ -1116,13 +1092,14 @@ public class Util {
 		priority5.setPriorityName("NotAttempted");
         
 		int testCasesCount = 0;
+		List<TestCase> testCases = new ArrayList<TestCase>();
 		for (int i=0; i<testSetQueryResponse.getResults().size();i++){
             JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
             int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
             if(numberOfTestCases>0){
             		DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
             		Date cutoffDate = (Date) formatter1.parse(cutoffDateStr);
-            		List<TestCase> testCases = new ArrayList<TestCase>();
+            		
                   	for (int j=0;j<numberOfTestCases;j++){
                   		JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
                   		TestCase testCase = new TestCase();
@@ -1167,10 +1144,9 @@ public class Util {
         	            testCase.setPriority(jsonObject.get("Priority")==null || jsonObject.get("Priority").isJsonNull() ?"":jsonObject.get("Priority").getAsString());
         	            testCases.add(testCase);
                  }
-                 dashboardForm.setTestCases(testCases);
             }
         }
-        
+		dashboardForm.setTestCases(testCases);        
 		List<Integer> arrayList = new ArrayList<Integer>();
 		arrayList.add(priority0.getPriorityCount());
 		arrayList.add(priority1.getPriorityCount());

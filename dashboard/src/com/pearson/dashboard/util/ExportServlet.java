@@ -72,6 +72,8 @@ public class ExportServlet extends HttpServlet {
 	    	
 	    	List<TestCase> testCases = dashboardForm.getTestCases();
 	    	sheet = wb.createSheet();
+	    	sheet.setColumnWidth(columnIndex, columnWidth);
+	    	sheet.setColumnWidth(Short.valueOf("2"), columnWidth);
 	    	wb.setSheetName(4, "Regression");
 	    	createSheetHeaderRegression(sheet, wb);
 	    	createSheetDataRegression(sheet, testCases, wb);
@@ -264,8 +266,14 @@ public class ExportServlet extends HttpServlet {
 			
 			cell = row.createCell(cellNum);
 			cell.setCellStyle(style);
-			cell.setCellValue(testCase.getDescription());
+			if(null != testCase.getDescription()) {
+				String text = testCase.getDescription().replaceAll("\\<.*?\\>", "");
+				cell.setCellValue(text);
+			} else {
+				cell.setCellValue("");
+			}
 			cellNum++;
+			
 			
 			cell = row.createCell(cellNum);
 			cell.setCellStyle(style);

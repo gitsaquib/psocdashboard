@@ -116,9 +116,9 @@ public class DashboardAction extends Action {
     		tab = Integer.parseInt(request.getParameter("tab"));
     		dashboardForm.setTabIndex(tab+"");
     	}
-    	
-    	dashboardForm.setSubProject(request.getParameter("subTab"));
-    	
+    	if(null != request.getParameter("subTab")) {
+    		dashboardForm.setSubProject(request.getParameter("subTab"));
+    	}
     	int subTab = Integer.parseInt(dashboardForm.getSubProject());
     	
 		String tabName = Util.getTabAttribute(configuration, "tabname", tab, subTab);
