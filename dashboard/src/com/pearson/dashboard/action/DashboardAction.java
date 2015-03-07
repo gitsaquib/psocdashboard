@@ -5,6 +5,7 @@
  */
 package com.pearson.dashboard.action;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -131,7 +132,17 @@ public class DashboardAction extends Action {
 		RegressionData regressionData = Util.getRegressionSetDetails(Util.getTabAttribute(configuration, "tabUniqueId", tab, subTab));
 		dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
 		if(null != regressionData) {
-			Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getTestSetsIds());
+			if(dashboardForm.getOperatingSystem().equalsIgnoreCase("IOS")) {
+				Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getIosTestSetsIds());
+			} else if(dashboardForm.getOperatingSystem().equalsIgnoreCase("WINDOWS")) {
+				Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getWinTestSetsIds());
+			} else {
+				List<String> allTestSets = new ArrayList<String>();
+				allTestSets.addAll(regressionData.getIosTestSetsIds());
+				allTestSets.addAll(regressionData.getWinTestSetsIds());
+				Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
+			}
+			
 		} else {
 			Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
 		}

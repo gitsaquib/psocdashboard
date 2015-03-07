@@ -1193,13 +1193,25 @@ public class Util {
 				String param[] = params.split(":");
 				if(param[0].equalsIgnoreCase(tabUniqueId)) {
 					RegressionData regressionData = new RegressionData();
+					
 					regressionData.setCutoffDate(param[1]);
-					String sets[] = param[2].split(",");
-					List<String> testSets = new ArrayList<String>();
+					
+					String iossets[] = param[2].split("~");
+					String sets[] = iossets[1].split(",");
+					List<String> iostestSets = new ArrayList<String>();
 					for(String set:sets) {
-						testSets.add(set);
+						iostestSets.add(set);
 					}
-					regressionData.setTestSetsIds(testSets);
+					regressionData.setIosTestSetsIds(iostestSets);
+					
+					String winsets[] = param[3].split("~");
+					sets = winsets[1].split(",");
+					List<String> wintestSets = new ArrayList<String>();
+					for(String set:sets) {
+						wintestSets.add(set);
+					}
+					regressionData.setWinTestSetsIds(wintestSets);
+					
 					return regressionData;
 				}
 			}

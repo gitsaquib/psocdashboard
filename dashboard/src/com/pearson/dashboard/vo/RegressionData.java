@@ -5,14 +5,21 @@ import java.util.List;
 
 public class RegressionData implements Serializable {
 	
-	private List<String> testSetsIds;
+	private List<String> winTestSetsIds;
+	private List<String> iosTestSetsIds;
 	private String cutoffDate;
 	
-	public List<String> getTestSetsIds() {
-		return testSetsIds;
+	public List<String> getWinTestSetsIds() {
+		return winTestSetsIds;
 	}
-	public void setTestSetsIds(List<String> testSetsIds) {
-		this.testSetsIds = testSetsIds;
+	public void setWinTestSetsIds(List<String> winTestSetsIds) {
+		this.winTestSetsIds = winTestSetsIds;
+	}
+	public List<String> getIosTestSetsIds() {
+		return iosTestSetsIds;
+	}
+	public void setIosTestSetsIds(List<String> iosTestSetsIds) {
+		this.iosTestSetsIds = iosTestSetsIds;
 	}
 	public String getCutoffDate() {
 		return cutoffDate;
@@ -20,4 +27,7 @@ public class RegressionData implements Serializable {
 	public void setCutoffDate(String cutoffDate) {
 		this.cutoffDate = cutoffDate;
 	}
+	
+	
+	
 }
