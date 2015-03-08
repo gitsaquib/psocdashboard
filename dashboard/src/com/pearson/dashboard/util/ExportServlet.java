@@ -70,14 +70,15 @@ public class ExportServlet extends HttpServlet {
 	    	createSheetHeader(sheet, wb);
 	    	createSheetData(sheet, closedDefects, wb);
 	    	
-	    	List<TestCase> testCases = dashboardForm.getTestCases();
-	    	sheet = wb.createSheet();
-	    	sheet.setColumnWidth(columnIndex, columnWidth);
-	    	sheet.setColumnWidth(Short.valueOf("2"), columnWidth);
-	    	wb.setSheetName(4, "Regression");
-	    	createSheetHeaderRegression(sheet, wb);
-	    	createSheetDataRegression(sheet, testCases, wb);
-	    	
+	    	if(dashboardForm.getRegressionData()) {
+		    	List<TestCase> testCases = dashboardForm.getTestCases();
+		    	sheet = wb.createSheet();
+		    	sheet.setColumnWidth(columnIndex, columnWidth);
+		    	sheet.setColumnWidth(Short.valueOf("2"), columnWidth);
+		    	wb.setSheetName(4, "Regression");
+		    	createSheetHeaderRegression(sheet, wb);
+		    	createSheetDataRegression(sheet, testCases, wb);
+	    	}
 	    	wb.write(out);
 	    } catch (Exception e) {
 	    	throw new ServletException("Exception in Excel Sample Servlet", e);

@@ -906,7 +906,7 @@ public class Util {
 		QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", cutoffDate).and(new QueryFilter("Type", "=", "Regression"));
     	QueryRequest defectRequest = new QueryRequest("testcases");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict"));
+    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict", "Name", "Description", "LastRun", "LastBuild", "Priority"));
     	defectRequest.setProject("/project/"+dashboardForm.getProjectId()); 
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(10000);
