@@ -21,6 +21,7 @@ import com.pearson.dashboard.vo.TestCase;
 public class DashboardForm extends ActionForm {
 	
 	private String loginUser;
+	private String role;
 	
     private List<Defect> openDefects;
     private int openDefectCount;
@@ -89,7 +90,13 @@ public class DashboardForm extends ActionForm {
     private String operatingSystem;
     private String filterInfo;
     
-    public String getSelectedRelease() {
+    public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
+	public String getSelectedRelease() {
 		return selectedRelease;
 	}
 	public void setSelectedRelease(String selectedRelease) {

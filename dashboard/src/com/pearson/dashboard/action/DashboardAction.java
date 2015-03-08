@@ -95,18 +95,26 @@ public class DashboardAction extends Action {
     		request.getRequestDispatcher("export.do").forward(request, response);
     	}
     	String userName = null;
+    	String role = null;
     	if(request.getSession().getAttribute("user") == null) {
     		return mapping.findForward("login");
-    	} else 
+    	} else {
     		userName = (String) request.getSession().getAttribute("user");
-		Cookie[] cookies = request.getCookies();
+    		role = (String) request.getSession().getAttribute("role");
+    	}
+		
+    	Cookie[] cookies = request.getCookies();
 		if(cookies !=null){
 			for(Cookie cookie : cookies){
 				if(cookie.getName().equals("user")) 
 					userName = cookie.getValue();
+				else if(cookie.getName().equals("role")) 
+					role = cookie.getValue();
 			}
 		}
 		dashboardForm.setLoginUser(userName);
+		dashboardForm.setRole(role);
+		
 		Configuration configuration = Util.readConfigFile();
         List<Tab> tabs = configuration.getTabs();
     	

@@ -36,12 +36,18 @@
 				    		<td>
 				    			<font color="white" size="2" face="Tahoma"><b>Welcome ${DashboardForm.loginUser}!!!</b></font>
 				    		</td>
-				    		<td width="55%" align="right">
-								<c:if test="${DashboardForm.projectId != null}">
-									<a href="dashboard.do?export=true">
-										<font color="white" size="2" face="Tahoma">Export to Excel</font>
+				    		<td width="45%" align="right">
+								<c:if test="${DashboardForm.role eq 'SysAdmin'}">
+									<a href="#">
+										<font color="white" size="2" face="Tahoma">Configure Dashboard</font>
 									</a>
 								</c:if>
+							</td>
+							<td>&nbsp;</td>
+				    		<td width="8%">
+								<a href="dashboard.do?export=true">
+									<font color="white" size="2" face="Tahoma">Export to Excel</font>
+								</a>
 							</td>
 							<td>&nbsp;</td>
 							<td>

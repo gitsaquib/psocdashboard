@@ -35,13 +35,20 @@ public class LoginAction extends Action {
 	    		String attributes[] = userDetails.split(":");
 	    		String password = attributes[0];
 	    		String displayName = attributes[1];
+	    		String role = attributes[3];
 	    		if(null != password && password.equals(loginForm.getPassword())) {
 	    			HttpSession session = request.getSession();
 					session.setAttribute("user", displayName);
+					session.setAttribute("role", role);
 					session.setMaxInactiveInterval(30*60);
 					Cookie userName = new Cookie("user", displayName);
 					userName.setMaxAge(30*60);
 					response.addCookie(userName);
+					
+					Cookie roleC = new Cookie("role", role);
+					roleC.setMaxAge(30*60);
+					response.addCookie(roleC);
+					
 					return mapping.findForward("loginsuccess");
 	    		}
 	    	}

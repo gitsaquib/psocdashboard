@@ -924,7 +924,7 @@ public class Util {
             testCase.setDescription(object.get("Description")==null || object.get("Description").isJsonNull() ?"":object.get("Description").getAsString());
             testCase.setLastRun(object.get("LastRun")==null || object.get("LastRun").isJsonNull() ?"":object.get("LastRun").getAsString());
             testCase.setLastBuild(object.get("LastBuild")==null || object.get("LastBuild").isJsonNull() ?"":object.get("LastBuild").getAsString());
-            testCase.setLastBuild(object.get("Priority")==null || object.get("Priority").isJsonNull() ?"":object.get("Priority").getAsString());
+            testCase.setPriority(object.get("Priority")==null || object.get("Priority").isJsonNull() ?"":object.get("Priority").getAsString());
             testCases.add(testCase);
     	}
     	dashboardForm.setTestCases(testCases);
