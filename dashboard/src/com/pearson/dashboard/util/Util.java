@@ -79,16 +79,23 @@ public class Util {
 		QueryResponse projectDefects;
 		JsonArray defectsArray;
 		defects = new ArrayList<Defect>();
+		
+		String releases[] =  releaseNum.split(",");
+		QueryFilter releaseQueryFilter = new QueryFilter("Release.Name", "=", releases[0]); 
+		for(int r=1; r<releases.length; r++) {
+			releaseQueryFilter = releaseQueryFilter.or(new QueryFilter("Release.Name", "=", releases[r]));
+		}
+		
     	if(yesterdayDefects) {
     		String today = getDate("today");
     		String yesterday = getDate("yesterday");
     		if(typeCategory.equalsIgnoreCase("ClosedY")) {
-    			queryFilter = new QueryFilter("State", "=", "Closed").and(new QueryFilter("Release.Name", "=", releaseNum)).and(new QueryFilter("ClosedDate", "<", today)).and(new QueryFilter("ClosedDate", ">=", yesterday));
+    			queryFilter = new QueryFilter("State", "=", "Closed").and(releaseQueryFilter).and(new QueryFilter("ClosedDate", "<", today)).and(new QueryFilter("ClosedDate", ">=", yesterday));
     		} else {
-    			queryFilter = new QueryFilter("Release.Name", "=", releaseNum).and(new QueryFilter("CreationDate", "<", today)).and(new QueryFilter("CreationDate", ">=", yesterday));
+    			queryFilter = releaseQueryFilter.and(new QueryFilter("CreationDate", "<", today)).and(new QueryFilter("CreationDate", ">=", yesterday));
     		}
     	} else {
-    		queryFilter = new QueryFilter("State", "=", typeCategory).and(new QueryFilter("Release.Name", "=", releaseNum));
+    		queryFilter = new QueryFilter("State", "=", typeCategory).and(releaseQueryFilter);
 			if(null != cutoffDate) {
 				queryFilter = queryFilter.and(new QueryFilter("CreationDate", ">=", cutoffDate));
 			}
@@ -827,7 +834,14 @@ public class Util {
 		QueryResponse projectDefects;
 		JsonArray defectsArray;
 		defects = new ArrayList<Defect>();
-    	queryFilter = new QueryFilter("State", "=", typeCategory).and(new QueryFilter("Release.Name", "=", releaseNum));
+		
+		String releases[] =  releaseNum.split(",");
+		QueryFilter releaseQueryFilter = new QueryFilter("Release.Name", "=", releases[0]); 
+		for(int r=1; r<releases.length; r++) {
+			releaseQueryFilter = releaseQueryFilter.or(new QueryFilter("Release.Name", "=", releases[r]));
+		}
+    	
+		queryFilter = new QueryFilter("State", "=", typeCategory).and(releaseQueryFilter);
 		if(null != cutoffDate) {
 			queryFilter = queryFilter.and(new QueryFilter("CreationDate", comparisonOperator, cutoffDate));
 		}
