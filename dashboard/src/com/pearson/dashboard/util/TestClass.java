@@ -46,8 +46,9 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	retrieveTestSets(restApi);
+    	//retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
+    	retrieveDefects(restApi);
     	restApi.close();
     	//postJenkinsJob();
     }
@@ -133,11 +134,11 @@ public class TestClass {
 	private static void retrieveDefects(RallyRestApi restApi)
 			throws IOException {
 		
-		QueryFilter queryFilter = new QueryFilter("State", "=", "Submitted");//.and(new QueryFilter("FormattedID", "=", "DE10013"));
+		QueryFilter queryFilter = new QueryFilter("FormattedID", "=", "DE8485");
     	QueryRequest defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Name", "Platform", "Release", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
-    	defectRequest.setProject("/project/21028059357"); 
+    	defectRequest.setFetch(new Fetch("State", "Name", "Tags", "Platform", "Release", "FormattedID", "Environment", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setProject("/project/23240411122"); 
     	defectRequest.setScopedDown(true);
     	QueryResponse projectDefects = restApi.query(defectRequest);
     	JsonArray defectsArray = projectDefects.getResults();
@@ -145,10 +146,43 @@ public class TestClass {
     	for(int i=0; i<defectsArray.size(); i++) {
     		JsonElement elements =  defectsArray.get(i);
             JsonObject object = elements.getAsJsonObject();
-            System.out.println(object.get("Name").getAsString());
+            if(null != object.get("Tags") && !object.get("Tags").isJsonNull()) {
+            	JsonObject jsonObject = object.get("Tags").getAsJsonObject();
+            	
+            	int numberOfTestCases = jsonObject.get("_tagsNameArray").getAsJsonArray().size();
+                if(numberOfTestCases>0){
+                      for (int j=0;j<numberOfTestCases;j++){
+	            	  	JsonObject jsonObj = jsonObject.get("_tagsNameArray").getAsJsonArray().get(j).getAsJsonObject();
+	            	  	System.out.println(jsonObj.get("Name"));
+                     }
+                }
+            }
     	}
 	}
     
+	private static void retrieveTags(RallyRestApi restApi)
+			throws IOException, ParseException {
+		
+		QueryRequest testSetRequest = new QueryRequest("Tags");
+        testSetRequest.setProject("/project/23240411122");
+        String wsapiVersion = "1.43";
+        restApi.setWsapiVersion(wsapiVersion);
+        
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Defects"}));
+        testSetRequest.setQueryFilter(new QueryFilter("Name", "=", "Release 1.6 - CA Adoption"));
+        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        for (int i=0; i<testSetQueryResponse.getResults().size();i++){
+            JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
+            int numberOfTestCases = testSetJsonObject.get("Defects").getAsJsonArray().size();
+            if(numberOfTestCases>0){
+                  for (int j=0;j<numberOfTestCases;j++){
+                	  	JsonObject jsonObject = testSetJsonObject.get("Defects").getAsJsonArray().get(j).getAsJsonObject();
+                	  	System.out.println(jsonObject.get("FormattedID"));
+                 }
+            }
+        }
+	}
+	
     private static List<Release> retrieveRelease(RallyRestApi restApi) throws Exception{
     	List<Release> releases = new ArrayList<Release>();
     	QueryRequest query = new QueryRequest("Release");
