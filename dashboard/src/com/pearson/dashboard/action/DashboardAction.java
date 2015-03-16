@@ -157,6 +157,7 @@ public class DashboardAction extends Action {
     	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
     	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
     	dashboardForm.setSelectedRelease(Util.getTabAttribute(configuration, "release", tab, subTab));
+    	dashboardForm.setTag(Util.getTabAttribute(configuration, "tag", tab, subTab));
     	dashboardForm.setTabName(tabName);
 		
     	Util.populateDefectData(dashboardForm, configuration);

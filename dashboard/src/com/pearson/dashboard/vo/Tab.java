@@ -18,6 +18,7 @@ public class Tab implements Serializable, Comparable<Tab> {
 	private String release;
 	private List<Tab> subTabs;
 	private String information;
+	private String tag;
 
 	public int getTabIndex() {
 		return tabIndex;
@@ -72,6 +73,12 @@ public class Tab implements Serializable, Comparable<Tab> {
 	}
 	public void setInformation(String information) {
 		this.information = information;
+	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 	@Override
 	public int compareTo(Tab tab) {

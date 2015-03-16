@@ -60,19 +60,20 @@ public class Util {
     public static Map<String, List<Defect>> getDataFromRally(DashboardForm dashboard, Configuration configuration) throws Exception {
     	Map<String, List<Defect>> allDefects = new HashMap<String, List<Defect>>();
     	RallyRestApi  restApi = loginRally(configuration);
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());    	
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem());
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem());
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());    	
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
+    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
     	restApi.close();
     	return allDefects;
     }
 
 	private static void retrieveDefects(
 			Map<String, List<Defect>> allDefects, RallyRestApi restApi,
-			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects, Configuration configuration, String operatingSystem) throws IOException, ParseException {
+			String projectId, String typeCategory, String releaseNum, String cutoffDate, boolean yesterdayDefects, Configuration configuration, 
+			String operatingSystem, String tag) throws IOException, ParseException {
 		List<Defect> defects;
 		QueryFilter queryFilter;
 		QueryRequest defectRequest;
@@ -80,39 +81,73 @@ public class Util {
 		JsonArray defectsArray;
 		defects = new ArrayList<Defect>();
 		
-		String releases[] =  releaseNum.split(",");
-		QueryFilter releaseQueryFilter = new QueryFilter("Release.Name", "=", releases[0]); 
-		for(int r=1; r<releases.length; r++) {
-			releaseQueryFilter = releaseQueryFilter.or(new QueryFilter("Release.Name", "=", releases[r]));
+		QueryFilter releaseQueryFilter = null;
+		if(null != releaseNum) {
+			String releases[] =  releaseNum.split(",");
+			releaseQueryFilter = new QueryFilter("Release.Name", "=", releases[0]); 
+			for(int r=1; r<releases.length; r++) {
+				releaseQueryFilter = releaseQueryFilter.or(new QueryFilter("Release.Name", "=", releases[r]));
+			}
 		}
-		
     	if(yesterdayDefects) {
     		String today = getDate("today");
     		String yesterday = getDate("yesterday");
     		if(typeCategory.equalsIgnoreCase("ClosedY")) {
-    			queryFilter = new QueryFilter("State", "=", "Closed").and(releaseQueryFilter).and(new QueryFilter("ClosedDate", "<", today)).and(new QueryFilter("ClosedDate", ">=", yesterday));
+    			if(null != releaseQueryFilter) {
+    				queryFilter = new QueryFilter("State", "=", "Closed").and(releaseQueryFilter).and(new QueryFilter("ClosedDate", "<", today)).and(new QueryFilter("ClosedDate", ">=", yesterday));	
+    			} else {
+    				queryFilter = new QueryFilter("State", "=", "Closed").and(new QueryFilter("ClosedDate", "<", today)).and(new QueryFilter("ClosedDate", ">=", yesterday));
+    			}
     		} else {
-    			queryFilter = releaseQueryFilter.and(new QueryFilter("CreationDate", "<", today)).and(new QueryFilter("CreationDate", ">=", yesterday));
+    			if(null != releaseQueryFilter) {
+    				queryFilter = releaseQueryFilter.and(new QueryFilter("CreationDate", "<", today)).and(new QueryFilter("CreationDate", ">=", yesterday));
+    			} else {
+    				queryFilter = new QueryFilter("CreationDate", "<", today).and(new QueryFilter("CreationDate", ">=", yesterday));
+    			}
     		}
     	} else {
-    		queryFilter = new QueryFilter("State", "=", typeCategory).and(releaseQueryFilter);
+    		if(null != releaseQueryFilter) {
+    			queryFilter = new QueryFilter("State", "=", typeCategory).and(releaseQueryFilter);
+    		} else {
+    			queryFilter = new QueryFilter("State", "=", typeCategory);
+    		}
 			if(null != cutoffDate) {
 				queryFilter = queryFilter.and(new QueryFilter("CreationDate", ">=", cutoffDate));
 			}
     	}
+    	
+    	
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Platform", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setFetch(new Fetch("State", "Release", "Tags", "Name", "FormattedID", "Platform", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
-    	defectRequest.setLimit(2000);
+    	defectRequest.setLimit(4000);
     	defectRequest.setOrder("FormattedID desc");
     	projectDefects = restApi.query(defectRequest);
     	defectsArray = projectDefects.getResults();
     	for(int i=0; i<defectsArray.size(); i++) {
             JsonElement elements =  defectsArray.get(i);
             JsonObject object = elements.getAsJsonObject();
-            if(!object.get("Release").isJsonNull()) {
+            boolean isTag = true;
+            if(null != tag) {
+            	isTag = false;
+            }
+            
+            if(null != object.get("Tags") && !object.get("Tags").isJsonNull()) {
+            	JsonObject jsonObject = object.get("Tags").getAsJsonObject();
+            	int numberOfTestCases = jsonObject.get("_tagsNameArray").getAsJsonArray().size();
+                if(numberOfTestCases>0){
+                      for (int j=0;j<numberOfTestCases;j++){
+	            	  	JsonObject jsonObj = jsonObject.get("_tagsNameArray").getAsJsonArray().get(j).getAsJsonObject();
+	            	  	if(jsonObj.get("Name").getAsString().equals(tag)){
+	            	  		isTag = true;
+	            	  	}
+                     }
+                }
+            }
+            
+            if(!object.get("Release").isJsonNull() && isTag) {
 	            Defect defect =  new Defect();
 	            defect.setDefectId(object.get("FormattedID").getAsString());
 
@@ -244,7 +279,11 @@ public class Util {
 					tab.setTabIndex(Integer.parseInt(param[0]));
 					tab.setTabDisplayName(param[1]);
 					tab.setTabUniqueId(param[2]);
-					tab.setRelease(param[3]);
+					if(param[3].equals("null")) {
+						tab.setRelease(null);
+					} else {
+						tab.setRelease(param[3]);
+					}
 					if(null != param[4] && !"null".equals(param[4])) {
 						tab.setCutoffDate(param[4]);
 					}
@@ -255,6 +294,11 @@ public class Util {
 					}
 					tab.setTabType("Parent");
 					tab.setInformation(param[6]);
+					if(param[7].equals("null")) {
+						tab.setTag(null);
+					} else {
+						tab.setTag(param[7]);
+					}
 					tab.setSubTabs(getSubTabs(param[2]));
 					tabs.add(tab);
 				}
@@ -754,6 +798,8 @@ public class Util {
 			return selectedTab.getCutoffDate();
 		} else if(key.equals("tabname")) {
 			return selectedTab.getTabDisplayName();
+		} else if(key.equals("tag")) {
+			return selectedTab.getTag();
 		} else {
 			return selectedTab.getTabUniqueId();
 		}
@@ -835,13 +881,19 @@ public class Util {
 		JsonArray defectsArray;
 		defects = new ArrayList<Defect>();
 		
-		String releases[] =  releaseNum.split(",");
-		QueryFilter releaseQueryFilter = new QueryFilter("Release.Name", "=", releases[0]); 
-		for(int r=1; r<releases.length; r++) {
-			releaseQueryFilter = releaseQueryFilter.or(new QueryFilter("Release.Name", "=", releases[r]));
+		QueryFilter releaseQueryFilter  = null;
+		if(null != releaseNum) {
+			String releases[] =  releaseNum.split(",");
+			releaseQueryFilter = new QueryFilter("Release.Name", "=", releases[0]); 
+			for(int r=1; r<releases.length; r++) {
+				releaseQueryFilter = releaseQueryFilter.or(new QueryFilter("Release.Name", "=", releases[r]));
+			}
 		}
-    	
-		queryFilter = new QueryFilter("State", "=", typeCategory).and(releaseQueryFilter);
+		if(null != releaseQueryFilter) {
+			queryFilter = new QueryFilter("State", "=", typeCategory).and(releaseQueryFilter);
+		} else {
+			queryFilter = new QueryFilter("State", "=", typeCategory);
+		}
 		if(null != cutoffDate) {
 			queryFilter = queryFilter.and(new QueryFilter("CreationDate", comparisonOperator, cutoffDate));
 		}
@@ -1031,7 +1083,11 @@ public class Util {
 					subTtab.setTabIndex(Integer.parseInt(paramSub[0]));
 					subTtab.setTabDisplayName(paramSub[1]);
 					subTtab.setTabUniqueId(paramSub[2]);
-					subTtab.setRelease(paramSub[3]);
+					if(paramSub[3].equals("null")) {
+						subTtab.setRelease(null);
+					} else {
+						subTtab.setRelease(paramSub[3]);
+					}
 					if(null != paramSub[4] && !"null".equals(paramSub[4])) {
 						subTtab.setCutoffDate(paramSub[4]);
 					}
@@ -1042,6 +1098,11 @@ public class Util {
 					}
 					subTtab.setTabType("Child");
 					subTtab.setInformation(paramSub[7]);
+					if(paramSub[8].equals("null")) {
+						subTtab.setTag(null);
+					} else {
+						subTtab.setTag(paramSub[8]);
+					}
 					subTabs.add(subTtab);
 				}
 			}

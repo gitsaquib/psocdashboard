@@ -89,6 +89,7 @@ public class DashboardForm extends ActionForm {
     private List<String> operatingSystems;
     private String operatingSystem;
     private String filterInfo;
+    private String tag;
     
     public String getRole() {
 		return role;
@@ -415,5 +416,11 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setFilterInfo(String filterInfo) {
 		this.filterInfo = filterInfo;
+	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 }
