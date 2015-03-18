@@ -174,7 +174,7 @@ public class Util {
 	            }
 	            defect.setState(object.get("State").getAsString());
 	            JsonObject project = object.get("Project").getAsJsonObject();
-	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
+	            defect.setProject(project.get("_refObjectName").getAsString());
 	            defect.setDefectDesc(object.get("Name").getAsString());
 	            String platform = "iOS";
 	            if(null != object.get("c_Platform")) {
@@ -843,12 +843,11 @@ public class Util {
 	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	
 	    	//Retrieve A team data
-	    	projectId = getTabAttribute(configuration, "project", 4, 3);
-	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 4, 3);    
-	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
-	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
-	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());  	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	projectId = getTabAttribute(configuration, "project", 4, 17);
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());  	
+	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
 	    	
     	} else {
 	    	//Retrieve 2-12 old data
@@ -937,7 +936,7 @@ public class Util {
 	            }
 	            defect.setState(object.get("State").getAsString());
 	            JsonObject project = object.get("Project").getAsJsonObject();
-	            defect.setProject(project.get("_refObjectName").getAsString().charAt(0)+"");
+	            defect.setProject(project.get("_refObjectName").getAsString());
 	            defect.setDefectDesc(object.get("Name").getAsString());
 	            String platform = "iOS";
 	            if(null != object.get("c_Platform")) {
