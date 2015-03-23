@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.http.conn.HttpHostConnectException;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -52,7 +54,7 @@ public class Util {
 	
     public static List<Release> retrieveReleaseInfo(Configuration configuration) throws Exception {
     	RallyRestApi  restApi = loginRally(configuration);
-    	List<Release> releases = retrieveRelease(restApi);
+    	List<Release> releases = retrieveRelease(restApi, configuration);
     	restApi.close();
     	return releases;
     }
@@ -124,76 +126,91 @@ public class Util {
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(4000);
     	defectRequest.setOrder("FormattedID desc");
-    	projectDefects = restApi.query(defectRequest);
-    	defectsArray = projectDefects.getResults();
-    	for(int i=0; i<defectsArray.size(); i++) {
-            JsonElement elements =  defectsArray.get(i);
-            JsonObject object = elements.getAsJsonObject();
-            boolean isTag = true;
-            if(null != tag) {
-            	isTag = false;
-            }
-            
-            if(null != object.get("Tags") && !object.get("Tags").isJsonNull()) {
-            	JsonObject jsonObject = object.get("Tags").getAsJsonObject();
-            	int numberOfTestCases = jsonObject.get("_tagsNameArray").getAsJsonArray().size();
-                if(numberOfTestCases>0){
-                      for (int j=0;j<numberOfTestCases;j++){
-	            	  	JsonObject jsonObj = jsonObject.get("_tagsNameArray").getAsJsonArray().get(j).getAsJsonObject();
-	            	  	if(jsonObj.get("Name").getAsString().equals(tag)){
-	            	  		isTag = true;
-	            	  	}
-                     }
-                }
-            }
-            
-            if(!object.get("Release").isJsonNull() && isTag) {
-	            Defect defect =  new Defect();
-	            defect.setDefectId(object.get("FormattedID").getAsString());
+    	boolean dataNotReceived = true;
+    	while(dataNotReceived){
+	    	try {
+	    		projectDefects = restApi.query(defectRequest);
+	    		dataNotReceived = false;
+	    		defectsArray = projectDefects.getResults();
+	        	for(int i=0; i<defectsArray.size(); i++) {
+	                JsonElement elements =  defectsArray.get(i);
+	                JsonObject object = elements.getAsJsonObject();
+	                boolean isTag = true;
+	                if(null != tag) {
+	                	isTag = false;
+	                }
+	                
+	                if(null != object.get("Tags") && !object.get("Tags").isJsonNull()) {
+	                	JsonObject jsonObject = object.get("Tags").getAsJsonObject();
+	                	int numberOfTestCases = jsonObject.get("_tagsNameArray").getAsJsonArray().size();
+	                    if(numberOfTestCases>0){
+	                          for (int j=0;j<numberOfTestCases;j++){
+	    	            	  	JsonObject jsonObj = jsonObject.get("_tagsNameArray").getAsJsonArray().get(j).getAsJsonObject();
+	    	            	  	if(jsonObj.get("Name").getAsString().equals(tag)){
+	    	            	  		isTag = true;
+	    	            	  	}
+	                         }
+	                    }
+	                }
+	                
+	                if(!object.get("Release").isJsonNull() && isTag) {
+	    	            Defect defect =  new Defect();
+	    	            defect.setDefectId(object.get("FormattedID").getAsString());
 
-	            if(null != object.get("_ref")) {
-	            	String defectRef = object.get("_ref").getAsString();
-	            	if(null != defectRef) {
-	            		String url = configuration.getRallyURL()+"#/"+projectId+"ud/detail/defect"+defectRef.substring(defectRef.lastIndexOf("/"));
-	            		defect.setDefectUrl(url);
-	            	}
+	    	            if(null != object.get("_ref")) {
+	    	            	String defectRef = object.get("_ref").getAsString();
+	    	            	if(null != defectRef) {
+	    	            		String url = configuration.getRallyURL()+"#/"+projectId+"ud/detail/defect"+defectRef.substring(defectRef.lastIndexOf("/"));
+	    	            		defect.setDefectUrl(url);
+	    	            	}
+	    	            }
+	    	            
+	    	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
+	    	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
+	    	            Date date = (Date) formatter1.parse(strFormat1);
+	    	            DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
+	    	            defect.setLastUpdateDate(formatter2.format(date));
+	    	            
+	    	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
+	    	            
+	    	            if(null != object.get("Priority") && !object.get("Priority").getAsString().isEmpty() && !object.get("Priority").getAsString().startsWith("No")) {
+	    	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
+	    	            } else {
+	    	                defect.setPriority("TBD");
+	    	            }
+	    	            defect.setState(object.get("State").getAsString());
+	    	            JsonObject project = object.get("Project").getAsJsonObject();
+	    	            defect.setProject(project.get("_refObjectName").getAsString());
+	    	            defect.setDefectDesc(object.get("Name").getAsString());
+	    	            String platform = "iOS";
+	    	            if(null != object.get("c_Platform")) {
+	    	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
+	    	            		platform  = "iOS";
+	    	            	} else if(object.get("c_Platform").getAsString().contains("iOS")) {
+	    	            		platform = "iOS";
+	    	            	} else if(object.get("c_Platform").getAsString().contains("Win")) {
+	    	            		platform = "Windows";
+	    	            	}
+	    	            }
+	    	            defect.setPlatform(platform);
+	    	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
+	    	            	defects.add(defect);	
+	    	            }
+	                }
 	            }
-	            
-	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
-	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
-	            Date date = (Date) formatter1.parse(strFormat1);
-	            DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
-	            defect.setLastUpdateDate(formatter2.format(date));
-	            
-	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
-	            
-	            if(null != object.get("Priority") && !object.get("Priority").getAsString().isEmpty() && !object.get("Priority").getAsString().startsWith("No")) {
-	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
-	            } else {
-	                defect.setPriority("TBD");
-	            }
-	            defect.setState(object.get("State").getAsString());
-	            JsonObject project = object.get("Project").getAsJsonObject();
-	            defect.setProject(project.get("_refObjectName").getAsString());
-	            defect.setDefectDesc(object.get("Name").getAsString());
-	            String platform = "iOS";
-	            if(null != object.get("c_Platform")) {
-	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
-	            		platform  = "iOS";
-	            	} else if(object.get("c_Platform").getAsString().contains("iOS")) {
-	            		platform = "iOS";
-	            	} else if(object.get("c_Platform").getAsString().contains("Win")) {
-	            		platform = "Windows";
-	            	}
-	            }
-	            defect.setPlatform(platform);
-	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
-	            	defects.add(defect);	
-	            }
-            }
-        }
-    	Collections.sort(defects);
-    	allDefects.put(typeCategory, defects);
+	        	Collections.sort(defects);
+	        	allDefects.put(typeCategory, defects);
+	    	} catch(HttpHostConnectException connectException) {
+	    		if(restApi != null) {
+	    			restApi.close();
+	    			try {
+						restApi = loginRally(configuration);
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
+	    		}
+	    	}	
+    	}
 	}
     
     public static Tab getSelectedProject(int tabIndex, int subTabIndex, Configuration configuration) {
@@ -224,25 +241,40 @@ public class Util {
     	return false;
     }
     
-    private static List<Release> retrieveRelease(RallyRestApi restApi) throws Exception{
+    private static List<Release> retrieveRelease(RallyRestApi restApi, Configuration configuration) throws Exception{
     	List<Release> releases = new ArrayList<Release>();
     	QueryRequest query = new QueryRequest("Release");
     	QueryFilter queryFilter = new QueryFilter("State", "=", "Active").or(new QueryFilter("State", "=", "Planning"));
     	query.setQueryFilter(queryFilter);
-    	QueryResponse projectDefects = restApi.query(query);
-    	
-    	JsonArray releasesArray = projectDefects.getResults();
-    	for(int i=0; i<releasesArray.size(); i++) {
-    		Release release = new Release();
-            JsonElement elements =  releasesArray.get(i);
-            JsonObject object = elements.getAsJsonObject();
-            if(!isReleaseAlreadyAdded(releases, object.get("_refObjectName").getAsString())) {
-	            release.setReleaseEndDate(object.get("ReleaseDate").getAsString());
-	            release.setReleaseName(object.get("_refObjectName").getAsString());
-	            release.setReleaseStartDate(object.get("ReleaseStartDate").getAsString());
-	            releases.add(release);
-            }
-        }
+    	QueryResponse projectDefects = null;
+    	boolean dataNotReceived = true;
+    	while(dataNotReceived){
+	    	try {
+	    		projectDefects = restApi.query(query);
+	    		dataNotReceived = false;
+	    		JsonArray releasesArray = projectDefects.getResults();
+	        	for(int i=0; i<releasesArray.size(); i++) {
+	        		Release release = new Release();
+	                JsonElement elements =  releasesArray.get(i);
+	                JsonObject object = elements.getAsJsonObject();
+	                if(!isReleaseAlreadyAdded(releases, object.get("_refObjectName").getAsString())) {
+	    	            release.setReleaseEndDate(object.get("ReleaseDate").getAsString());
+	    	            release.setReleaseName(object.get("_refObjectName").getAsString());
+	    	            release.setReleaseStartDate(object.get("ReleaseStartDate").getAsString());
+	    	            releases.add(release);
+	                }
+	            }
+	    	} catch(HttpHostConnectException connectException) {
+	    		if(restApi != null) {
+	    			restApi.close();
+	    			try {
+						restApi = loginRally(configuration);
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
+	    		}
+	    	}
+    	}
     	return releases;
     }
     
@@ -904,64 +936,72 @@ public class Util {
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(2000);
     	defectRequest.setOrder("FormattedID desc");
-    	projectDefects = restApi.query(defectRequest);
-    	defectsArray = projectDefects.getResults();
-    	for(int i=0; i<defectsArray.size(); i++) {
-            JsonElement elements =  defectsArray.get(i);
-            JsonObject object = elements.getAsJsonObject();
-            if(!object.get("Release").isJsonNull()) {
-	            Defect defect =  new Defect();
-	            defect.setDefectId(object.get("FormattedID").getAsString());
-	            
-	            if(null != object.get("_ref")) {
-	            	String defectRef = object.get("_ref").getAsString();
-	            	if(null != defectRef) {
-	            		String url = configuration.getRallyURL()+"#/"+projectId+"ud/detail/defect"+defectRef.substring(defectRef.lastIndexOf("/"));
-	            		defect.setDefectUrl(url);
-	            	}
-	            }
-	            
-	            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
-	            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
-	            Date date = (Date) formatter1.parse(strFormat1);
-	            DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
-	            defect.setLastUpdateDate(formatter2.format(date));
-	            
-	            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
-	            
-	            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty() && !object.get("Priority").getAsString().startsWith("No")) {
-	                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
-	            } else {
-	                defect.setPriority("TBD");
-	            }
-	            defect.setState(object.get("State").getAsString());
-	            JsonObject project = object.get("Project").getAsJsonObject();
-	            defect.setProject(project.get("_refObjectName").getAsString());
-	            defect.setDefectDesc(object.get("Name").getAsString());
-	            String platform = "iOS";
-	            if(null != object.get("c_Platform")) {
-	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
-	            		platform  = "iOS";
-	            	} else if(object.get("c_Platform").getAsString().startsWith("iOS")) {
-	            		platform = "iOS";
-	            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
-	            		platform = "Windows";
-	            	}
-	            }
-	            defect.setPlatform(platform);
-	            
-	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
-	            	defects.add(defect);	
-	            }
-            }
-        }
-    	List<Defect> olderDefects = allDefects.get(typeCategory);
-    	if(null == olderDefects) {
-    		olderDefects = new ArrayList<Defect>();
+    	boolean dataNotReceived = true;
+    	while(dataNotReceived){
+	    	try {
+		    	projectDefects = restApi.query(defectRequest);
+		    	dataNotReceived = false;
+		    	defectsArray = projectDefects.getResults();
+		    	for(int i=0; i<defectsArray.size(); i++) {
+		            JsonElement elements =  defectsArray.get(i);
+		            JsonObject object = elements.getAsJsonObject();
+		            if(!object.get("Release").isJsonNull()) {
+			            Defect defect =  new Defect();
+			            defect.setDefectId(object.get("FormattedID").getAsString());
+			            
+			            if(null != object.get("_ref")) {
+			            	String defectRef = object.get("_ref").getAsString();
+			            	if(null != defectRef) {
+			            		String url = configuration.getRallyURL()+"#/"+projectId+"ud/detail/defect"+defectRef.substring(defectRef.lastIndexOf("/"));
+			            		defect.setDefectUrl(url);
+			            	}
+			            }
+			            
+			            String strFormat1 = object.get("LastUpdateDate").getAsString().substring(0, 10);
+			            DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
+			            Date date = (Date) formatter1.parse(strFormat1);
+			            DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
+			            defect.setLastUpdateDate(formatter2.format(date));
+			            
+			            defect.setLastUpdateDateOriginal(object.get("LastUpdateDate").getAsString().substring(0, 10));
+			            
+			            if(null != object.get("Priority") && !object.get("Priority").toString().isEmpty() && !object.get("Priority").getAsString().startsWith("No")) {
+			                defect.setPriority("P"+object.get("Priority").getAsString().charAt(0));
+			            } else {
+			                defect.setPriority("TBD");
+			            }
+			            defect.setState(object.get("State").getAsString());
+			            JsonObject project = object.get("Project").getAsJsonObject();
+			            defect.setProject(project.get("_refObjectName").getAsString());
+			            defect.setDefectDesc(object.get("Name").getAsString());
+			            String platform = "iOS";
+			            if(null != object.get("c_Platform")) {
+			            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
+			            		platform  = "iOS";
+			            	} else if(object.get("c_Platform").getAsString().startsWith("iOS")) {
+			            		platform = "iOS";
+			            	} else if(object.get("c_Platform").getAsString().startsWith("Win")) {
+			            		platform = "Windows";
+			            	}
+			            }
+			            defect.setPlatform(platform);
+			            
+			            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
+			            	defects.add(defect);	
+			            }
+		            }
+		        }
+		    	List<Defect> olderDefects = allDefects.get(typeCategory);
+		    	if(null == olderDefects) {
+		    		olderDefects = new ArrayList<Defect>();
+		    	}
+		    	olderDefects.addAll(defects);
+		    	Collections.sort(olderDefects);
+		    	allDefects.put(typeCategory, olderDefects);
+	    	} catch(HttpHostConnectException connectException){
+	    		
+	    	}
     	}
-    	olderDefects.addAll(defects);
-    	Collections.sort(olderDefects);
-    	allDefects.put(typeCategory, olderDefects);
 	}
     
 	public static void retrieveTestCases(DashboardForm dashboardForm, Configuration configuration, String cutoffDate)
@@ -976,92 +1016,107 @@ public class Util {
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(10000);
     	defectRequest.setOrder("FormattedID desc");
-    	QueryResponse projectDefects = restApi.query(defectRequest);
-    	JsonArray defectsArray = projectDefects.getResults();
-    
-    	for(int i=0; i<defectsArray.size(); i++) {
-    		TestCase testCase = new TestCase();
-    		JsonElement elements =  defectsArray.get(i);
-            JsonObject object = elements.getAsJsonObject();
-            testCase.setTestCaseId(object.get("FormattedID").getAsString());
-            testCase.setLastVerdict(object.get("LastVerdict")==null || object.get("LastVerdict").isJsonNull() ?"":object.get("LastVerdict").getAsString());
-            testCase.setName(object.get("Name")==null || object.get("Name").isJsonNull() ?"":object.get("Name").getAsString());
-            testCase.setDescription(object.get("Description")==null || object.get("Description").isJsonNull() ?"":object.get("Description").getAsString());
-            testCase.setLastRun(object.get("LastRun")==null || object.get("LastRun").isJsonNull() ?"":object.get("LastRun").getAsString());
-            testCase.setLastBuild(object.get("LastBuild")==null || object.get("LastBuild").isJsonNull() ?"":object.get("LastBuild").getAsString());
-            testCase.setPriority(object.get("Priority")==null || object.get("Priority").isJsonNull() ?"":object.get("Priority").getAsString());
-            testCases.add(testCase);
+    	boolean dataNotReceived = true;
+    	while(dataNotReceived){
+	    	try {
+		    	QueryResponse projectDefects = restApi.query(defectRequest);
+		    	JsonArray defectsArray = projectDefects.getResults();
+		    	dataNotReceived = false;
+		    
+		    	for(int i=0; i<defectsArray.size(); i++) {
+		    		TestCase testCase = new TestCase();
+		    		JsonElement elements =  defectsArray.get(i);
+		            JsonObject object = elements.getAsJsonObject();
+		            testCase.setTestCaseId(object.get("FormattedID").getAsString());
+		            testCase.setLastVerdict(object.get("LastVerdict")==null || object.get("LastVerdict").isJsonNull() ?"":object.get("LastVerdict").getAsString());
+		            testCase.setName(object.get("Name")==null || object.get("Name").isJsonNull() ?"":object.get("Name").getAsString());
+		            testCase.setDescription(object.get("Description")==null || object.get("Description").isJsonNull() ?"":object.get("Description").getAsString());
+		            testCase.setLastRun(object.get("LastRun")==null || object.get("LastRun").isJsonNull() ?"":object.get("LastRun").getAsString());
+		            testCase.setLastBuild(object.get("LastBuild")==null || object.get("LastBuild").isJsonNull() ?"":object.get("LastBuild").getAsString());
+		            testCase.setPriority(object.get("Priority")==null || object.get("Priority").isJsonNull() ?"":object.get("Priority").getAsString());
+		            testCases.add(testCase);
+		    	}
+		    	dashboardForm.setTestCases(testCases);
+		    	restApi.close();
+		    	
+		    	List<Priority> priorities = new ArrayList<Priority>();
+		    	Priority priority0 = new Priority();
+		    	priority0.setPriorityName("Pass");
+				Priority priority1 = new Priority();
+				priority1.setPriorityName("Blocked");
+				Priority priority2 = new Priority();
+				priority2.setPriorityName("Error");
+				Priority priority3 = new Priority();
+				priority3.setPriorityName("Fail");
+				Priority priority4 = new Priority();
+				priority4.setPriorityName("Inconclusive");
+				Priority priority5 = new Priority();
+				priority5.setPriorityName("NotAttempted");
+				if(null != testCases) {
+					for(TestCase testCase:testCases) {
+					    if(testCase.getLastVerdict().equalsIgnoreCase("Pass")) {
+					    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
+					    }
+					    if(testCase.getLastVerdict().equalsIgnoreCase("Blocked")) {
+					    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
+					    }
+					    if(testCase.getLastVerdict().equalsIgnoreCase("Error")) {
+					    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
+					    }
+					    if(testCase.getLastVerdict().equalsIgnoreCase("Fail")) {
+					    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
+					    }
+					    if(testCase.getLastVerdict().equalsIgnoreCase("Inconclusive")) {
+					    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
+					    }
+					    if(testCase.getLastVerdict().equalsIgnoreCase("")) {
+					    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
+					    }
+					}
+				}
+				List<Integer> arrayList = new ArrayList<Integer>();
+				arrayList.add(priority0.getPriorityCount());
+				arrayList.add(priority1.getPriorityCount());
+				arrayList.add(priority2.getPriorityCount());
+				arrayList.add(priority3.getPriorityCount());
+				arrayList.add(priority4.getPriorityCount());
+				arrayList.add(priority5.getPriorityCount());
+				Integer maximumCount = Collections.max(arrayList);
+				if(maximumCount <= 0) {
+					priority0.setPxSize("0");
+				    priority1.setPxSize("0");
+				    priority2.setPxSize("0");
+				    priority3.setPxSize("0");
+				    priority4.setPxSize("0");
+				    priority5.setPxSize("0");
+				} else {
+					priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
+				    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
+				    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
+				    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
+				    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
+				    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
+				}
+				priorities.add(priority0);
+				priorities.add(priority1);
+				priorities.add(priority2);
+				priorities.add(priority3);
+				priorities.add(priority4);
+				priorities.add(priority5);
+				
+				dashboardForm.setTestCasesCount(testCases.size());
+				dashboardForm.setTestCasesPriorities(priorities);
+	    	} catch(HttpHostConnectException connectException) {
+	    		if(restApi != null) {
+	    			restApi.close();
+	    			try {
+						restApi = loginRally(configuration);
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
+	    		}
+	    	}
     	}
-    	dashboardForm.setTestCases(testCases);
-    	restApi.close();
-    	
-    	List<Priority> priorities = new ArrayList<Priority>();
-    	Priority priority0 = new Priority();
-    	priority0.setPriorityName("Pass");
-		Priority priority1 = new Priority();
-		priority1.setPriorityName("Blocked");
-		Priority priority2 = new Priority();
-		priority2.setPriorityName("Error");
-		Priority priority3 = new Priority();
-		priority3.setPriorityName("Fail");
-		Priority priority4 = new Priority();
-		priority4.setPriorityName("Inconclusive");
-		Priority priority5 = new Priority();
-		priority5.setPriorityName("NotAttempted");
-		if(null != testCases) {
-			for(TestCase testCase:testCases) {
-			    if(testCase.getLastVerdict().equalsIgnoreCase("Pass")) {
-			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
-			    }
-			    if(testCase.getLastVerdict().equalsIgnoreCase("Blocked")) {
-			    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
-			    }
-			    if(testCase.getLastVerdict().equalsIgnoreCase("Error")) {
-			    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
-			    }
-			    if(testCase.getLastVerdict().equalsIgnoreCase("Fail")) {
-			    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
-			    }
-			    if(testCase.getLastVerdict().equalsIgnoreCase("Inconclusive")) {
-			    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
-			    }
-			    if(testCase.getLastVerdict().equalsIgnoreCase("")) {
-			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
-			    }
-			}
-		}
-		List<Integer> arrayList = new ArrayList<Integer>();
-		arrayList.add(priority0.getPriorityCount());
-		arrayList.add(priority1.getPriorityCount());
-		arrayList.add(priority2.getPriorityCount());
-		arrayList.add(priority3.getPriorityCount());
-		arrayList.add(priority4.getPriorityCount());
-		arrayList.add(priority5.getPriorityCount());
-		Integer maximumCount = Collections.max(arrayList);
-		if(maximumCount <= 0) {
-			priority0.setPxSize("0");
-		    priority1.setPxSize("0");
-		    priority2.setPxSize("0");
-		    priority3.setPxSize("0");
-		    priority4.setPxSize("0");
-		    priority5.setPxSize("0");
-		} else {
-			priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
-		    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
-		    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
-		    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
-		    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
-		    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
-		}
-		priorities.add(priority0);
-		priorities.add(priority1);
-		priorities.add(priority2);
-		priorities.add(priority3);
-		priorities.add(priority4);
-		priorities.add(priority5);
-		
-		dashboardForm.setTestCasesCount(testCases.size());
-		dashboardForm.setTestCasesPriorities(priorities);
 	}
 	
 	private static List<Tab> getSubTabs(String tabUniqueId) throws IOException {
@@ -1149,110 +1204,124 @@ public class Util {
         	q++;
         }
         testSetRequest.setQueryFilter(queryFilter);
-        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
-        
-        List<Priority> priorities = new ArrayList<Priority>();
-    	Priority priority0 = new Priority();
-    	priority0.setPriorityName("Pass");
-		Priority priority1 = new Priority();
-		priority1.setPriorityName("Blocked");
-		Priority priority2 = new Priority();
-		priority2.setPriorityName("Error");
-		Priority priority3 = new Priority();
-		priority3.setPriorityName("Fail");
-		Priority priority4 = new Priority();
-		priority4.setPriorityName("Inconclusive");
-		Priority priority5 = new Priority();
-		priority5.setPriorityName("NotAttempted");
-        
-		int testCasesCount = 0;
-		List<TestCase> testCases = new ArrayList<TestCase>();
-		for (int i=0; i<testSetQueryResponse.getResults().size();i++){
-            JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
-            int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
-            if(numberOfTestCases>0){
-            		DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
-            		Date cutoffDate = (Date) formatter1.parse(cutoffDateStr);
-            		
-                  	for (int j=0;j<numberOfTestCases;j++){
-                  		JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
-                  		TestCase testCase = new TestCase();
-                  		testCase.setTestCaseId(jsonObject.get("FormattedID").getAsString());
-                	  	Date lastVerdictDate = null;
-                	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
-                	  		lastVerdictDate = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
-                	  	}
-                	  	String lastVerdict = "";
-                	  	if(!jsonObject.get("LastVerdict").isJsonNull()) {
-                	  		lastVerdict = jsonObject.get("LastVerdict").getAsString();
-                	  	}
-                	  	if(null != lastVerdictDate && lastVerdictDate.compareTo(cutoffDate) >= 0) {
-	                	  	if(lastVerdict.equalsIgnoreCase("Pass")) {
-	        			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
-	        			    }
-	        			    if(lastVerdict.equalsIgnoreCase("Blocked")) {
-	        			    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
-	        			    }
-	        			    if(lastVerdict.equalsIgnoreCase("Error")) {
-	        			    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
-	        			    }
-	        			    if(lastVerdict.equalsIgnoreCase("Fail")) {
-	        			    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
-	        			    }
-	        			    if(lastVerdict.equalsIgnoreCase("Inconclusive")) {
-	        			    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
-	        			    }
-	        			    if(lastVerdict.equalsIgnoreCase("")) {
-	        			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
-	        			    }
-	        			    
-                	  	} else {
-                	  		priority5.setPriorityCount(priority5.getPriorityCount()+1);
-                	  	}
-                	  	testCasesCount++;
-                	  	testCase.setLastVerdict(jsonObject.get("LastVerdict")==null || jsonObject.get("LastVerdict").isJsonNull() ?"":jsonObject.get("LastVerdict").getAsString());
-        			    testCase.setName(jsonObject.get("Name")==null || jsonObject.get("Name").isJsonNull() ?"":jsonObject.get("Name").getAsString());
-        	            testCase.setDescription(jsonObject.get("Description")==null || jsonObject.get("Description").isJsonNull() ?"":jsonObject.get("Description").getAsString());
-        	            testCase.setLastRun(jsonObject.get("LastRun")==null || jsonObject.get("LastRun").isJsonNull() ?"":jsonObject.get("LastRun").getAsString());
-        	            testCase.setLastBuild(jsonObject.get("LastBuild")==null || jsonObject.get("LastBuild").isJsonNull() ?"":jsonObject.get("LastBuild").getAsString());
-        	            testCase.setPriority(jsonObject.get("Priority")==null || jsonObject.get("Priority").isJsonNull() ?"":jsonObject.get("Priority").getAsString());
-        	            testCases.add(testCase);
-                 }
-            }
-        }
-		dashboardForm.setTestCases(testCases);        
-		List<Integer> arrayList = new ArrayList<Integer>();
-		arrayList.add(priority0.getPriorityCount());
-		arrayList.add(priority1.getPriorityCount());
-		arrayList.add(priority2.getPriorityCount());
-		arrayList.add(priority3.getPriorityCount());
-		arrayList.add(priority4.getPriorityCount());
-		arrayList.add(priority5.getPriorityCount());
-		Integer maximumCount = Collections.max(arrayList);
-		if(maximumCount <= 0) {
-			priority0.setPxSize("0");
-		    priority1.setPxSize("0");
-		    priority2.setPxSize("0");
-		    priority3.setPxSize("0");
-		    priority4.setPxSize("0");
-		    priority5.setPxSize("0");
-		} else {
-			priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
-		    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
-		    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
-		    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
-		    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
-		    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
-		}
-		priorities.add(priority0);
-		priorities.add(priority1);
-		priorities.add(priority2);
-		priorities.add(priority3);
-		priorities.add(priority4);
-		priorities.add(priority5);
-		
-		dashboardForm.setTestCasesCount(testCasesCount);
-		dashboardForm.setTestCasesPriorities(priorities);
+        boolean dataNotReceived = true;
+    	while(dataNotReceived){
+	    	try {
+		        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+		        dataNotReceived = false;
+		        List<Priority> priorities = new ArrayList<Priority>();
+		    	Priority priority0 = new Priority();
+		    	priority0.setPriorityName("Pass");
+				Priority priority1 = new Priority();
+				priority1.setPriorityName("Blocked");
+				Priority priority2 = new Priority();
+				priority2.setPriorityName("Error");
+				Priority priority3 = new Priority();
+				priority3.setPriorityName("Fail");
+				Priority priority4 = new Priority();
+				priority4.setPriorityName("Inconclusive");
+				Priority priority5 = new Priority();
+				priority5.setPriorityName("NotAttempted");
+		        
+				int testCasesCount = 0;
+				List<TestCase> testCases = new ArrayList<TestCase>();
+				for (int i=0; i<testSetQueryResponse.getResults().size();i++){
+		            JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
+		            int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
+		            if(numberOfTestCases>0){
+		            		DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
+		            		Date cutoffDate = (Date) formatter1.parse(cutoffDateStr);
+		            		
+		                  	for (int j=0;j<numberOfTestCases;j++){
+		                  		JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
+		                  		TestCase testCase = new TestCase();
+		                  		testCase.setTestCaseId(jsonObject.get("FormattedID").getAsString());
+		                	  	Date lastVerdictDate = null;
+		                	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
+		                	  		lastVerdictDate = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
+		                	  	}
+		                	  	String lastVerdict = "";
+		                	  	if(!jsonObject.get("LastVerdict").isJsonNull()) {
+		                	  		lastVerdict = jsonObject.get("LastVerdict").getAsString();
+		                	  	}
+		                	  	if(null != lastVerdictDate && lastVerdictDate.compareTo(cutoffDate) >= 0) {
+			                	  	if(lastVerdict.equalsIgnoreCase("Pass")) {
+			        			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
+			        			    }
+			        			    if(lastVerdict.equalsIgnoreCase("Blocked")) {
+			        			    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
+			        			    }
+			        			    if(lastVerdict.equalsIgnoreCase("Error")) {
+			        			    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
+			        			    }
+			        			    if(lastVerdict.equalsIgnoreCase("Fail")) {
+			        			    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
+			        			    }
+			        			    if(lastVerdict.equalsIgnoreCase("Inconclusive")) {
+			        			    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
+			        			    }
+			        			    if(lastVerdict.equalsIgnoreCase("")) {
+			        			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
+			        			    }
+			        			    
+		                	  	} else {
+		                	  		priority5.setPriorityCount(priority5.getPriorityCount()+1);
+		                	  	}
+		                	  	testCasesCount++;
+		                	  	testCase.setLastVerdict(jsonObject.get("LastVerdict")==null || jsonObject.get("LastVerdict").isJsonNull() ?"":jsonObject.get("LastVerdict").getAsString());
+		        			    testCase.setName(jsonObject.get("Name")==null || jsonObject.get("Name").isJsonNull() ?"":jsonObject.get("Name").getAsString());
+		        	            testCase.setDescription(jsonObject.get("Description")==null || jsonObject.get("Description").isJsonNull() ?"":jsonObject.get("Description").getAsString());
+		        	            testCase.setLastRun(jsonObject.get("LastRun")==null || jsonObject.get("LastRun").isJsonNull() ?"":jsonObject.get("LastRun").getAsString());
+		        	            testCase.setLastBuild(jsonObject.get("LastBuild")==null || jsonObject.get("LastBuild").isJsonNull() ?"":jsonObject.get("LastBuild").getAsString());
+		        	            testCase.setPriority(jsonObject.get("Priority")==null || jsonObject.get("Priority").isJsonNull() ?"":jsonObject.get("Priority").getAsString());
+		        	            testCases.add(testCase);
+		                 }
+		            }
+		        }
+				dashboardForm.setTestCases(testCases);        
+				List<Integer> arrayList = new ArrayList<Integer>();
+				arrayList.add(priority0.getPriorityCount());
+				arrayList.add(priority1.getPriorityCount());
+				arrayList.add(priority2.getPriorityCount());
+				arrayList.add(priority3.getPriorityCount());
+				arrayList.add(priority4.getPriorityCount());
+				arrayList.add(priority5.getPriorityCount());
+				Integer maximumCount = Collections.max(arrayList);
+				if(maximumCount <= 0) {
+					priority0.setPxSize("0");
+				    priority1.setPxSize("0");
+				    priority2.setPxSize("0");
+				    priority3.setPxSize("0");
+				    priority4.setPxSize("0");
+				    priority5.setPxSize("0");
+				} else {
+					priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
+				    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
+				    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
+				    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
+				    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
+				    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
+				}
+				priorities.add(priority0);
+				priorities.add(priority1);
+				priorities.add(priority2);
+				priorities.add(priority3);
+				priorities.add(priority4);
+				priorities.add(priority5);
+				
+				dashboardForm.setTestCasesCount(testCasesCount);
+				dashboardForm.setTestCasesPriorities(priorities);
+	    	} catch(HttpHostConnectException connectException) {
+	    		if(restApi != null) {
+	    			restApi.close();
+	    			try {
+						restApi = loginRally(configuration);
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
+	    		}
+	    	}
+    	}
 	}
 
 	public static RegressionData getRegressionSetDetails(String tabUniqueId) throws IOException {
