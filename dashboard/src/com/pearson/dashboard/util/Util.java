@@ -203,12 +203,12 @@ public class Util {
 	    	} catch(HttpHostConnectException connectException) {
 	    		if(restApi != null) {
 	    			restApi.close();
-	    			try {
-						restApi = loginRally(configuration);
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
 	    		}
+	    		try {
+					restApi = loginRally(configuration);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 	    	}	
     	}
 	}
@@ -267,12 +267,12 @@ public class Util {
 	    	} catch(HttpHostConnectException connectException) {
 	    		if(restApi != null) {
 	    			restApi.close();
-	    			try {
-						restApi = loginRally(configuration);
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
 	    		}
+	    		try {
+					restApi = loginRally(configuration);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 	    	}
     	}
     	return releases;
@@ -999,7 +999,14 @@ public class Util {
 		    	Collections.sort(olderDefects);
 		    	allDefects.put(typeCategory, olderDefects);
 	    	} catch(HttpHostConnectException connectException){
-	    		
+	    		if(null != restApi) {
+	    			restApi.close();
+	    		}
+	    		try {
+					restApi = loginRally(configuration);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 	    	}
     	}
 	}
@@ -1109,12 +1116,12 @@ public class Util {
 	    	} catch(HttpHostConnectException connectException) {
 	    		if(restApi != null) {
 	    			restApi.close();
-	    			try {
-						restApi = loginRally(configuration);
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
 	    		}
+	    		try {
+					restApi = loginRally(configuration);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 	    	}
     	}
 	}
@@ -1314,12 +1321,12 @@ public class Util {
 	    	} catch(HttpHostConnectException connectException) {
 	    		if(restApi != null) {
 	    			restApi.close();
-	    			try {
-						restApi = loginRally(configuration);
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
 	    		}
+	    		try {
+					restApi = loginRally(configuration);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 	    	}
     	}
 	}
