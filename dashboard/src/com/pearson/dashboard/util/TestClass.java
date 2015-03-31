@@ -46,9 +46,9 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	//retrieveTestSets(restApi);
+    	retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
-    	retrieveDefects(restApi);
+    	//retrieveDefects(restApi);
     	restApi.close();
     	//postJenkinsJob();
     }

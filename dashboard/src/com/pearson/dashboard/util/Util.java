@@ -1355,10 +1355,12 @@ public class Util {
 					regressionData.setIosTestSetsIds(iostestSets);
 					
 					String winsets[] = param[3].split("~");
-					sets = winsets[1].split(",");
 					List<String> wintestSets = new ArrayList<String>();
-					for(String set:sets) {
-						wintestSets.add(set);
+					if(winsets.length > 1) {
+						sets = winsets[1].split(",");
+						for(String set:sets) {
+							wintestSets.add(set);
+						}
 					}
 					regressionData.setWinTestSetsIds(wintestSets);
 					
