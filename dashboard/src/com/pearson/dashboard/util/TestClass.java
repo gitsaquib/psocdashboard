@@ -37,20 +37,67 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pearson.dashboard.vo.Release;
 import com.rallydev.rest.RallyRestApi;
+import com.rallydev.rest.request.CreateRequest;
+import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
+import com.rallydev.rest.response.CreateResponse;
+import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
 import com.rallydev.rest.util.Fetch;
 import com.rallydev.rest.util.QueryFilter;
+import com.rallydev.rest.util.Ref;
 
 public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	retrieveTestSets(restApi);
+    	updateTestCase(restApi);
+    	//retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	restApi.close();
     	//postJenkinsJob();
+    }
+    
+    private static void updateTestCase(RallyRestApi restApi) throws IOException {
+    	
+    	QueryRequest userRequest = new QueryRequest("User");
+        userRequest.setFetch(new Fetch("UserName", "Subscription", "DisplayName", "SubscriptionAdmin"));
+        userRequest.setQueryFilter(new QueryFilter("UserName", "=", "mohammed.saquib@pearson.com"));
+        QueryResponse userQueryResponse = restApi.query(userRequest);
+        JsonArray userQueryResults = userQueryResponse.getResults();
+        JsonElement userQueryElement = userQueryResults.get(0);
+        JsonObject userQueryObject = userQueryElement.getAsJsonObject();
+        String userRef = userQueryObject.get("_ref").getAsString();  
+        
+    	QueryRequest testCaseRequest = new QueryRequest("TestCase");
+        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
+        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TC25475"));
+        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
+        String testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+        
+        //String wsapiVersion = "1.43";
+        //restApi.setWsapiVersion(wsapiVersion);
+        QueryRequest testSetRequest = new QueryRequest("TestSet");
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS477"));
+        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        String testSetRef = testSetQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+
+        JsonObject newTestCaseResult = new JsonObject();
+        newTestCaseResult.addProperty("Verdict", "Fail");
+        newTestCaseResult.addProperty("Date", "2015-04-01T00:00:00.000Z");
+        newTestCaseResult.addProperty("Build", "cadevelop-1.6.0.130-cadevelop");
+        newTestCaseResult.addProperty("TestCase", testCaseRef);
+        newTestCaseResult.addProperty("Tester", userRef);
+        newTestCaseResult.addProperty("TestSet", testSetRef);
+        
+        CreateRequest createRequest = new CreateRequest("testcaseresult", newTestCaseResult);
+        CreateResponse createResponse = restApi.create(createRequest);  
+        if (createResponse.wasSuccessful()) {
+            System.out.println(String.format("Created %s", createResponse.getObject().get("_ref").getAsString()));          
+        } else {
+            System.out.println("Error occurred creating Test Case Result: ");
+        }
     }
     
     private static void retrieveTestSets(RallyRestApi restApi)
