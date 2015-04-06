@@ -15,7 +15,7 @@
     <action-mappings>
    
         <action path="/login" type="com.pearson.dashboard.action.LoginAction" scope="session" name="LoginForm">
-			<forward name="loginsuccess" path="/dashboard.do?subTab=0&amp;tab=0"/>
+			<forward name="loginsuccess" path="/dashboard.do?subTab=0&amp;tab=0&amp;os=iOS"/>
 			<forward name="login" path="/login.jsp"/>
         </action>
    

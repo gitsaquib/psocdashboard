@@ -161,7 +161,7 @@ tabberObj.prototype.navClick = function(event) {
     rVal = self.onClick(onClickArgs);
     if (rVal === false) { return false; }
   }
-  document.forms["dashboardForm"].action = "/dashboard/dashboard.do?subTab="+tabberIndex+"&tab="+tabberIndex;
+  document.forms["dashboardForm"].action = "/dashboard/dashboard.do?subTab="+tabberIndex+"&tab="+tabberIndex+"&os=iOS";
   document.forms["dashboardForm"].submit();
   self.tabShow(tabberIndex);
   document.getElementById("tab"+tabberIndex).style.display="none";
