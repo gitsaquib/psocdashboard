@@ -51,12 +51,44 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	updateTestCase(restApi);
+    	getUserStory(restApi);
+    	//updateTestCase(restApi);
     	//retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	restApi.close();
     	//postJenkinsJob();
+    }
+    
+    private static void getUserStory(RallyRestApi restApi) throws IOException {
+    	QueryRequest storyRequest = new QueryRequest("HierarchicalRequirement");
+        //storyRequest.setWorkspace(workspaceRef);
+        //restApi.setApplicationName(applicationName);  
+        storyRequest.setFetch(new Fetch(new String[] {"Name", "FormattedID", "Tags", "Children"}));
+        storyRequest.setLimit(1000);
+        storyRequest.setScopedDown(false);
+        storyRequest.setScopedUp(false);
+
+        storyRequest.setQueryFilter((new QueryFilter("FormattedID", "=", "US6407")).and(new QueryFilter("DirectChildrenCount", ">", "0")));
+
+        QueryResponse storyQueryResponse = restApi.query(storyRequest);
+        System.out.println("Successful: " + storyQueryResponse.wasSuccessful());
+        System.out.println("Size: " + storyQueryResponse.getTotalResultCount());
+
+        for (int i=0; i<storyQueryResponse.getTotalResultCount();i++){
+            JsonObject storyJsonObject = storyQueryResponse.getResults().get(i).getAsJsonObject();
+            System.out.println("Name: " + storyJsonObject.get("Name") + " FormattedID: " + storyJsonObject.get("FormattedID"));
+            QueryRequest childrenRequest = new QueryRequest(storyJsonObject.getAsJsonObject("Children"));
+            childrenRequest.setFetch(new Fetch("Name","FormattedID"));
+            int numberOfChildren = storyJsonObject.get("DirectChildrenCount").getAsInt();
+            System.out.println(numberOfChildren);
+            //load the collection
+            JsonArray children = restApi.query(childrenRequest).getResults();
+            for (int j=0;j<numberOfChildren;j++){
+                System.out.println("Name: " + children.get(j).getAsJsonObject().get("Name") + children.get(j).getAsJsonObject().get("FormattedID").getAsString());
+                System.out.println("Name: " + children.get(0).getAsJsonObject().get("Name") + children.get(0).getAsJsonObject().get("FormattedID").getAsString());
+            }
+        }
     }
     
     private static void updateTestCase(RallyRestApi restApi) throws IOException {
