@@ -12,6 +12,13 @@
         <form-bean name="LoginForm" type="com.pearson.dashboard.form.LoginForm"/>
     </form-beans>
     
+    <global-exceptions>
+	    <exception
+	      key="error.global.mesage"
+	      type="java.lang.Exception"
+	      path="/jsp/common/error.jsp" />
+	</global-exceptions>
+    
     <action-mappings>
    
         <action path="/login" type="com.pearson.dashboard.action.LoginAction" scope="session" name="LoginForm">
