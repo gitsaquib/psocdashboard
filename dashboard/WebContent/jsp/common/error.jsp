@@ -8,7 +8,7 @@
 		<title>::: Dashboard :::</title>
 		<script type="text/javascript">
 			function reloadPreviousPage() {
-				alert("Page hostname is " + window.location.href);
+				window.location.assign(window.location.href);
 			}
 		</script>
 	</head>
@@ -24,7 +24,7 @@
 	                    <tr>
 	                        <td>
 	                        	<font size="2" face="Tahoma" color="red">
-	                        		We are unable to process your request due to System internal issues. Please <a href="javascript: reloadPreviousPage();" >click here.</a>
+	                        		We are unable to process your request due to System internal error. Please <a href="javascript: reloadPreviousPage();" >click here.</a>
 	                        	</font>
 	                        </td>
 	                    </tr>
