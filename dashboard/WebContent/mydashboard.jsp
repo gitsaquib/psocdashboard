@@ -84,15 +84,15 @@
 													<%@include file="jsp/defects/fixed_defects.jsp" %>
 												</td>
 												<td>
-													<%@include file="jsp/defects/closed_defects.jsp" %>
+													<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
 												</td>
 											</tr>
 											<tr>
 												<td>
-													<%@include file="jsp/defects/open_yesterday_defects.jsp" %>
+													<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
 												</td>
 												<td>
-													<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+													&nbsp;
 												</td>
 												<td>
 													&nbsp;
@@ -116,10 +116,10 @@
 													<%@include file="jsp/defects/fixed_defects.jsp" %>
 												</td>
 												<td>
-													<%@include file="jsp/defects/closed_defects.jsp" %>
+													<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
 												</td>
 												<td>
-													<%@include file="jsp/defects/closed_yesterday_defects.jsp" %>
+													&nbsp;
 												</td>
 											</tr>
 										</c:otherwise>

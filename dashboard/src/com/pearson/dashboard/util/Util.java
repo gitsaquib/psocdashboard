@@ -65,7 +65,7 @@ public class Util {
     	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Open", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
     	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Submitted", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
     	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Fixed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());    	
-    	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
+    	//retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "Closed", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), false, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
     	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "ClosedY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
     	retrieveDefects(allDefects, restApi, dashboard.getProjectId(), "OpenY", dashboard.getSelectedRelease(), dashboard.getCutoffDate(), true, configuration, dashboard.getOperatingSystem(), dashboard.getTag());
     	restApi.close();
@@ -588,6 +588,9 @@ public class Util {
 		priority3.setPriorityName("P3");
 		priority4 = new Priority();
 		priority4.setPriorityName("P4");
+		if(null == closedDefects){
+			closedDefects = new ArrayList<Defect>();
+		}
 		for(Defect defect:closedDefects) {
 		    if(defect.getPriority().equalsIgnoreCase("TBD")) {
 		        tbd1.setPriorityCount(tbd1.getPriorityCount()+1);
@@ -634,6 +637,7 @@ public class Util {
 		
 		iOSCount = 0;
 		winCount = 0;
+		
 		for(Defect defect:closedDefects) {
 			if(defect.getPlatform().equalsIgnoreCase("iOS")) {
 				iOSCount++;
@@ -872,14 +876,14 @@ public class Util {
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	//retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	
 	    	//Retrieve A team data
 	    	projectId = getTabAttribute(configuration, "project", 4, 17);
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());  	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
+	    	//retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
 	    	
     	} else {
 	    	//Retrieve 2-12 old data
@@ -888,7 +892,7 @@ public class Util {
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
+	    	//retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
 	    	
 	    	//Retrieve K1 old data
 	    	projectId = getTabAttribute(configuration, "project", 1, 1);
@@ -896,7 +900,7 @@ public class Util {
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());    	
-	    	retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
+	    	//retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, "<", configuration, dashboard.getOperatingSystem());
     	}	
     	restApi.close();
     	return allDefects;
