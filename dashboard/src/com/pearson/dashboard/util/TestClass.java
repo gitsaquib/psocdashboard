@@ -40,9 +40,11 @@ import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.CreateRequest;
 import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
+import com.rallydev.rest.request.UpdateRequest;
 import com.rallydev.rest.response.CreateResponse;
 import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
+import com.rallydev.rest.response.UpdateResponse;
 import com.rallydev.rest.util.Fetch;
 import com.rallydev.rest.util.QueryFilter;
 import com.rallydev.rest.util.Ref;
@@ -51,13 +53,58 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	getUserStory(restApi);
+    	updateTestSet(restApi);
     	//updateTestCase(restApi);
     	//retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	restApi.close();
     	//postJenkinsJob();
+    }
+    
+    private static void updateTestSet(RallyRestApi restApi) throws IOException {
+    	QueryRequest testCaseRequest = new QueryRequest("TestCase");
+        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
+        String testcasesids = "TC15859,TC15874,TC15880,TC15881,TC15882,TC15886,TC15887,TC15888,TC15909,TC15967,TC15969,TC15970,TC15971,TC15972,TC15974,TC15980,TC16087,TC16091,TC16092,TC16108,TC16109,TC16114,TC17664,TC17665,TC17669,TC17670,TC17675,TC17676,TC17679,TC17696,TC18572,TC19372,TC19373,TC19374,TC20039,TC20098,TC15877,TC15921,TC17673,TC19058,TC19384,TC26212 ,TC26213,TC26215,TC16019,TC22307,TC23154,TC23923,TC24163,TC24164,TC24165,TC24166,TC24356,TC25097,TC25112,TC25115,TC25116,TC25117,TC25118,TC25119,TC25121,TC25123,TC25125,TC25129,TC25135,TC25140,TC25168,TC25472,TC25818,TC25821,TC26310,TC26311,TC27034,TC27139,TC27142,TC27145,TC27213,TC27214,TC28346,TC14961,TC29823,TC27473,TC27450,TC28364,TC27470,TC27224,TC30109,TC27219,TC30108,TC20269,TC20270,TC23163,TC23169,TC23164,TC23167,TC20376,TC22054,TC23165,TC22044,TC22138,TC23265,TC23271,TC43978,TC44280,TC44276,TC43971,TC44514,TC43948";
+        String[] tcids = testcasesids.split(",");
+        
+        QueryFilter query = new QueryFilter("FormattedID", "=", "TC15944");
+        
+        for(String tc:tcids) {
+        	query = query.or(new QueryFilter("FormattedID", "=", tc));
+        }
+        	
+        testCaseRequest.setQueryFilter(query);
+        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
+        JsonArray testCases = new JsonArray();
+        JsonArray testCasesArray = testCaseQueryResponse.getResults();
+        
+        for(int i=0; i<testCasesArray.size(); i++) {
+    		JsonElement elements =  testCasesArray.get(i);
+    		JsonObject object = elements.getAsJsonObject();
+    		testCases.add(object);
+    	}
+        
+        QueryRequest testSetRequest = new QueryRequest("TestSet");
+        String wsapiVersion = "1.43";
+        restApi.setWsapiVersion(wsapiVersion);
+        
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS569"));
+        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        JsonArray testSetArray = testSetQueryResponse.getResults();
+        
+        for(int i=0; i<testSetArray.size(); i++) {
+    		JsonElement elements =  testSetArray.get(i);
+    		JsonObject object = elements.getAsJsonObject();
+    		System.out.println(i+" "+object);
+            System.out.println(i+" "+object.get("_ref"));
+            JsonArray exTCs = object.get("TestCases").getAsJsonArray();
+            exTCs.addAll(testCases);
+            object.add("TestCases", exTCs);
+            UpdateRequest request = new UpdateRequest("/testset/33616967261", object);
+            UpdateResponse response = restApi.update(request);
+            System.out.println(response);
+    	}
     }
     
     private static void getUserStory(RallyRestApi restApi) throws IOException {
