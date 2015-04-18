@@ -38,24 +38,21 @@ import com.google.gson.JsonObject;
 import com.pearson.dashboard.vo.Release;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.CreateRequest;
-import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
 import com.rallydev.rest.request.UpdateRequest;
 import com.rallydev.rest.response.CreateResponse;
-import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
 import com.rallydev.rest.response.UpdateResponse;
 import com.rallydev.rest.util.Fetch;
 import com.rallydev.rest.util.QueryFilter;
-import com.rallydev.rest.util.Ref;
 
 public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	updateTestSet(restApi);
-    	//updateTestCase(restApi);
-    	//retrieveTestSets(restApi);
+    	//updateTestSet(restApi);
+    	//updateTestCase(restApi, "TC15971,TC17684,TC23272,TC18572,TC27213,TC43948,TC25472,TC22054,TC15859,TC20515");
+    	retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	restApi.close();
@@ -138,7 +135,7 @@ public class TestClass {
         }
     }
     
-    private static void updateTestCase(RallyRestApi restApi) throws IOException {
+    private static void updateTestCase(RallyRestApi restApi, String testcases) throws IOException {
     	
     	QueryRequest userRequest = new QueryRequest("User");
         userRequest.setFetch(new Fetch("UserName", "Subscription", "DisplayName", "SubscriptionAdmin"));
@@ -149,33 +146,41 @@ public class TestClass {
         JsonObject userQueryObject = userQueryElement.getAsJsonObject();
         String userRef = userQueryObject.get("_ref").getAsString();  
         
-    	QueryRequest testCaseRequest = new QueryRequest("TestCase");
-        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
-        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TC25475"));
-        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
-        String testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
-        
         //String wsapiVersion = "1.43";
         //restApi.setWsapiVersion(wsapiVersion);
         QueryRequest testSetRequest = new QueryRequest("TestSet");
-        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS477"));
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS569"));
         QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
         String testSetRef = testSetQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
-
-        JsonObject newTestCaseResult = new JsonObject();
-        newTestCaseResult.addProperty("Verdict", "Fail");
-        newTestCaseResult.addProperty("Date", "2015-04-01T00:00:00.000Z");
-        newTestCaseResult.addProperty("Build", "cadevelop-1.6.0.130-cadevelop");
-        newTestCaseResult.addProperty("TestCase", testCaseRef);
-        newTestCaseResult.addProperty("Tester", userRef);
-        newTestCaseResult.addProperty("TestSet", testSetRef);
         
-        CreateRequest createRequest = new CreateRequest("testcaseresult", newTestCaseResult);
-        CreateResponse createResponse = restApi.create(createRequest);  
-        if (createResponse.wasSuccessful()) {
-            System.out.println(String.format("Created %s", createResponse.getObject().get("_ref").getAsString()));          
-        } else {
-            System.out.println("Error occurred creating Test Case Result: ");
+        String testCaseRef = "";
+        String testCaseIds[] = testcases.split(",");
+        for(String testCase: testCaseIds) {
+            QueryRequest testCaseRequest = new QueryRequest("TestCase");
+	        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
+	        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", testCase));
+	        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
+	        testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+	        
+	        if(null != testCaseRef && !testCaseRef.equals("")){
+		        JsonObject newTestCaseResult = new JsonObject();
+		        newTestCaseResult.addProperty("Verdict", "Pass");
+		        newTestCaseResult.addProperty("Date", "2015-04-17T16:00:00.000Z");
+		        newTestCaseResult.addProperty("Build", "1.6.0.190-cadevelop");
+		        newTestCaseResult.addProperty("TestCase", testCaseRef);
+		        newTestCaseResult.addProperty("Tester", userRef);
+		        newTestCaseResult.addProperty("TestSet", testSetRef);
+		        
+		        CreateRequest createRequest = new CreateRequest("testcaseresult", newTestCaseResult);
+		        CreateResponse createResponse = restApi.create(createRequest);  
+		        if (createResponse.wasSuccessful()) {
+		            System.out.println(String.format("Created %s", createResponse.getObject().get("_ref").getAsString()));          
+		        } else {
+		            System.out.println("Error occurred creating Test Case Result: ");
+		        }
+	        } else {
+	        	System.out.println("Error occurred creating Test Case Result: ");
+	        }
         }
     }
     
@@ -183,13 +188,20 @@ public class TestClass {
 			throws IOException, URISyntaxException, ParseException {
 
         QueryRequest testSetRequest = new QueryRequest("TestSet");
-        testSetRequest.setProject("/project/23240411122");
+        testSetRequest.setProject("/project/21028059357");
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
-        
-        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "FormattedID", "LastVerdict", "LastBuild", "LastRun"}));
-        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS291").or(new QueryFilter("FormattedID", "=", "TS292")));
+
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
+        String testSetsString = "TS569";
+        String[] testSets = testSetsString.split(",");
+        QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
+        for(String testSet:testSets) {
+        	query = query.or(new QueryFilter("FormattedID", "=", testSet));
+        }
+        testSetRequest.setQueryFilter(query);
         QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        int ij=1;
         for (int i=0; i<testSetQueryResponse.getResults().size();i++){
             JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
             int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
@@ -201,10 +213,11 @@ public class TestClass {
                 	  		Date date = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
           	            	DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
           	            	String dateStr = formatter2.format(date);
-          	            	System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description")+"\t" + jsonObject.get("LastBuild"));
+          	            	System.out.println((ij)+"\t"+ jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description").getAsString().replaceAll("\\<[^>]*>","")+"\t" + jsonObject.get("LastBuild")+"\t" + jsonObject.get("Priority")+"\t" + jsonObject.get("Method"));
                 	  	} else {
-                	  		System.out.println(jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "" +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description")+"\t" + jsonObject.get("LastBuild"));
+                	  		System.out.println((ij)+"\t"+ jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "" +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description").getAsString().replaceAll("\\<[^>]*>","")+"\t" + jsonObject.get("LastBuild")+"\t" + jsonObject.get("Priority")+"\t" + jsonObject.get("Method"));
                 	  	}
+                	  	ij++;
                  }
             }
         }
