@@ -51,8 +51,8 @@ public class TestClass {
 
     	RallyRestApi restApi = loginRally(); 
     	//updateTestSet(restApi);
-    	//updateTestCase(restApi, "TC15971,TC17684,TC23272,TC18572,TC27213,TC43948,TC25472,TC22054,TC15859,TC20515");
-    	retrieveTestSets(restApi);
+    	updateTestCase(restApi, "TC24408,TC43971,TC44280,TC26310,TC31609,TC24407,TC27034,TC15944,TC15999,TC15955,TC23138,TC23265,TC23923,TC23163,TC23271,TC23164,TC22307,TC23167,TC15888,TC19059,TC18573,TC17673,TC15875,TC19362,TC20078,TC16193,TC20030,TC15876,TC19372,TC15883,TC15880,TC45485,TC15882,TC17672,TC16114,TC20077,TC17667,TC22044,TC17666,TC17676,TC17675,TC17669,TC30109,TC30108,TC30110,TC17684,TC17681,TC19398,TC34064,TC16047,TC19380,TC15865,TC16042,TC20151,TC16011,TC18632,TC20448,TC18627,TC16007,TC22423,TC20519,TC16214,TC22555,TC20431,TC20449,TC20378,TC16002,TC20388,TC23168,TC23257,TC16216,TC20387,TC16012,TC18625,TC23166,TC20508,TC20430,TC16003,TC20450,TC20390,TC22465,TC16018,TC22639,TC15964,TC20511,TC22242,TC23273,TC20517,TC16210,TC22627,TC16009,TC16001,TC20465,TC22625,TC22138,TC18622,TC18616,TC20518,TC22626,TC23274,TC22549,TC22524,TC16023,TC20514,TC23258,TC16010,TC20422,TC16017,TC19058,TC15860,TC34062,TC16028");
+    	//retrieveTestSets(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	restApi.close();
@@ -149,7 +149,7 @@ public class TestClass {
         //String wsapiVersion = "1.43";
         //restApi.setWsapiVersion(wsapiVersion);
         QueryRequest testSetRequest = new QueryRequest("TestSet");
-        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS569"));
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS615"));
         QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
         String testSetRef = testSetQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
         
@@ -165,8 +165,8 @@ public class TestClass {
 	        if(null != testCaseRef && !testCaseRef.equals("")){
 		        JsonObject newTestCaseResult = new JsonObject();
 		        newTestCaseResult.addProperty("Verdict", "Pass");
-		        newTestCaseResult.addProperty("Date", "2015-04-17T16:00:00.000Z");
-		        newTestCaseResult.addProperty("Build", "1.6.0.190-cadevelop");
+		        newTestCaseResult.addProperty("Date", "2015-04-28T18:40:00.000Z");
+		        newTestCaseResult.addProperty("Build", "1.6.0.408");
 		        newTestCaseResult.addProperty("TestCase", testCaseRef);
 		        newTestCaseResult.addProperty("Tester", userRef);
 		        newTestCaseResult.addProperty("TestSet", testSetRef);
@@ -188,12 +188,12 @@ public class TestClass {
 			throws IOException, URISyntaxException, ParseException {
 
         QueryRequest testSetRequest = new QueryRequest("TestSet");
-        testSetRequest.setProject("/project/21028059357");
+        testSetRequest.setProject("/project/28521436640");
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
 
         testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
-        String testSetsString = "TS569";
+        String testSetsString = "TS615";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
