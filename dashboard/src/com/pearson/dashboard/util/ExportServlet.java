@@ -36,7 +36,11 @@ public class ExportServlet extends HttpServlet {
 	    {
 	    	DashboardForm dashboardForm = (DashboardForm) request.getAttribute("dashboardForm");
 	    	response.setContentType("application/vnd.ms-excel");
-	    	response.setHeader("Content-Disposition","attachment; filename="+dashboardForm.getProjectName()+"-"+dashboardForm.getSelectedRelease()+".xls");
+	    	if(null != dashboardForm.getSelectedRelease()) {
+	    		response.setHeader("Content-Disposition","attachment; filename="+dashboardForm.getProjectName()+"-"+dashboardForm.getSelectedRelease()+".xls");
+	    	} else {
+	    		response.setHeader("Content-Disposition","attachment; filename="+dashboardForm.getProjectName()+".xls");
+	    	}
 	    	out = response.getOutputStream();
 	    	HSSFWorkbook wb = new HSSFWorkbook();
 	    	short columnIndex = 1;

@@ -140,7 +140,7 @@ public class Util {
 	                	isTag = false;
 	                }
 	                
-	                if(null != object.get("Tags") && !object.get("Tags").isJsonNull()) {
+	                if(null != tag && null != object.get("Tags") && !object.get("Tags").isJsonNull()) {
 	                	JsonObject jsonObject = object.get("Tags").getAsJsonObject();
 	                	int numberOfTestCases = jsonObject.get("_tagsNameArray").getAsJsonArray().size();
 	                    if(numberOfTestCases>0){
@@ -153,7 +153,7 @@ public class Util {
 	                    }
 	                }
 	                
-	                if(!object.get("Release").isJsonNull() && isTag) {
+	                if(isTag) {
 	    	            Defect defect =  new Defect();
 	    	            defect.setDefectId(object.get("FormattedID").getAsString());
 
@@ -196,6 +196,8 @@ public class Util {
 	    	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
 	    	            	defects.add(defect);	
 	    	            }
+	                } else {
+	                	System.out.println("aplha");
 	                }
 	            }
 	        	Collections.sort(defects);
