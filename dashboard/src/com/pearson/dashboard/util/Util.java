@@ -346,11 +346,15 @@ public class Util {
     public static void populateDefectData(DashboardForm dashboardForm, Configuration configuration) throws Exception {
 		Map<String, List<Defect>> allDefects = null;
 		
+		/*
 		if(dashboardForm.getTabName().startsWith("Older") || dashboardForm.getTabName().startsWith("Authoring")) {
 			allDefects = Util.getMultiProjectDataFromRally(dashboardForm, configuration);
 		} else {
 			allDefects = Util.getDataFromRally(dashboardForm, configuration);
 		}
+		*/
+		
+		allDefects = Util.getDataFromRally(dashboardForm, configuration);
 		
 		int winCount = 0;
 		int iOSCount = 0;
