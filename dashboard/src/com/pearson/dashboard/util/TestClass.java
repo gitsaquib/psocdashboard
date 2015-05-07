@@ -38,9 +38,11 @@ import com.google.gson.JsonObject;
 import com.pearson.dashboard.vo.Release;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.CreateRequest;
+import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
 import com.rallydev.rest.request.UpdateRequest;
 import com.rallydev.rest.response.CreateResponse;
+import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
 import com.rallydev.rest.response.UpdateResponse;
 import com.rallydev.rest.util.Fetch;
@@ -62,10 +64,10 @@ public class TestClass {
     private static void updateTestSet(RallyRestApi restApi) throws IOException {
     	QueryRequest testCaseRequest = new QueryRequest("TestCase");
         testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
-        String testcasesids = "TC15859,TC15874,TC15880,TC15881,TC15882,TC15886,TC15887,TC15888,TC15909,TC15967,TC15969,TC15970,TC15971,TC15972,TC15974,TC15980,TC16087,TC16091,TC16092,TC16108,TC16109,TC16114,TC17664,TC17665,TC17669,TC17670,TC17675,TC17676,TC17679,TC17696,TC18572,TC19372,TC19373,TC19374,TC20039,TC20098,TC15877,TC15921,TC17673,TC19058,TC19384,TC26212 ,TC26213,TC26215,TC16019,TC22307,TC23154,TC23923,TC24163,TC24164,TC24165,TC24166,TC24356,TC25097,TC25112,TC25115,TC25116,TC25117,TC25118,TC25119,TC25121,TC25123,TC25125,TC25129,TC25135,TC25140,TC25168,TC25472,TC25818,TC25821,TC26310,TC26311,TC27034,TC27139,TC27142,TC27145,TC27213,TC27214,TC28346,TC14961,TC29823,TC27473,TC27450,TC28364,TC27470,TC27224,TC30109,TC27219,TC30108,TC20269,TC20270,TC23163,TC23169,TC23164,TC23167,TC20376,TC22054,TC23165,TC22044,TC22138,TC23265,TC23271,TC43978,TC44280,TC44276,TC43971,TC44514,TC43948";
+        String testcasesids = "TC25478,TC26223,TC29984,TC24402,TC24403,TC24361,TC24304,TC24295,TC27061,TC24401,TC19548,TC19550,TC19924,TC19925,TC19926,TC24429,TC30104,TC19571,TC19554,TC30102,TC26288,TC19648,TC30009,TC24425,TC31834,TC44181,TC24175,TC22859,TC29862,TC19573,TC20419,TC20418,TC30048,TC30046,TC30007,TC29992,TC29989,TC20482,TC23890,TC31645,TC25165,TC43479,TC31593,TC30049,TC29985,TC27025,TC30052,TC24413,TC28365,TC26287,TC31591,TC27059,TC29979,TC31592,TC29961,TC43463,TC21662,TC28363,TC21671,TC27060,TC20721,TC23287,TC31833,TC19549,TC25167,TC23883,TC27011,TC31835,TC30028,TC20803,TC21667,TC20805,TC31812,TC30047,TC43808,TC43809,TC27155,TC31613,TC26284,TC23129,TC31611,TC22759,TC22303,TC19556,TC24343,TC24399,TC23199,TC23201,TC31751,TC23309,TC43481,TC23363,TC23365,TC23364,TC43462";
         String[] tcids = testcasesids.split(",");
         
-        QueryFilter query = new QueryFilter("FormattedID", "=", "TC15944");
+        QueryFilter query = new QueryFilter("FormattedID", "=", "TC43480");
         
         for(String tc:tcids) {
         	query = query.or(new QueryFilter("FormattedID", "=", tc));
@@ -86,7 +88,7 @@ public class TestClass {
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
         
-        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS569"));
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TS681"));
         QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
         JsonArray testSetArray = testSetQueryResponse.getResults();
         
@@ -98,7 +100,7 @@ public class TestClass {
             JsonArray exTCs = object.get("TestCases").getAsJsonArray();
             exTCs.addAll(testCases);
             object.add("TestCases", exTCs);
-            UpdateRequest request = new UpdateRequest("/testset/33616967261", object);
+            UpdateRequest request = new UpdateRequest("/testset/35178559772", object);
             UpdateResponse response = restApi.update(request);
             System.out.println(response);
     	}
@@ -192,7 +194,7 @@ public class TestClass {
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
 
-        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
+        testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "Results", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
         String testSetsString = "TS615";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
@@ -208,6 +210,8 @@ public class TestClass {
             if(numberOfTestCases>0){
                   for (int j=0;j<numberOfTestCases;j++){
                 	  	JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
+                	  	JsonArray results = jsonObject.get("Results").getAsJsonArray();
+                	  	testSetResultExists(restApi, testSetsString, results);
                 	  	DateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd"); 
                 	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
                 	  		Date date = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
@@ -223,6 +227,18 @@ public class TestClass {
         }
 
 	}
+    
+    private static boolean testSetResultExists(RallyRestApi restApi, String testSetsString, JsonArray results) throws IOException {
+    	int numberOfTestCaseResults = results.size();
+    	for (int j=0; j<numberOfTestCaseResults; j++){
+    		JsonObject testResult = results.get(j).getAsJsonObject();
+    		GetRequest testCaseResultRequest = new GetRequest("/testcaseresult/25348909269.js");
+    	    GetResponse testCaseResultResponse = restApi.get(testCaseResultRequest);
+    	    JsonObject testCaseResultObj = testCaseResultResponse.getObject();
+        	System.out.println(testCaseResultObj);
+    	}
+    	return false;
+    }
     
     private static void retrieveTestCases(RallyRestApi restApi)
 			throws IOException {
