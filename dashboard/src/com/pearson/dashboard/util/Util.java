@@ -1233,44 +1233,11 @@ public class Util {
 		                  		JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
 		                  		TestCase testCase = new TestCase();
 		                  		testCase.setTestCaseId(jsonObject.get("FormattedID").getAsString());
-		                	  	Date lastVerdictDate = null;
-		                	  	if(null != jsonObject.get("LastRun") && !jsonObject.get("LastRun").isJsonNull()) {
-		                	  		lastVerdictDate = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
-		                	  	}
-		                	  	String lastVerdict = "";
-		                	  	if(!jsonObject.get("LastVerdict").isJsonNull()) {
-		                	  		lastVerdict = jsonObject.get("LastVerdict").getAsString();
-		                	  	}
-		                	  	if(null != lastVerdictDate && lastVerdictDate.compareTo(cutoffDate) >= 0) {
-			                	  	if(lastVerdict.equalsIgnoreCase("Pass")) {
-			        			    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
-			        			    }
-			        			    if(lastVerdict.equalsIgnoreCase("Blocked")) {
-			        			    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
-			        			    }
-			        			    if(lastVerdict.equalsIgnoreCase("Error")) {
-			        			    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
-			        			    }
-			        			    if(lastVerdict.equalsIgnoreCase("Fail")) {
-			        			    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
-			        			    }
-			        			    if(lastVerdict.equalsIgnoreCase("Inconclusive")) {
-			        			    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
-			        			    }
-			        			    if(lastVerdict.equalsIgnoreCase("")) {
-			        			    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
-			        			    }
-			        			    
-		                	  	} else {
-		                	  		priority5.setPriorityCount(priority5.getPriorityCount()+1);
-		                	  	}
+		                	  	verifyTestCaseStatusInTestSet(restApi, testSets, testCase.getTestCaseId(), testCase, priority0, priority1,
+										priority2, priority3, priority4,
+										priority5, testCasesCount, formatter1,
+										cutoffDate, jsonObject);
 		                	  	testCasesCount++;
-		                	  	testCase.setLastVerdict(jsonObject.get("LastVerdict")==null || jsonObject.get("LastVerdict").isJsonNull() ?"":jsonObject.get("LastVerdict").getAsString());
-		        			    testCase.setName(jsonObject.get("Name")==null || jsonObject.get("Name").isJsonNull() ?"":jsonObject.get("Name").getAsString());
-		        	            testCase.setDescription(jsonObject.get("Description")==null || jsonObject.get("Description").isJsonNull() ?"":jsonObject.get("Description").getAsString());
-		        	            testCase.setLastRun(jsonObject.get("LastRun")==null || jsonObject.get("LastRun").isJsonNull() ?"":jsonObject.get("LastRun").getAsString());
-		        	            testCase.setLastBuild(jsonObject.get("LastBuild")==null || jsonObject.get("LastBuild").isJsonNull() ?"":jsonObject.get("LastBuild").getAsString());
-		        	            testCase.setPriority(jsonObject.get("Priority")==null || jsonObject.get("Priority").isJsonNull() ?"":jsonObject.get("Priority").getAsString());
 		        	            testCases.add(testCase);
 		                 }
 		            }
@@ -1320,6 +1287,71 @@ public class Util {
 	    	}
     	}
 	}
+
+	private static void verifyTestCaseStatusInTestSet(RallyRestApi restApi, List<String> testSets, String testCaseId, TestCase testCase, Priority priority0, Priority priority1,
+			Priority priority2, Priority priority3, Priority priority4,
+			Priority priority5, int testCasesCount, DateFormat formatter1,
+			Date cutoffDate, JsonObject jsonObject) throws IOException, ParseException {
+    	boolean isExecuted = false;
+    	for(String testSet:testSets) {
+    		if(isExecuted) {
+    			break;
+    		} else {
+    			QueryRequest testCaseResultsRequest = new QueryRequest("TestCaseResult");
+    	        testCaseResultsRequest.setFetch(new Fetch("Build","TestCase","TestSet", "Verdict", "Date", "FormattedID"));
+    	        testCaseResultsRequest.setQueryFilter(new QueryFilter("TestCase.FormattedID", "=", testCaseId).and(
+    	                new QueryFilter("TestSet.FormattedID", "=", testSet)));
+    	        QueryResponse testCaseResultResponse = restApi.query(testCaseResultsRequest);
+    	        int numberTestCaseResults = testCaseResultResponse.getTotalResultCount();
+    	        if(numberTestCaseResults >0) {
+    	        	
+    	        	Date lastVerdictDate = null;
+    	    		if(null != testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Date").getAsString()) {
+    	    			lastVerdictDate = (Date) formatter1.parse(testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Date").getAsString());
+    	    		}
+    	    		
+    	    		String lastVerdict = "";
+    	    		if(null != testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Verdict").getAsString()) {
+    	    			lastVerdict = testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Verdict").getAsString();
+    	    		}
+    	    		if(null != lastVerdictDate && lastVerdictDate.compareTo(cutoffDate) >= 0) {
+    	    		  	if(lastVerdict.equalsIgnoreCase("Pass")) {
+    	    		    	priority0.setPriorityCount(priority0.getPriorityCount()+1);
+    	    		    }
+    	    		    if(lastVerdict.equalsIgnoreCase("Blocked")) {
+    	    		    	priority1.setPriorityCount(priority1.getPriorityCount()+1);
+    	    		    }
+    	    		    if(lastVerdict.equalsIgnoreCase("Error")) {
+    	    		    	priority2.setPriorityCount(priority2.getPriorityCount()+1);
+    	    		    }
+    	    		    if(lastVerdict.equalsIgnoreCase("Fail")) {
+    	    		    	priority3.setPriorityCount(priority3.getPriorityCount()+1);
+    	    		    }
+    	    		    if(lastVerdict.equalsIgnoreCase("Inconclusive")) {
+    	    		    	priority4.setPriorityCount(priority4.getPriorityCount()+1);
+    	    		    }
+    	    		    if(lastVerdict.equalsIgnoreCase("")) {
+    	    		    	priority5.setPriorityCount(priority5.getPriorityCount()+1);
+    	    		    }
+    	    		} else {
+    	    			priority5.setPriorityCount(priority5.getPriorityCount()+1);
+    	    		}
+    	        	testCase.setLastVerdict(testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Verdict").getAsString());
+    	        	testCase.setLastRun(testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Date").getAsString());
+    	            testCase.setLastBuild(testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Build").getAsString());
+    	        }
+    	        else {
+    	        	testCase.setLastVerdict("");
+    	        	testCase.setLastRun("");
+    	            testCase.setLastBuild("");
+    	        }
+    	        testCase.setName(jsonObject.get("Name")==null || jsonObject.get("Name").isJsonNull() ?"":jsonObject.get("Name").getAsString());
+	    		testCase.setDescription(jsonObject.get("Description")==null || jsonObject.get("Description").isJsonNull() ?"":jsonObject.get("Description").getAsString());
+	    		testCase.setPriority(jsonObject.get("Priority")==null || jsonObject.get("Priority").isJsonNull() ?"":jsonObject.get("Priority").getAsString());
+	    		
+    		}
+    	}
+    }
 
 	public static RegressionData getRegressionSetDetails(String tabUniqueId) throws IOException {
 		File file = new File(System.getProperty("user.home"), "config/regression.properties");
