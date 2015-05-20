@@ -282,7 +282,7 @@ public class TestClass {
                   for (int j=0;j<numberOfTestCases;j++){
                 	  	JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
                 	  	JsonArray results = jsonObject.get("Results").getAsJsonArray();
-                	  	String verdict = testSetResultExists(restApi, testSetJsonObject.get("Name").getAsString(), results);
+                	  	String verdict = testSetResult(restApi, jsonObject.get("FormattedID").getAsString(), testSetJsonObject.get("FormattedID").getAsString());
                 	  	if(verdict != null) {
                 	  		System.out.println((ij)+"\t"+ jsonObject.get("FormattedID") +"\t" + verdict +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Method"));
                 	  	} else {
@@ -294,6 +294,19 @@ public class TestClass {
         }
 
 	}
+    
+    private static String testSetResult(RallyRestApi restApi, String testCaseId, String testSetId) throws IOException {
+    	QueryRequest testCaseResultsRequest = new QueryRequest("TestCaseResult");
+        testCaseResultsRequest.setFetch(new Fetch("Build","TestCase","TestSet", "Verdict","FormattedID"));
+        testCaseResultsRequest.setQueryFilter(new QueryFilter("TestCase.FormattedID", "=", testCaseId).and(
+                new QueryFilter("TestSet.FormattedID", "=", testSetId)));
+        QueryResponse testCaseResultResponse = restApi.query(testCaseResultsRequest);
+        int numberTestCaseResults = testCaseResultResponse.getTotalResultCount();
+        if(numberTestCaseResults >0)
+            return testCaseResultResponse.getResults().get(0).getAsJsonObject().get("Verdict").getAsString();
+        else
+            return null;
+    }
     
     private static String testSetResultExists(RallyRestApi restApi, String testSetName, JsonArray results) throws IOException {
     	int numberOfTestCaseResults = results.size();
