@@ -55,10 +55,10 @@ public class TestClass {
     	//updateTestSet(restApi);
     	//updateTestCase(restApi, "TC44627,TC45043");
     	//retrieveTestSets(restApi);
-    	retrieveTestSetsResult(restApi);
+    	//retrieveTestSetsResult(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
-    	//retrieveTestFolder(restApi);
+    	retrieveTestFolder(restApi);
     	restApi.close();
     	//postJenkinsJob();
     }
@@ -235,25 +235,38 @@ public class TestClass {
 
 	}
     
-    private static void retrieveTestFolder(RallyRestApi restApi) throws IOException {
-		QueryFilter queryFilter = new QueryFilter("FormattedID", "=", "TC49355");
-    	QueryRequest defectRequest = new QueryRequest("testcases");
+    private static void retrieveTestFolder(RallyRestApi restApi) throws IOException, URISyntaxException {
+		QueryFilter queryFilter = new QueryFilter("FormattedID", "=", "TF1145");
+    	QueryRequest defectRequest = new QueryRequest("TestFolder");
     	defectRequest.setQueryFilter(queryFilter);
     	defectRequest.setFetch(new Fetch("FormattedID", "TestFolder"));
     	defectRequest.setProject("/project/11052443367"); 
     	defectRequest.setScopedDown(true);
-    	defectRequest.setLimit(10000);
-    	QueryResponse projectDefects = restApi.query(defectRequest);
-    	JsonArray defectsArray = projectDefects.getResults();
-    
-    	for(int i=0; i<defectsArray.size(); i++) {
-    		JsonElement elements =  defectsArray.get(i);
-    		JsonObject object = elements.getAsJsonObject();
-            System.out.println(i+" "+object);
-            JsonObject testSets = object.get("TestFolder").getAsJsonObject();
-            System.out.println(testSets.get("_ref"));
-    	}
-	}
+    	QueryResponse testFolder = restApi.query(defectRequest);
+    	String testFolderRef = testFolder.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+        String ref = testFolderRef.substring(testFolderRef.indexOf("/testfolder/"));
+        
+        /*
+        QueryRequest testCaseRequest = new QueryRequest("TestCase");
+        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
+        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TC15857"));
+        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
+        String testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+        String ref = testCaseRef.substring(testCaseRef.indexOf("/testcase/"));
+        */
+        
+        JsonObject tcUpdate = new JsonObject();
+        tcUpdate.addProperty("Notes", "Fixed3");
+        tcUpdate.addProperty("Project", "/project/11052443367");
+        tcUpdate.addProperty("TestFolder", ref);
+        UpdateRequest updateRequest = new UpdateRequest("/testcase/23413726793", tcUpdate);
+        UpdateResponse updateResponse = restApi.update(updateRequest);
+        if (updateResponse.wasSuccessful()) {
+            System.out.println("Successfully updated test case: ");
+        } else {
+            System.out.println("Error");
+        }
+    }
     
     private static void retrieveTestSetsResult(RallyRestApi restApi)
 			throws IOException, URISyntaxException, ParseException {
