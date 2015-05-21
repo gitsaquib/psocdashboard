@@ -1,5 +1,7 @@
 package com.pearson.dashboard.util;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
@@ -31,6 +34,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.dom4j.xpp.ProxyXmlStartTag;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -53,14 +57,22 @@ public class TestClass {
 
     	RallyRestApi restApi = loginRally(); 
     	//updateTestSet(restApi);
-    	//updateTestCase(restApi, "TC44627,TC45043");
+    	//updateTestCase(restApi, "TC19924,TC19907,TC19548,TC20721,TC19216,TC20856,TC44181,TC26258,TC25478,TC29981,TC29974,TC31840,TC27088,TC26224,TC43481,TC43480,TC30028,TC27457,TC27082,TC26229,TC43478,TC43462,TC31751,TC24399");
     	//retrieveTestSets(restApi);
     	//retrieveTestSetsResult(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
-    	retrieveTestFolder(restApi);
+    	readTabDelimitedFileAddTestCaseToTestFolder();
     	restApi.close();
     	//postJenkinsJob();
+    }
+    
+    private static void readTabDelimitedFileAddTestCaseToTestFolder() throws FileNotFoundException {
+    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\sample.txt"));
+        while (sc.hasNextLine()){
+        	String words[] = sc.nextLine().split("\t");
+            System.out.println(words[0] + " "+ words[1]);
+        }
     }
     
     private static void updateTestSet(RallyRestApi restApi) throws IOException {
@@ -171,8 +183,8 @@ public class TestClass {
 		        if(null != testCaseRef && !testCaseRef.equals("")){
 			        JsonObject newTestCaseResult = new JsonObject();
 			        newTestCaseResult.addProperty("Verdict", "Pass");
-			        newTestCaseResult.addProperty("Date", "2015-05-19T17:00:00.000Z");
-			        newTestCaseResult.addProperty("Build", "1.6.0.715");
+			        newTestCaseResult.addProperty("Date", "2015-05-21T13:00:00.000Z");
+			        newTestCaseResult.addProperty("Build", "1.6.0.727");
 			        newTestCaseResult.addProperty("TestCase", testCaseRef);
 			        newTestCaseResult.addProperty("Tester", userRef);
 			        newTestCaseResult.addProperty("TestSet", testSetRef);
@@ -196,13 +208,13 @@ public class TestClass {
 
         QueryRequest testSetRequest = new QueryRequest("TestSet");
         
-        //testSetRequest.setProject("/project/21028059357"); //2-12
-        testSetRequest.setProject("/project/23240411122"); //K1
+        testSetRequest.setProject("/project/21028059357"); //2-12
+        //testSetRequest.setProject("/project/23240411122"); //K1
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
 
         testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "Results", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
-        String testSetsString = "TS722,TS723,TS724,TS725,TS726,TS727,TS728,TS729,TS730,TS731,TS732";
+        String testSetsString = "TS750";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
@@ -235,36 +247,28 @@ public class TestClass {
 
 	}
     
-    private static void retrieveTestFolder(RallyRestApi restApi) throws IOException, URISyntaxException {
-		QueryFilter queryFilter = new QueryFilter("FormattedID", "=", "TF1145");
+    private static void addTestCaseToTestFolder(RallyRestApi restApi, String project, String testFolderId, String testCaseId, String testCaseRef) throws IOException, URISyntaxException {
+		QueryFilter queryFilter = new QueryFilter("FormattedID", "=", testFolderId);
     	QueryRequest defectRequest = new QueryRequest("TestFolder");
     	defectRequest.setQueryFilter(queryFilter);
     	defectRequest.setFetch(new Fetch("FormattedID", "TestFolder"));
-    	defectRequest.setProject("/project/11052443367"); 
+    	defectRequest.setProject("/project/"+project); 
     	defectRequest.setScopedDown(true);
     	QueryResponse testFolder = restApi.query(defectRequest);
     	String testFolderRef = testFolder.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
         String ref = testFolderRef.substring(testFolderRef.indexOf("/testfolder/"));
         
-        /*
-        QueryRequest testCaseRequest = new QueryRequest("TestCase");
-        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
-        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", "TC15857"));
-        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
-        String testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
-        String ref = testCaseRef.substring(testCaseRef.indexOf("/testcase/"));
-        */
         
         JsonObject tcUpdate = new JsonObject();
-        tcUpdate.addProperty("Notes", "Fixed3");
-        tcUpdate.addProperty("Project", "/project/11052443367");
+        tcUpdate.addProperty("Notes", "Added by automation team");
+        tcUpdate.addProperty("Project", "/project/"+project);
         tcUpdate.addProperty("TestFolder", ref);
-        UpdateRequest updateRequest = new UpdateRequest("/testcase/23413726793", tcUpdate);
+        UpdateRequest updateRequest = new UpdateRequest(testCaseRef, tcUpdate);
         UpdateResponse updateResponse = restApi.update(updateRequest);
         if (updateResponse.wasSuccessful()) {
-            System.out.println("Successfully updated test case: ");
+            System.out.println("Successfully updated test case: " + testCaseId);
         } else {
-            System.out.println("Error");
+        	System.out.println("Failed to update test case: " + testCaseId);
         }
     }
     
@@ -342,24 +346,28 @@ public class TestClass {
     
     private static void retrieveTestCases(RallyRestApi restApi)
 			throws IOException {
-		
-		QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", "2014-09-16").and(new QueryFilter("Type", "=", "Regression")).and(new QueryFilter("TestSets.ObjectID", "=", "29426036743"));
-    	QueryRequest defectRequest = new QueryRequest("testcases");
-    	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict", "TestSets"));
-    	defectRequest.setProject("/project/23240411122"); 
-    	defectRequest.setScopedDown(true);
-    	defectRequest.setLimit(10000);
-    	QueryResponse projectDefects = restApi.query(defectRequest);
-    	JsonArray defectsArray = projectDefects.getResults();
-    
-    	for(int i=0; i<defectsArray.size(); i++) {
-    		JsonElement elements =  defectsArray.get(i);
-    		JsonObject object = elements.getAsJsonObject();
-            System.out.println(i+" "+object);
-            JsonObject testSets = object.get("TestSets").getAsJsonObject();
-            System.out.println(testSets.get("_ref"));
-    	}
+		String testCases = "TC16006,TC16027,TC16215,TC20467,TC20629,TC20505,TC23259,TC23260,TC23358,TC22129,TC22130,TC22131,TC15871,TC15891,TC15893,TC15896,TC15990,TC16075,TC17685,TC17686,TC20187,TC20193,TC20194,TC20199,TC20203,TC20630,TC20631,TC15884,TC15885,TC15910,TC15992,TC16071,TC17671,TC17680,TC17688,TC17690,TC17691,TC17699,TC19457,TC20040,TC20472,TC20473,TC20474,TC20476,TC20493,TC20632,TC20633,TC20634,TC21721,TC21727,TC21957,TC22134,TC22411,TC22623,TC22624,TC15863,TC15879,TC15894,TC16302,TC19368,TC20490,TC22114,TC22115,TC22405,TC22610,TC15929,TC15941,TC16064,TC18609,TC18672,TC20531,TC22244,TC15998,TC16061,TC18600,TC18602,TC19140,TC19383,TC20523,TC20524,TC20526,TC20594,TC21998,TC21999,TC22000,TC22010,TC22012,TC22324,TC22326,TC22334,TC22336,TC22338,TC22339,TC22340,TC22341,TC22343,TC22344,TC22346,TC22348,TC22349,TC22351,TC22353,TC22354,TC22355,TC22357,TC22359,TC22446,TC22447,TC22463,TC22769,TC23175,TC23250,TC23319,TC18610,TC16030,TC20509,TC20510,TC22146,TC22761,TC22767,TC23256,TC23927,TC23964,TC23965,TC23967,TC23974,TC24222,TC24225,TC24228,TC24236,TC24237,TC24383,TC25090,TC25143,TC25469,TC25471,TC25822,TC27063,TC27181,TC27172,TC27168,TC16218,TC21932,TC20289,TC29945,TC31610,TC24381,TC24432,TC24385,TC24382,TC24377,TC24376,TC15631,TC2245,TC2187,TC2085,TC14784,TC8178,TC27451,TC27444,TC29920,TC27452,TC27446,TC29922,TC27221,TC20623,TC20492,TC20487,TC31813,TC21757,TC21758,TC34177,TC34183,TC34192,,TC18603,TC34178,TC34182,TC34190,TC17683,TC16024,TC20253,TC23360,TC29907,TC23266,TC22456,TC33956,TC9305,TC43537,TC9303,TC27212,TC27177,TC22152,TC22557,TC22611,TC22612,TC22613,TC23361,TC22128,TC22620,TC21839,TC21956,TC16303,TC22111,TC22112,TC22113,TC20273,TC21996,TC22037,TC22243,TC22245,TC22325,TC20528,TC20529,TC20771,TC21951,TC22001,TC22002,TC22003,TC22004,TC22005,TC22172,TC22246,TC22247,TC22322,TC22329,TC22330,TC22331,TC22332,TC22335,TC22430,TC22458,TC22460,TC22466,TC23157,TC23160,TC23161,TC23162,TC22145,TC22155,TC22156,TC23255,TC27026,TC27028,TC27033,TC27045,TC27046,TC27047,TC27105,TC20522,TC33494,TC29943,TC29942,TC31798,TC31786,TC31785,TC29824,TC16078,TC44083,TC20800,TC22429,TC22606,TC23113,TC20204,TC22408,TC22409,TC29810,TC29811,TC15944,TC16002,TC16003,TC16004,TC16005,TC16007,TC16009,TC16010,TC16013,TC16014,TC16042,TC16043,TC16045,TC16049,TC16050,TC16051,TC16052,TC16069,TC16070,TC16210,TC16216,TC19066,TC19303,TC19304,TC19306,TC19307,TC19309,TC19310,TC20422,TC22423,TC22465,TC23138,TC23155,TC15958,TC15964,TC15965,TC16011,TC16012,TC16023,TC16044,TC16047,TC18616,TC18617,TC18620,TC18622,TC18623,TC18625,TC18627,TC18632,TC18633,TC20518,TC19311,TC19315,TC19316,TC19317,TC19318,TC19319,TC19320,TC19321,TC19380,TC19398,TC19418,TC20151,TC20378,TC20387,TC20388,TC20390,TC20399,TC20448,TC20449,TC20450,TC20508,TC20511,TC20514,TC20516,TC20517,TC20518,TC20519,TC20806,TC20807,TC20808,TC20809,TC20810,TC20811,TC22249,TC22549,TC22550,TC22552,TC22555,TC22556,TC22603,TC22604,TC22605,TC22608,TC22609,TC22625,TC22626,TC22627,TC22628,TC22639,TC23156,TC23166,TC23168,TC23170,TC23257,TC23258,TC23262,TC23263,TC23264,TC23268,TC23269,TC23270,TC23272,TC23273,TC23274,TC15948,TC16001,TC22132,TC22133,TC15857,TC15860,TC15873,TC15889,TC15892,TC15906,TC15908,TC15918,TC15922,TC15981,TC15982,TC15983,TC15984,TC15985,TC16068,TC31820,TC16074,TC16077,TC16111,TC16193,TC16194,TC16195,TC17672,TC17677,TC17678,TC17681,TC17684,TC18573,TC18984,TC19059,TC19114,TC19362,TC19367,TC19370,TC19455,TC19456,TC19458,TC19459,TC19461,TC19462,TC19465,TC20021,TC20024,TC20026,TC20027,TC20028,TC20029,TC20030,TC20073,TC20074,TC20075,TC20077,TC20078,TC20189,TC20190,TC20191,TC20192,TC20195,TC20196,TC20197,TC20200,TC20201,TC20202,TC20205,TC20216,TC20477,TC20483,TC20515,TC20601,TC20602,TC21851,TC22107,TC22108,TC22406,TC22407,TC22410,TC22607,TC22619,TC15859,TC15864,TC15865,TC15874,TC15875,TC15876,TC15878,TC15880,TC15881,TC15882,TC15883,TC15886,TC15887,TC15888,TC15897,TC15899,TC15900,TC15901,TC15909,TC15966,TC15967,TC15968,TC15969,TC15970,TC15971,TC15972,TC15974,TC15975,TC15978,TC15980,TC16087,TC16090,TC16091,TC16092,TC16095,TC16105,TC16108,TC16109,TC16112,TC16113,TC16114,TC16124,TC17664,TC17665,TC17666,TC17667,TC17669,TC17670,TC17674,TC17675,TC17676,TC17679,TC17682,TC17687,TC17689,TC17696,TC17698,TC18572,TC18612,TC19361,TC19363,TC19365,TC19366,TC19371,TC19372,TC19373,TC19374,TC19460,TC20038,TC20039,TC20042,TC20046,TC20098,TC20099,TC20143,TC20440,TC20475,TC20684,TC20687,TC20689,TC20690,TC21705,TC21706,TC21707,TC21708,TC21710,TC21711,TC21725,TC21728,TC21732,TC21761,TC21762,TC21763,TC21764,TC21765,TC21778,TC21779,TC21780,TC21785,TC21786,TC21787,TC21792,TC21797,TC21827,TC21829,TC21837,TC21840,TC21841,TC21843,TC21845,TC21878,TC22106,TC22116,TC22315,TC22316,TC22318,TC22320,TC22614,TC22616,TC22617,TC22618,TC15861,TC15877,TC15895,TC15898,TC15904,TC15921,TC15932,TC15979,TC16028,TC16029,TC17668,TC17673,TC19058,TC19384,TC21736,TC21737,TC21738,TC21740,TC21741,TC21760,TC22110,TC22126,TC22621,TC22622,TC22716,TC15943,TC15954,TC15955,TC16059,TC16062,TC16063,TC16066,TC18606,TC20152,TC20266,TC20271,TC20272,TC20430,TC20431,TC22242,TC15999,TC18601,TC18604,TC18607,TC18673,TC19139,TC19299,TC20595,TC20596,TC20776,TC21726,TC21756,TC21759,TC21952,TC22173,TC22174,TC22327,TC22328,TC22337,TC22345,TC22347,TC22350,TC22461,TC22768,TC22770,TC23148,TC23149,TC23150,TC23151,TC23158,TC19953,TC25148,TC25491,TC26212,TC26213,TC25838,TC26215,TC26216,TC26217,TC16019,TC16088,TC22143,TC22144,TC22148,TC22149,TC22150,TC22151,TC22153,TC22157,TC22305,TC22307,TC22477,TC22487,TC22524,TC22760,TC22762,TC22763,TC22765,TC22766,TC22867,TC22868,TC23147,TC23153,TC23154,TC23252,TC23253,TC23254,TC23279,TC23280,TC23887,TC23888,TC23889,TC23923,TC23924,TC23925,TC23928,TC23936,TC23937,TC23938,TC23939,TC24163,TC24164,TC24165,TC24166,TC24356,TC25088,TC25089,TC25091,TC25092,TC25093,TC25094,TC25095,TC25096,TC25097,TC25112,TC25113,TC25114,TC25115,TC25116,TC25117,TC25118,TC25119,TC25121,TC25123,TC25125,TC25128,TC25129,TC25135,TC25140,TC25141,TC25142,TC25166,TC25168,TC25470,TC25472,TC25818,TC25821,TC26299,TC26310,TC26311,TC27034,TC27064,TC27066,TC29892,TC29893,TC29894,TC29895,TC29898,TC29899,TC29900,TC29902,TC29903,TC29904,TC29897,TC29901,TC29896,TC29936,TC29937,TC30096,TC30097,TC31230,TC31602,TC31603,TC27139,TC27142,TC27145,TC27213,TC27214,TC27215,TC27216,TC28346,TC31809,TC31810,TC33501,TC33502,TC33503,TC29929,TC29928,TC29927,TC29926,TC29923,TC29910,TC27179,TC27173,TC27171,TC27166,TC33496,TC29944,TC29909,TC29905,TC27175,TC27170,TC27169,TC27167,TC27165,TC27164,TC31801,TC31800,TC31799,TC31797,TC31793,TC31658,TC31657,TC31619,TC31608,TC31607,TC31659,TC31656,TC31609,TC31232,TC31223,TC31222,TC31220,TC31623,TC31620,TC31606,TC31605,TC31234,TC31233,TC31221,TC24408,TC24407,TC14961,TC27439,TC27448,TC27441,TC29823,TC27473,TC27450,TC28364,TC27470,TC27469,TC27224,TC29925,TC29924,TC28356,TC32206,TC30109,TC30110,TC31841,TC27443,TC27222,TC28367,TC28357,TC27445,TC27223,TC29921,TC27472,TC27471,TC27449,TC27442,TC27219,TC30112,TC31820,TC30108,TC34184,TC34180,TC34191,TC14404,TC34185,TC20269,TC20270,TC34181,TC20267,TC16018,TC19312,TC19313,TC19314,TC23163,TC23169,TC23359,TC20465,TC23164,TC23167,TC23261,TC27180,TC16017,TC16212,TC20376,TC20398,TC16214,TC22054,TC23165,TC29911,TC29939,TC22044,TC22138,TC23265,TC23271,TC27118,TC27185,TC29938,TC27178,TC34062,TC34063,TC34064,TC34065,TC43978,TC44280,TC44276,TC43971,TC44514,TC43948,TC45485,TC43541,TC43539,TC43540,TC43543,TC43587,TC43554,TC18634,TC43542,TC43555,TC43586,TC43588,TC43545,TC43553,TC43589,TC45567,TC45568,TC45569,TC45570,TC16073,TC16016,TC20211,TC16110,TC17697,TC17701,TC19369,TC20726,TC21793,TC21804,TC22109,TC22317,TC22615,TC20544,TC20546,TC20796,TC16067,TC22011,TC22171,TC22241,TC22356,TC22432,TC23159,TC26214,TC22147,TC23124,TC23125,TC23251,TC29946,TC24406,TC31822,TC34186,TC43544,TC33958,TC20513,TC23173,TC29812,TC29820,TC29821,TC24426,TC24423";
+		String testCasesArray[] = testCases.split(",");
+		//QueryFilter queryFilter = new QueryFilter("CreationDate", ">=", "2014-09-16").and(new QueryFilter("Type", "=", "Regression")).and(new QueryFilter("TestSets.ObjectID", "=", "29426036743"));
+		for(String testCase:testCasesArray) {
+			QueryFilter queryFilter = new QueryFilter("FormattedID", "=", testCase);
+	    	QueryRequest defectRequest = new QueryRequest("testcases");
+	    	defectRequest.setQueryFilter(queryFilter);
+	    	defectRequest.setFetch(new Fetch("FormattedID", "LastVerdict", "TestSets", "Project"));
+	    	//defectRequest.setProject("/project/23240411122"); 
+	    	defectRequest.setScopedDown(true);
+	    	defectRequest.setLimit(10000);
+	    	QueryResponse projectDefects = restApi.query(defectRequest);
+	    	JsonArray defectsArray = projectDefects.getResults();
+	    	for(int i=0; i<defectsArray.size(); i++) {
+	    		JsonElement elements =  defectsArray.get(i);
+	    		JsonObject object = elements.getAsJsonObject();
+	    		JsonObject project = object.get("Project").getAsJsonObject();
+	            String projet = project.get("_refObjectName").getAsString();
+	            String ref = object.get("_ref").getAsString();
+	            System.out.println(i+"\t"+testCase+"\t"+ref.substring(ref.indexOf("/testcase/"))+"\t"+projet);
+	    	}
+		}
 	}
     
     public static void postJenkinsJob() throws ClientProtocolException, IOException {
