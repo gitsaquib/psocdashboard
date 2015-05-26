@@ -42,6 +42,7 @@ import com.google.gson.JsonObject;
 import com.pearson.dashboard.vo.Release;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.CreateRequest;
+import com.rallydev.rest.request.DeleteRequest;
 import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
 import com.rallydev.rest.request.UpdateRequest;
@@ -57,12 +58,12 @@ public class TestClass {
 
     	RallyRestApi restApi = loginRally(); 
     	//updateTestSet(restApi);
-    	//updateTestCase(restApi, "TC19924,TC19907,TC19548,TC20721,TC19216,TC20856,TC44181,TC26258,TC25478,TC29981,TC29974,TC31840,TC27088,TC26224,TC43481,TC43480,TC30028,TC27457,TC27082,TC26229,TC43478,TC43462,TC31751,TC24399");
-    	//retrieveTestSets(restApi);
+    	//updateTestCase(restApi, "TC31229,TC26223,TC24275,TC22309,TC22452,TC30052,TC29979,TC22451,TC22453");
+    	retrieveTestSets(restApi);
     	//retrieveTestSetsResult(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
-    	readTabDelimitedFileAddTestCaseToTestFolder();
+    	//readTabDelimitedFileAddTestCaseToTestFolder();
     	restApi.close();
     	//postJenkinsJob();
     }
@@ -208,13 +209,13 @@ public class TestClass {
 
         QueryRequest testSetRequest = new QueryRequest("TestSet");
         
-        testSetRequest.setProject("/project/21028059357"); //2-12
-        //testSetRequest.setProject("/project/23240411122"); //K1
+        //testSetRequest.setProject("/project/21028059357"); //2-12
+        testSetRequest.setProject("/project/23240411122"); //K1
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
 
         testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "Results", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
-        String testSetsString = "TS750";
+        String testSetsString = "TS755,TS756,TS757,TS758,TS759,TS760,TS761,TS762,TS763,TS764,TS765";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
@@ -226,6 +227,8 @@ public class TestClass {
         for (int i=0; i<testSetQueryResponse.getResults().size();i++){
             JsonObject testSetJsonObject = testSetQueryResponse.getResults().get(i).getAsJsonObject();
             int numberOfTestCases = testSetJsonObject.get("TestCases").getAsJsonArray().size();
+            String testSetId = testSetJsonObject.get("FormattedID").getAsString();
+            String testSetName = testSetJsonObject.get("Name").getAsString();
             if(numberOfTestCases>0){
                   for (int j=0;j<numberOfTestCases;j++){
                 	  	JsonObject jsonObject = testSetJsonObject.get("TestCases").getAsJsonArray().get(j).getAsJsonObject();
@@ -236,9 +239,9 @@ public class TestClass {
                 	  		Date date = (Date) formatter1.parse(jsonObject.get("LastRun").getAsString());
           	            	DateFormat formatter2 = new SimpleDateFormat("MMM dd YY");
           	            	String dateStr = formatter2.format(date);
-          	            	System.out.println((ij)+"\t"+ jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description").getAsString().replaceAll("\\<[^>]*>","")+"\t" + jsonObject.get("LastBuild")+"\t" + jsonObject.get("Priority")+"\t" + jsonObject.get("Method"));
+          	            	System.out.println((ij)+"\t"+testSetId+"\t"+testSetName+"\t"+ jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + dateStr +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description").getAsString().replaceAll("\\<[^>]*>","")+"\t" + jsonObject.get("LastBuild")+"\t" + jsonObject.get("Priority")+"\t" + jsonObject.get("Method"));
                 	  	} else {
-                	  		System.out.println((ij)+"\t"+ jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "" +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description").getAsString().replaceAll("\\<[^>]*>","")+"\t" + jsonObject.get("LastBuild")+"\t" + jsonObject.get("Priority")+"\t" + jsonObject.get("Method"));
+                	  		System.out.println((ij)+"\t"+testSetId+"\t"+testSetName+"\t"+ jsonObject.get("FormattedID") +"\t" + jsonObject.get("LastVerdict")+"\t" + "" +"\t" + jsonObject.get("Name")+"\t" + jsonObject.get("Description").getAsString().replaceAll("\\<[^>]*>","")+"\t" + jsonObject.get("LastBuild")+"\t" + jsonObject.get("Priority")+"\t" + jsonObject.get("Method"));
                 	  	}
                 	  	ij++;
                  }
