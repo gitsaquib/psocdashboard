@@ -1332,6 +1332,7 @@ public class Util {
         	queryFilter = queryFilter.or(new QueryFilter("TestSet.FormattedID", "=", testSets.get(q)));
         	q++;
         }
+        testCaseResultsRequest.setLimit(3000);
         testCaseResultsRequest.setQueryFilter(queryFilter);
         boolean dataNotReceived = true;
     	while(dataNotReceived){

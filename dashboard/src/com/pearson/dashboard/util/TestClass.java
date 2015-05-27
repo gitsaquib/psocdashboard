@@ -1,6 +1,5 @@
 package com.pearson.dashboard.util;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +33,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.dom4j.xpp.ProxyXmlStartTag;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -42,7 +40,6 @@ import com.google.gson.JsonObject;
 import com.pearson.dashboard.vo.Release;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.CreateRequest;
-import com.rallydev.rest.request.DeleteRequest;
 import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
 import com.rallydev.rest.request.UpdateRequest;
@@ -57,8 +54,8 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
+    	//updateTestCaseResults(restApi);
     	//updateTestSet(restApi);
-    	//updateTestCase(restApi, "TC31229,TC26223,TC24275,TC22309,TC22452,TC30052,TC29979,TC22451,TC22453");
     	//retrieveTestSets(restApi);
     	//retrieveTestSetsResult(restApi);
     	//retrieveTestCases(restApi);
@@ -69,12 +66,13 @@ public class TestClass {
     	//postJenkinsJob();
     }
     
-    private static void readTabDelimitedFileAddTestCaseToTestFolder() throws FileNotFoundException {
-    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\sample.txt"));
+    private static void updateTestCaseResults(RallyRestApi restApi) throws IOException {
+    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\Regression-27MayBuid-1.6.0.591.txt"));
         while (sc.hasNextLine()){
         	String words[] = sc.nextLine().split("\t");
-            System.out.println(words[0] + " "+ words[1]);
+            updateTestCase(restApi, words[0], words[1], words[2]);
         }
+        //updateTestCase(restApi, "TS754", "TC17664", "Pass");
     }
     
     private static void updateTestSet(RallyRestApi restApi) throws IOException {
@@ -153,55 +151,50 @@ public class TestClass {
         }
     }
     
-    private static void updateTestCase(RallyRestApi restApi, String testcases) throws IOException {
+    private static void updateTestCase(RallyRestApi restApi, String testSet, String testCase, String status) throws IOException {
     	
     	QueryRequest userRequest = new QueryRequest("User");
         userRequest.setFetch(new Fetch("UserName", "Subscription", "DisplayName", "SubscriptionAdmin"));
-        userRequest.setQueryFilter(new QueryFilter("UserName", "=", "namrita.agarwal@pearson.com"));
+        userRequest.setQueryFilter(new QueryFilter("UserName", "=", "mohammed.saquib@pearson.com"));
         QueryResponse userQueryResponse = restApi.query(userRequest);
         JsonArray userQueryResults = userQueryResponse.getResults();
         JsonElement userQueryElement = userQueryResults.get(0);
         JsonObject userQueryObject = userQueryElement.getAsJsonObject();
         String userRef = userQueryObject.get("_ref").getAsString();  
         
-        //String wsapiVersion = "1.43";
-        //restApi.setWsapiVersion(wsapiVersion);
-        String testSets[] = "TS722,TS723,TS724,TS725,TS726,TS727,TS728,TS730,TS731,TS732".split(",");
-        for(String testSet:testSets) {
-	        QueryRequest testSetRequest = new QueryRequest("TestSet");
-	        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", testSet));
-	        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
-	        String testSetRef = testSetQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+        String wsapiVersion = "1.43";
+        restApi.setWsapiVersion(wsapiVersion);
+        
+        QueryRequest testSetRequest = new QueryRequest("TestSet");
+        testSetRequest.setQueryFilter(new QueryFilter("FormattedID", "=", testSet));
+        QueryResponse testSetQueryResponse = restApi.query(testSetRequest);
+        String testSetRef = testSetQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+        
+        String testCaseRef = "";
+        QueryRequest testCaseRequest = new QueryRequest("TestCase");
+        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
+        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", testCase));
+        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
+        testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
+        
+        if(null != testCaseRef && !testCaseRef.equals("")){
+	        JsonObject newTestCaseResult = new JsonObject();
+	        newTestCaseResult.addProperty("Verdict", status);
+	        newTestCaseResult.addProperty("Date", "2015-05-27T15:00:00.000Z");
+	        newTestCaseResult.addProperty("Build", "1.6.0.591");
+	        newTestCaseResult.addProperty("TestCase", testCaseRef);
+	        newTestCaseResult.addProperty("Tester", userRef);
+	        newTestCaseResult.addProperty("TestSet", testSetRef);
 	        
-	        String testCaseRef = "";
-	        String testCaseIds[] = testcases.split(",");
-	        for(String testCase: testCaseIds) {
-	            QueryRequest testCaseRequest = new QueryRequest("TestCase");
-		        testCaseRequest.setFetch(new Fetch("FormattedID","Name"));
-		        testCaseRequest.setQueryFilter(new QueryFilter("FormattedID", "=", testCase));
-		        QueryResponse testCaseQueryResponse = restApi.query(testCaseRequest);
-		        testCaseRef = testCaseQueryResponse.getResults().get(0).getAsJsonObject().get("_ref").getAsString(); 
-		        
-		        if(null != testCaseRef && !testCaseRef.equals("")){
-			        JsonObject newTestCaseResult = new JsonObject();
-			        newTestCaseResult.addProperty("Verdict", "Pass");
-			        newTestCaseResult.addProperty("Date", "2015-05-21T13:00:00.000Z");
-			        newTestCaseResult.addProperty("Build", "1.6.0.727");
-			        newTestCaseResult.addProperty("TestCase", testCaseRef);
-			        newTestCaseResult.addProperty("Tester", userRef);
-			        newTestCaseResult.addProperty("TestSet", testSetRef);
-			        
-			        CreateRequest createRequest = new CreateRequest("testcaseresult", newTestCaseResult);
-			        CreateResponse createResponse = restApi.create(createRequest);  
-			        if (createResponse.wasSuccessful()) {
-			            System.out.println(String.format("Created %s", createResponse.getObject().get("_ref").getAsString()));          
-			        } else {
-			            System.out.println("Error occurred creating Test Case Result: ");
-			        }
-		        } else {
-		        	System.out.println("Error occurred creating Test Case Result: ");
-		        }
+	        CreateRequest createRequest = new CreateRequest("testcaseresult", newTestCaseResult);
+	        CreateResponse createResponse = restApi.create(createRequest);  
+	        if (createResponse.wasSuccessful()) {
+	            System.out.println(String.format("Created %s", createResponse.getObject().get("_ref").getAsString()));          
+	        } else {
+	            System.out.println("Error occurred creating Test Case Result: "+createResponse.getErrors());
 	        }
+        } else {
+        	System.out.println("Error occurred creating Test Case Result: ");
         }
     }
     
@@ -210,14 +203,14 @@ public class TestClass {
 
         QueryRequest testSetRequest = new QueryRequest("TestSet");
         
-        //testSetRequest.setProject("/project/21028059357"); //2-12
-        testSetRequest.setProject("/project/23240411122"); //K1
+        testSetRequest.setProject("/project/21028059357"); //2-12
+        //testSetRequest.setProject("/project/23240411122"); //K1
         String wsapiVersion = "1.43";
         restApi.setWsapiVersion(wsapiVersion);
 
         testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "Results", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
-        String testSetsString = "TS755,TS756,TS757,TS758,TS759,TS760,TS761,TS762,TS763,TS764,TS765";
-        //String testSetsString = "TS752,TS745,TS741,TS743,TS746,TS754,TS778,TS779,TS780,TS781";
+        //String testSetsString = "TS755,TS756,TS757,TS758,TS759,TS760,TS761,TS762,TS763,TS764,TS765";
+        String testSetsString = "TS752,TS745,TS741,TS743,TS746,TS754,TS778,TS779,TS780,TS781";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
@@ -334,12 +327,13 @@ public class TestClass {
     private static void retrieveTestResults(RallyRestApi restApi, String testSetId) throws IOException {
     	QueryRequest testCaseResultsRequest = new QueryRequest("TestCaseResult");
         testCaseResultsRequest.setFetch(new Fetch("Build","TestCase","TestSet", "Verdict","FormattedID", "Date"));
-        String testSetsString = "TS745,TS741,TS743,TS746,TS754,TS778,TS779,TS780,TS781";
+        String testSetsString = "TS752,TS745,TS741,TS778,TS779,TS743,TS746,TS754,TS780,TS781";
         String[] testSets = testSetsString.split(",");
-        QueryFilter query = new QueryFilter("TestSet.FormattedID", "=", "TS752");
+        QueryFilter query = new QueryFilter("TestSet.FormattedID", "=", "TS0");
         for(String testSet:testSets) {
         	query = query.or(new QueryFilter("TestSet.FormattedID", "=", testSet));
         }
+        testCaseResultsRequest.setLimit(3000);
         testCaseResultsRequest.setQueryFilter(query);
         QueryResponse testCaseResultResponse = restApi.query(testCaseResultsRequest);
         JsonArray array = testCaseResultResponse.getResults();
@@ -366,7 +360,7 @@ public class TestClass {
         
         QueryRequest testCaseCount = new QueryRequest("TestSet");
         testCaseCount.setFetch(new Fetch("FormattedID", "Name", "TestCaseCount"));
-        query = new QueryFilter("FormattedID", "=", "TS752");
+        query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
         	query = query.or(new QueryFilter("FormattedID", "=", testSet));
         }
