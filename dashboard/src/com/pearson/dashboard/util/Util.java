@@ -1320,6 +1320,134 @@ public class Util {
 	    	}
     	}
 	}
+	
+	public static void retrieveTestResults(DashboardForm dashboardForm, Configuration configuration, String cutoffDateStr, List<String> testSets)
+			throws IOException, URISyntaxException, ParseException {
+		RallyRestApi  restApi = loginRally(configuration);
+        QueryRequest testCaseResultsRequest = new QueryRequest("TestCaseResult");
+        testCaseResultsRequest.setFetch(new Fetch("Build","TestCase","TestSet", "Verdict","FormattedID","Date", "TestCaseCount"));
+        QueryFilter queryFilter = new QueryFilter("TestSet.FormattedID", "=", testSets.get(0));
+        int q = 1;
+        while(testSets.size() > q) {
+        	queryFilter = queryFilter.or(new QueryFilter("TestSet.FormattedID", "=", testSets.get(q)));
+        	q++;
+        }
+        testCaseResultsRequest.setQueryFilter(queryFilter);
+        boolean dataNotReceived = true;
+    	while(dataNotReceived){
+	    	try {
+		        QueryResponse testCaseResultResponse = restApi.query(testCaseResultsRequest);
+		        JsonArray array = testCaseResultResponse.getResults();
+		        int numberTestCaseResults = array.size();
+		        dataNotReceived = false;
+		        List<Priority> priorities = new ArrayList<Priority>();
+		    	Priority priority0 = new Priority();
+		    	priority0.setPriorityName("Pass");
+				Priority priority1 = new Priority();
+				priority1.setPriorityName("Blocked");
+				Priority priority2 = new Priority();
+				priority2.setPriorityName("Error");
+				Priority priority3 = new Priority();
+				priority3.setPriorityName("Fail");
+				Priority priority4 = new Priority();
+				priority4.setPriorityName("Inconclusive");
+				Priority priority5 = new Priority();
+				priority5.setPriorityName("NotAttempted");
+				List<TestCase> testCases = new ArrayList<TestCase>();
+				if(numberTestCaseResults >0) {
+		        	for(int i=0; i<numberTestCaseResults; i++) {
+		        		TestCase testCase = new TestCase();
+		            	String verdict = array.get(i).getAsJsonObject().get("Verdict").getAsString();
+		            	String date = array.get(i).getAsJsonObject().get("Date").getAsString();
+		            	String build = array.get(i).getAsJsonObject().get("Build").getAsString();
+		        		JsonObject jsonObj = array.get(i).getAsJsonObject().get("TestSet").getAsJsonObject();
+		        		String testSetId = jsonObj.get("FormattedID").getAsString();
+		        		if(verdict.equalsIgnoreCase("error")) {
+		        			priority2.setPriorityCount(priority2.getPriorityCount()+1);
+		        		} else if(verdict.equalsIgnoreCase("pass")) {
+		        			priority0.setPriorityCount(priority0.getPriorityCount()+1);
+		        		} else if(verdict.equalsIgnoreCase("fail")) {
+		        			priority3.setPriorityCount(priority3.getPriorityCount()+1);
+		        		} else if(verdict.equalsIgnoreCase("inconclusive")) {
+		        			priority4.setPriorityCount(priority4.getPriorityCount()+1);
+		        		} else if(verdict.equalsIgnoreCase("blocked")) {
+		        			priority1.setPriorityCount(priority1.getPriorityCount()+1);
+		        		}
+		        		testCase.setTestCaseId(testSetId);
+                	  	testCase.setLastVerdict(verdict);
+        			    testCase.setName("");
+        	            testCase.setDescription("");
+        	            testCase.setLastRun(date);
+        	            testCase.setLastBuild(build);
+        	            testCase.setPriority("");
+        	            testCases.add(testCase);
+	                 }
+	            }
+				dashboardForm.setTestCases(testCases); 
+				
+				
+				QueryRequest testCaseCountReq = new QueryRequest("TestSet");
+				testCaseCountReq.setFetch(new Fetch("FormattedID", "Name", "TestCaseCount"));
+				queryFilter = new QueryFilter("FormattedID", "=", testSets.get(0));
+		        q = 1;
+		        while(testSets.size() > q) {
+		        	queryFilter = queryFilter.or(new QueryFilter("FormattedID", "=", testSets.get(q)));
+		        	q++;
+		        }
+		        testCaseCountReq.setQueryFilter(queryFilter);
+		        QueryResponse testCaseResponse = restApi.query(testCaseCountReq);
+		        int testCaseCount = 0;
+		        for(int i=0; i<testCaseResponse.getResults().size(); i++) {
+		        	testCaseCount = testCaseCount + testCaseResponse.getResults().get(i).getAsJsonObject().get("TestCaseCount").getAsInt();
+		        }
+		        
+		        int unAttempted = testCaseCount - priority0.getPriorityCount() - priority1.getPriorityCount() - priority2.getPriorityCount() - priority3.getPriorityCount() - priority4.getPriorityCount();
+		        priority5.setPriorityCount(unAttempted);
+		        
+				List<Integer> arrayList = new ArrayList<Integer>();
+				arrayList.add(priority0.getPriorityCount());
+				arrayList.add(priority1.getPriorityCount());
+				arrayList.add(priority2.getPriorityCount());
+				arrayList.add(priority3.getPriorityCount());
+				arrayList.add(priority4.getPriorityCount());
+				arrayList.add(priority5.getPriorityCount());
+				Integer maximumCount = Collections.max(arrayList);
+				if(maximumCount <= 0) {
+					priority0.setPxSize("0");
+				    priority1.setPxSize("0");
+				    priority2.setPxSize("0");
+				    priority3.setPxSize("0");
+				    priority4.setPxSize("0");
+				    priority5.setPxSize("0");
+				} else {
+					priority0.setPxSize(Math.round((100*priority0.getPriorityCount())/maximumCount)+"");
+				    priority1.setPxSize(Math.round((100*priority1.getPriorityCount())/maximumCount)+"");
+				    priority2.setPxSize(Math.round((100*priority2.getPriorityCount())/maximumCount)+"");
+				    priority3.setPxSize(Math.round((100*priority3.getPriorityCount())/maximumCount)+"");
+				    priority4.setPxSize(Math.round((100*priority4.getPriorityCount())/maximumCount)+"");
+				    priority5.setPxSize(Math.round((100*priority5.getPriorityCount())/maximumCount)+"");
+				}
+				priorities.add(priority0);
+				priorities.add(priority1);
+				priorities.add(priority2);
+				priorities.add(priority3);
+				priorities.add(priority4);
+				priorities.add(priority5);
+				
+				dashboardForm.setTestCasesCount(testCaseCount);
+				dashboardForm.setTestCasesPriorities(priorities);
+	    	} catch(HttpHostConnectException connectException) {
+	    		if(restApi != null) {
+	    			restApi.close();
+	    		}
+	    		try {
+					restApi = loginRally(configuration);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+	    	}
+    	}
+	}
 
 	public static RegressionData getRegressionSetDetails(String tabUniqueId) throws IOException {
 		File file = new File(System.getProperty("user.home"), "config/regression.properties");
