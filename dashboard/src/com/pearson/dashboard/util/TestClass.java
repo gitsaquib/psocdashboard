@@ -54,20 +54,20 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	//updateTestCaseResults(restApi);
+    	updateTestCaseResults(restApi);
     	//updateTestSet(restApi);
     	//retrieveTestSets(restApi);
     	//retrieveTestSetsResult(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	//readTabDelimitedFileAddTestCaseToTestFolder();
-    	retrieveTestResults(restApi, "TS752");
+    	//retrieveTestResults(restApi, "TS752");
     	restApi.close();
     	//postJenkinsJob();
     }
     
     private static void updateTestCaseResults(RallyRestApi restApi) throws IOException {
-    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\Regression-27MayBuid-1.6.0.591.txt"));
+    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\2-12-iOS.txt"));
         while (sc.hasNextLine()){
         	String words[] = sc.nextLine().split("\t");
             updateTestCase(restApi, words[0], words[1], words[2]);
@@ -180,8 +180,8 @@ public class TestClass {
         if(null != testCaseRef && !testCaseRef.equals("")){
 	        JsonObject newTestCaseResult = new JsonObject();
 	        newTestCaseResult.addProperty("Verdict", status);
-	        newTestCaseResult.addProperty("Date", "2015-05-27T15:00:00.000Z");
-	        newTestCaseResult.addProperty("Build", "1.6.0.591");
+	        newTestCaseResult.addProperty("Date", "2015-05-27T18:20:00.000Z");
+	        newTestCaseResult.addProperty("Build", "1.6.0.617");
 	        newTestCaseResult.addProperty("TestCase", testCaseRef);
 	        newTestCaseResult.addProperty("Tester", userRef);
 	        newTestCaseResult.addProperty("TestSet", testSetRef);
