@@ -349,7 +349,7 @@ public class Util {
 		Map<String, List<Defect>> allDefects = null;
 		
 		
-		if(dashboardForm.getTabName().startsWith("Other")) {
+		if(dashboardForm.getTabName().startsWith("Other") || dashboardForm.getTabName().startsWith("Author")) {
 			allDefects = Util.getMultiProjectDataFromRally(dashboardForm, configuration);
 		} else {
 			allDefects = Util.getDataFromRally(dashboardForm, configuration);
@@ -882,6 +882,22 @@ public class Util {
 	    	
 	    	projectId = getTabAttribute(configuration, "project", 6, 26);
 	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 6, 26);   
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());  	
+	    	//retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), null, ">=", configuration, dashboard.getOperatingSystem());
+    	}	
+    	if(dashboard.getTabName().startsWith("Author")) {
+    		
+	    	String projectId = getTabAttribute(configuration, "project", 3, 15);
+	    	String cutoffDate = getTabAttribute(configuration, "cutoffdate", 3, 15);    	
+	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());    	
+	    	//retrieveDefects(allDefects, restApi, projectId, "Closed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
+	    	
+	    	projectId = getTabAttribute(configuration, "project", 3, 18);
+	    	cutoffDate = getTabAttribute(configuration, "cutoffdate", 3, 18);   
 	    	retrieveDefects(allDefects, restApi, projectId, "Open", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Submitted", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());
 	    	retrieveDefects(allDefects, restApi, projectId, "Fixed", dashboard.getSelectedRelease(), cutoffDate, ">=", configuration, dashboard.getOperatingSystem());  	

@@ -54,20 +54,20 @@ public class TestClass {
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
 
     	RallyRestApi restApi = loginRally(); 
-    	updateTestCaseResults(restApi);
+    	//updateTestCaseResults(restApi);
     	//updateTestSet(restApi);
     	//retrieveTestSets(restApi);
-    	//retrieveTestSetsResult(restApi);
+    	retrieveTestSetsResult(restApi);
     	//retrieveTestCases(restApi);
     	//retrieveDefects(restApi);
     	//readTabDelimitedFileAddTestCaseToTestFolder();
-    	//retrieveTestResults(restApi, "TS752");
+    	//retrieveTestResults(restApi);
     	restApi.close();
     	//postJenkinsJob();
     }
     
     private static void updateTestCaseResults(RallyRestApi restApi) throws IOException {
-    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\2-12-iOS.txt"));
+    	Scanner sc=new Scanner(new FileReader("C:\\Users\\msaqib\\Downloads\\529-4.txt"));
         while (sc.hasNextLine()){
         	String words[] = sc.nextLine().split("\t");
             updateTestCase(restApi, words[0], words[1], words[2]);
@@ -180,7 +180,7 @@ public class TestClass {
         if(null != testCaseRef && !testCaseRef.equals("")){
 	        JsonObject newTestCaseResult = new JsonObject();
 	        newTestCaseResult.addProperty("Verdict", status);
-	        newTestCaseResult.addProperty("Date", "2015-05-27T18:20:00.000Z");
+	        newTestCaseResult.addProperty("Date", "2015-05-29T11:52:00.000Z");
 	        newTestCaseResult.addProperty("Build", "1.6.0.617");
 	        newTestCaseResult.addProperty("TestCase", testCaseRef);
 	        newTestCaseResult.addProperty("Tester", userRef);
@@ -210,7 +210,7 @@ public class TestClass {
 
         testSetRequest.setFetch(new Fetch(new String[] {"Name", "Description", "TestCases", "Results", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
         //String testSetsString = "TS755,TS756,TS757,TS758,TS759,TS760,TS761,TS762,TS763,TS764,TS765";
-        String testSetsString = "TS752,TS745,TS741,TS743,TS746,TS754,TS778,TS779,TS780,TS781";
+        String testSetsString = "TS745,TS741,TS752";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
@@ -282,7 +282,7 @@ public class TestClass {
         restApi.setWsapiVersion(wsapiVersion);
 
         testSetRequest.setFetch(new Fetch(new String[] {"Name", "TestCases", "Results", "FormattedID", "LastVerdict", "LastBuild", "LastRun", "Priority", "Method"}));
-        String testSetsString = "TS752,TS745,TS741,TS743,TS746,TS754,TS778,TS779,TS780,TS781";
+        String testSetsString = "TS752,TS745,TS741";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("FormattedID", "=", "TS0");
         for(String testSet:testSets) {
@@ -324,10 +324,10 @@ public class TestClass {
             return null;
     }
     
-    private static void retrieveTestResults(RallyRestApi restApi, String testSetId) throws IOException {
+    private static void retrieveTestResults(RallyRestApi restApi) throws IOException {
     	QueryRequest testCaseResultsRequest = new QueryRequest("TestCaseResult");
         testCaseResultsRequest.setFetch(new Fetch("Build","TestCase","TestSet", "Verdict","FormattedID", "Date"));
-        String testSetsString = "TS752,TS745,TS741,TS778,TS779,TS743,TS746,TS754,TS780,TS781";
+        String testSetsString = "TS745,TS741,TS752";
         String[] testSets = testSetsString.split(",");
         QueryFilter query = new QueryFilter("TestSet.FormattedID", "=", "TS0");
         for(String testSet:testSets) {
@@ -343,7 +343,6 @@ public class TestClass {
         	for(int i=0; i<numberTestCaseResults; i++) {
         		String verdict = array.get(i).getAsJsonObject().get("Verdict").getAsString();
         		JsonObject jsonObj = array.get(i).getAsJsonObject().get("TestSet").getAsJsonObject();
-        		System.out.println(jsonObj);
         		if(verdict.equalsIgnoreCase("error")) {
         			error++;
         		} else if(verdict.equalsIgnoreCase("pass")) {
