@@ -8,6 +8,7 @@ package com.pearson.dashboard.action;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -136,24 +137,43 @@ public class DashboardAction extends Action {
 				dashboardForm.setSubTabs(selectedTab.getSubTabs());
 			}
 		}
-		
-		RegressionData regressionData = Util.getRegressionSetDetails(Util.getTabAttribute(configuration, "tabUniqueId", tab, subTab));
-		dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
-		if(null != regressionData) {
-			if(dashboardForm.getOperatingSystem().equalsIgnoreCase("IOS")) {
-				Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getIosTestSetsIds());
-			} else if(dashboardForm.getOperatingSystem().equalsIgnoreCase("WINDOWS")) {
-				Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getWinTestSetsIds());
+		if(configuration.getUseRegressionInputFile().equalsIgnoreCase("false")) {
+			Map<String, List<String>> regressionData = Util.getIteration(configuration, Util.getTabAttribute(configuration, "project", tab, subTab));
+			dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
+			if(null != regressionData) {
+				if(dashboardForm.getOperatingSystem().equalsIgnoreCase("IOS")) {
+					Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("IOS"));
+				} else if(dashboardForm.getOperatingSystem().equalsIgnoreCase("WINDOWS")) {
+					Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("WIN"));
+				} else {
+					List<String> allTestSets = new ArrayList<String>();
+					allTestSets.addAll(regressionData.get("IOS"));
+					allTestSets.addAll(regressionData.get("WIN"));
+					Util.retrieveTestResults(dashboardForm, configuration, null, allTestSets);
+				}
+				
 			} else {
-				List<String> allTestSets = new ArrayList<String>();
-				allTestSets.addAll(regressionData.getIosTestSetsIds());
-				allTestSets.addAll(regressionData.getWinTestSetsIds());
-				//Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
-				Util.retrieveTestResults(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
+				Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
 			}
-			
 		} else {
-			Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+			RegressionData regressionData = Util.getRegressionSetDetails(Util.getTabAttribute(configuration, "tabUniqueId", tab, subTab));
+			dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
+			if(null != regressionData) {
+				if(dashboardForm.getOperatingSystem().equalsIgnoreCase("IOS")) {
+					Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getIosTestSetsIds());
+				} else if(dashboardForm.getOperatingSystem().equalsIgnoreCase("WINDOWS")) {
+					Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getWinTestSetsIds());
+				} else {
+					List<String> allTestSets = new ArrayList<String>();
+					allTestSets.addAll(regressionData.getIosTestSetsIds());
+					allTestSets.addAll(regressionData.getWinTestSetsIds());
+					//Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
+					Util.retrieveTestResults(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
+				}
+				
+			} else {
+				Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+			}
 		}
     	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
     	dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));

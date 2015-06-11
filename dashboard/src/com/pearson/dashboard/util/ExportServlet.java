@@ -73,7 +73,7 @@ public class ExportServlet extends HttpServlet {
 	    	wb.setSheetName(3, "Closed");
 	    	createSheetHeader(sheet, wb);
 	    	createSheetData(sheet, closedDefects, wb);
-	    	/*
+	    	
 	    	if(dashboardForm.getRegressionData()) {
 		    	List<TestCase> testCases = dashboardForm.getTestCases();
 		    	sheet = wb.createSheet();
@@ -82,7 +82,7 @@ public class ExportServlet extends HttpServlet {
 		    	wb.setSheetName(4, "Regression");
 		    	createSheetHeaderRegression(sheet, wb);
 		    	createSheetDataRegression(sheet, testCases, wb);
-	    	}*/
+	    	}
 	    	wb.write(out);
 	    } catch (Exception e) {
 	    	throw new ServletException("Exception in Excel Sample Servlet", e);
