@@ -167,7 +167,6 @@ public class DashboardAction extends Action {
 					List<String> allTestSets = new ArrayList<String>();
 					allTestSets.addAll(regressionData.getIosTestSetsIds());
 					allTestSets.addAll(regressionData.getWinTestSetsIds());
-					//Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
 					Util.retrieveTestResults(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
 				}
 				

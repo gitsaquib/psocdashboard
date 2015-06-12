@@ -1373,8 +1373,8 @@ public class Util {
 				Priority priority5 = new Priority();
 				priority5.setPriorityName("NotAttempted");
 				List<TestCase> testCases = new ArrayList<TestCase>();
+				List<TestResult> testResults = new ArrayList<TestResult>();
 				if(numberTestCaseResults >0) {
-					List<TestResult> testResults = new ArrayList<TestResult>();
 		        	for(int i=0; i<numberTestCaseResults; i++) {
 		        		TestResult testResult = new TestResult();
 		        		TestCase testCase = new TestCase();
@@ -1398,20 +1398,7 @@ public class Util {
 		        			testResult.setTestCase(testCaseId);
 		        			testResult.setTestSet(testSet);
 		        			testResults.add(testResult);
-		        			if(resultExists != 1) {
-				        		if(verdict.equalsIgnoreCase("error")) {
-				        			priority2.setPriorityCount(priority2.getPriorityCount()+1);
-				        		} else if(verdict.equalsIgnoreCase("pass")) {
-				        			priority0.setPriorityCount(priority0.getPriorityCount()+1);
-				        		} else if(verdict.equalsIgnoreCase("fail")) {
-				        			priority3.setPriorityCount(priority3.getPriorityCount()+1);
-				        		} else if(verdict.equalsIgnoreCase("inconclusive")) {
-				        			priority4.setPriorityCount(priority4.getPriorityCount()+1);
-				        		} else if(verdict.equalsIgnoreCase("blocked")) {
-				        			priority1.setPriorityCount(priority1.getPriorityCount()+1);
-				        		}
-		        			}
-			        		testCase.setTestCaseId(testCaseId);
+		        			testCase.setTestCaseId(testCaseId);
 	                	  	testCase.setLastVerdict(verdict);
 	        			    testCase.setName(testSet);
 	        	            testCase.setDescription("");
@@ -1422,6 +1409,21 @@ public class Util {
 		        		}
 	                 }
 	            }
+				for(TestResult result:testResults) {
+					String verdict = result.getStatus();
+	        		if(verdict.equalsIgnoreCase("error")) {
+	        			priority2.setPriorityCount(priority2.getPriorityCount()+1);
+	        		} else if(verdict.equalsIgnoreCase("pass")) {
+	        			priority0.setPriorityCount(priority0.getPriorityCount()+1);
+	        		} else if(verdict.equalsIgnoreCase("fail")) {
+	        			priority3.setPriorityCount(priority3.getPriorityCount()+1);
+	        		} else if(verdict.equalsIgnoreCase("inconclusive")) {
+	        			priority4.setPriorityCount(priority4.getPriorityCount()+1);
+	        		} else if(verdict.equalsIgnoreCase("blocked")) {
+	        			priority1.setPriorityCount(priority1.getPriorityCount()+1);
+	        		}
+    			}
+        		
 				dashboardForm.setTestCases(testCases); 
 				
 				
