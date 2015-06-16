@@ -1344,6 +1344,10 @@ public class Util {
 		RallyRestApi  restApi = loginRally(configuration);
         QueryRequest testCaseResultsRequest = new QueryRequest("TestCaseResult");
         testCaseResultsRequest.setFetch(new Fetch("Build","TestCase","TestSet", "Verdict","FormattedID","Date", "TestCaseCount"));
+        if(testSets == null ||  testSets.isEmpty()){
+        	testSets = new ArrayList<String>();
+        	testSets.add("TS0");
+        }
         QueryFilter queryFilter = new QueryFilter("TestSet.FormattedID", "=", testSets.get(0));
         int q = 1;
         while(testSets.size() > q) {
@@ -1391,7 +1395,7 @@ public class Util {
 		        		JsonObject testCaseJsonObj = array.get(i).getAsJsonObject().get("TestCase").getAsJsonObject();
 		        		String testSet = testSetJsonObj.get("FormattedID").getAsString();
 		        		String testCaseId = testCaseJsonObj.get("FormattedID").getAsString();
-		        		int resultExists = testResultExists(testSet, testCaseId, date, testResults); 
+		        		int resultExists = testResultExists(testSet, testCaseId, date, testResults, testCases); 
 		        		if(resultExists != 0) {
 		        			testResult.setDate(date);
 		        			testResult.setStatus(verdict);
@@ -1588,7 +1592,7 @@ public class Util {
         return testSetsInformation;
     }
 	
-	private static int testResultExists(String testSet, String testCase, Date date, List<TestResult> testResults) {
+	private static int testResultExists(String testSet, String testCase, Date date, List<TestResult> testResults, List<TestCase> testCases) {
     	int index = 0;
     	for(TestResult testResult:testResults) {
     		if(testResult.getTestCase().equalsIgnoreCase(testCase) && testResult.getTestSet().equalsIgnoreCase(testSet)){
@@ -1596,6 +1600,7 @@ public class Util {
     				return 0;
     			} else {
     				testResults.remove(index);
+    				testCases.remove(index);
     				return 1;
     			}
     		} 
