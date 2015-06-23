@@ -147,8 +147,12 @@ public class DashboardAction extends Action {
 					Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("WIN"));
 				} else {
 					List<String> allTestSets = new ArrayList<String>();
-					allTestSets.addAll(regressionData.get("IOS"));
-					allTestSets.addAll(regressionData.get("WIN"));
+					if(null != regressionData.get("IOS")) {
+						allTestSets.addAll(regressionData.get("IOS"));
+					}
+					if(null != regressionData.get("WIN")) {
+						allTestSets.addAll(regressionData.get("WIN"));
+					}
 					Util.retrieveTestResults(dashboardForm, configuration, null, allTestSets);
 				}
 				
