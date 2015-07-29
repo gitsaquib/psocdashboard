@@ -1,5 +1,6 @@
 package com.pearson.dashboard.util;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 
 public class ChartServlet extends HttpServlet {
@@ -36,6 +38,19 @@ public class ChartServlet extends HttpServlet {
 		boolean tooltips = true;
 		boolean urls = false;
 		JFreeChart chart = ChartFactory.createPieChart(""+getCount(query, "Total"), dataset, legend, tooltips, urls);
+		PiePlot plot = (PiePlot) chart.getPlot();
+		count = getCount(query, "Blocked");
+		plot.setSectionPaint("Blocked["+count+"]", new Color(255,127,14));
+		count = getCount(query, "NotAttempted");
+		plot.setSectionPaint("NotAttempted["+count+"]", new Color(31,119,180));
+		count = getCount(query, "Pass");
+		plot.setSectionPaint("Pass["+count+"]", new Color(44,160,44));
+		count = getCount(query, "Fail");
+		plot.setSectionPaint("Fail["+count+"]", new Color(214,39,40));
+		count = getCount(query, "Inconclusive");
+		plot.setSectionPaint("Inconclusive["+count+"]", new Color(171,70,140));
+		count = getCount(query, "Error");
+		plot.setSectionPaint("Error["+count+"]", new Color(0,0,0));
 		int width = 610;
 		int height = 210;
 		BufferedImage bi = chart.createBufferedImage(width, height);
