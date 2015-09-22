@@ -13,7 +13,6 @@ public class Configuration {
 	private String rallyUser;
 	private String rallyPassword;
 	private List<Tab> tabs;
-	private String useRegressionInputFile;
 	
 	public String getRallyURL() {
 		return rallyURL;
@@ -38,11 +37,5 @@ public class Configuration {
 	}
 	public void setTabs(List<Tab> tabs) {
 		this.tabs = tabs;
-	}
-	public String getUseRegressionInputFile() {
-		return useRegressionInputFile;
-	}
-	public void setUseRegressionInputFile(String useRegressionInputFile) {
-		this.useRegressionInputFile = useRegressionInputFile;
 	}
 }

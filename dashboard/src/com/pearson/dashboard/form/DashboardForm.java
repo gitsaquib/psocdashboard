@@ -90,6 +90,7 @@ public class DashboardForm extends ActionForm {
     private String operatingSystem;
     private String filterInfo;
     private String tag;
+    private String useRegressionInputFile;
     
     public String getRole() {
 		return role;
@@ -422,5 +423,11 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+	public String getUseRegressionInputFile() {
+		return useRegressionInputFile;
+	}
+	public void setUseRegressionInputFile(String useRegressionInputFile) {
+		this.useRegressionInputFile = useRegressionInputFile;
 	}
 }

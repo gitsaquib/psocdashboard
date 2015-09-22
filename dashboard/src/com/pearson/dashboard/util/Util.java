@@ -184,7 +184,7 @@ public class Util {
 	    	            defect.setProject(project.get("_refObjectName").getAsString());
 	    	            defect.setDefectDesc(object.get("Name").getAsString());
 	    	            String platform = "iOS";
-	    	            if(null != object.get("c_Platform")) {
+	    	            if(null != object.get("c_Platform") && !object.get("c_Platform").isJsonNull()) {
 	    	            	if(object.get("c_Platform").getAsString().contains("iOS") && object.get("c_Platform").getAsString().contains("Win")) {
 	    	            		platform  = "iOS";
 	    	            	} else if(object.get("c_Platform").getAsString().contains("iOS")) {
@@ -192,6 +192,8 @@ public class Util {
 	    	            	} else if(object.get("c_Platform").getAsString().contains("Win")) {
 	    	            		platform = "Windows";
 	    	            	}
+	    	            } else {
+	    	            	System.out.println(defect.getDefectId());
 	    	            }
 	    	            defect.setPlatform(platform);
 	    	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
@@ -297,7 +299,6 @@ public class Util {
 			configuration.setRallyURL(prop.getProperty("rallyURL"));
 			configuration.setRallyUser(prop.getProperty("rallyUser"));
 			configuration.setRallyPassword(prop.getProperty("rallyPassword"));
-			configuration.setUseRegressionInputFile(prop.getProperty("useRegressionInputFile"));
 			
 			file = new File(System.getProperty("user.home"), "config/tab.properties");
 	    	InputStream streamProject = new FileInputStream(file);
@@ -334,6 +335,11 @@ public class Util {
 						tab.setTag(null);
 					} else {
 						tab.setTag(param[7]);
+					}
+					if(null == param[8] || param[8].equals("null") || param[8].equals("false")) {
+						tab.setUseRegressionInputFile("false");
+					} else {
+						tab.setUseRegressionInputFile("true");
 					}
 					tab.setSubTabs(getSubTabs(param[2]));
 					tabs.add(tab);

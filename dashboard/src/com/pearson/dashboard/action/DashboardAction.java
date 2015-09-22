@@ -5,11 +5,17 @@
  */
 package com.pearson.dashboard.action;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +40,7 @@ import com.pearson.dashboard.vo.Tab;
 public class DashboardAction extends Action {
 
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
     	DashboardForm dashboardForm = (DashboardForm) form;
     	
     	Util.setOperatingSystems(dashboardForm);
@@ -93,7 +99,11 @@ public class DashboardAction extends Action {
     	if(null != request.getParameter("export")) {
     		request.getSession().setAttribute("dashboardForm", dashboardForm);
     		request.setAttribute("dashboardForm", dashboardForm);
-    		request.getRequestDispatcher("export.do").forward(request, response);
+    		try {
+				request.getRequestDispatcher("export.do").forward(request, response);
+			} catch (ServletException | IOException e) {
+				e.printStackTrace();
+			}
     	}
     	String userName = null;
     	String role = null;
@@ -116,7 +126,12 @@ public class DashboardAction extends Action {
 		dashboardForm.setLoginUser(userName);
 		dashboardForm.setRole(role);
 		
-		Configuration configuration = Util.readConfigFile();
+		Configuration configuration = new Configuration();
+		try {
+			configuration = Util.readConfigFile();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
         List<Tab> tabs = configuration.getTabs();
     	
     	dashboardForm.setTabs(tabs);
@@ -135,16 +150,30 @@ public class DashboardAction extends Action {
 		for(Tab selectedTab:tabs) {
 			if(selectedTab.getTabIndex() ==  tab) {
 				dashboardForm.setSubTabs(selectedTab.getSubTabs());
+				dashboardForm.setUseRegressionInputFile(selectedTab.getUseRegressionInputFile());
 			}
 		}
-		if(configuration.getUseRegressionInputFile().equalsIgnoreCase("false")) {
-			Map<String, List<String>> regressionData = Util.getIteration(configuration, Util.getTabAttribute(configuration, "project", tab, subTab));
+		if(dashboardForm.getUseRegressionInputFile().equalsIgnoreCase("false")) {
+			Map<String, List<String>> regressionData = new HashMap<String, List<String>>();
+			try {
+				regressionData = Util.getIteration(configuration, Util.getTabAttribute(configuration, "project", tab, subTab));
+			} catch (IOException | ParseException | URISyntaxException e) {
+				e.printStackTrace();
+			}
 			dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
 			if(null != regressionData) {
 				if(dashboardForm.getOperatingSystem().equalsIgnoreCase("IOS")) {
-					Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("IOS"));
+					try {
+						Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("IOS"));
+					} catch (IOException | URISyntaxException | ParseException e) {
+						e.printStackTrace();
+					}
 				} else if(dashboardForm.getOperatingSystem().equalsIgnoreCase("WINDOWS")) {
-					Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("WIN"));
+					try {
+						Util.retrieveTestResults(dashboardForm, configuration, null, regressionData.get("WIN"));
+					} catch (IOException | URISyntaxException | ParseException e) {
+						e.printStackTrace();
+					}
 				} else {
 					List<String> allTestSets = new ArrayList<String>();
 					if(null != regressionData.get("IOS")) {
@@ -153,29 +182,58 @@ public class DashboardAction extends Action {
 					if(null != regressionData.get("WIN")) {
 						allTestSets.addAll(regressionData.get("WIN"));
 					}
-					Util.retrieveTestResults(dashboardForm, configuration, null, allTestSets);
+					try {
+						Util.retrieveTestResults(dashboardForm, configuration, null, allTestSets);
+					} catch (IOException | URISyntaxException | ParseException e) {
+						e.printStackTrace();
+					}
 				}
 				
 			} else {
-				Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+				try {
+					Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+				} catch (IOException | URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 		} else {
-			RegressionData regressionData = Util.getRegressionSetDetails(Util.getTabAttribute(configuration, "tabUniqueId", tab, subTab));
+			RegressionData regressionData = new RegressionData();
+			try {
+				regressionData = Util.getRegressionSetDetails(Util.getTabAttribute(configuration, "tabUniqueId", tab, subTab));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			dashboardForm.setProjectId(Util.getTabAttribute(configuration, "project", tab, subTab));
 			if(null != regressionData) {
 				if(dashboardForm.getOperatingSystem().equalsIgnoreCase("IOS")) {
-					Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getIosTestSetsIds());
+					try {
+						Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getIosTestSetsIds());
+					} catch (IOException | URISyntaxException | ParseException e) {
+						e.printStackTrace();
+					}
 				} else if(dashboardForm.getOperatingSystem().equalsIgnoreCase("WINDOWS")) {
-					Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getWinTestSetsIds());
+					try {
+						Util.retrieveTestCasesUsingSets(dashboardForm, configuration, regressionData.getCutoffDate(), regressionData.getWinTestSetsIds());
+					} catch (IOException | URISyntaxException | ParseException e) {
+						e.printStackTrace();
+					}
 				} else {
 					List<String> allTestSets = new ArrayList<String>();
 					allTestSets.addAll(regressionData.getIosTestSetsIds());
 					allTestSets.addAll(regressionData.getWinTestSetsIds());
-					Util.retrieveTestResults(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
+					try {
+						Util.retrieveTestResults(dashboardForm, configuration, regressionData.getCutoffDate(), allTestSets);
+					} catch (IOException | URISyntaxException | ParseException e) {
+						e.printStackTrace();
+					}
 				}
 				
 			} else {
-				Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+				try {
+					Util.retrieveTestCases(dashboardForm, configuration, Util.getTabAttribute(configuration, "cutoffdate", tab, tab));
+				} catch (IOException | URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 		}
     	dashboardForm.setCutoffDate(Util.getTabAttribute(configuration, "cutoffdate", tab, subTab));
@@ -184,7 +242,11 @@ public class DashboardAction extends Action {
     	dashboardForm.setTag(Util.getTabAttribute(configuration, "tag", tab, subTab));
     	dashboardForm.setTabName(tabName);
 		
-    	Util.populateDefectData(dashboardForm, configuration);
+    	try {
+			Util.populateDefectData(dashboardForm, configuration);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     	
     	if(dashboardForm.getRegressionData()) {
 			List<Priority> testCases =  dashboardForm.getTestCasesPriorities();

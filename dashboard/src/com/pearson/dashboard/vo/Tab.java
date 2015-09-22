@@ -19,6 +19,7 @@ public class Tab implements Serializable, Comparable<Tab> {
 	private List<Tab> subTabs;
 	private String information;
 	private String tag;
+	private String useRegressionInputFile;
 
 	public int getTabIndex() {
 		return tabIndex;
@@ -79,6 +80,12 @@ public class Tab implements Serializable, Comparable<Tab> {
 	}
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+	public String getUseRegressionInputFile() {
+		return useRegressionInputFile;
+	}
+	public void setUseRegressionInputFile(String useRegressionInputFile) {
+		this.useRegressionInputFile = useRegressionInputFile;
 	}
 	@Override
 	public int compareTo(Tab tab) {
