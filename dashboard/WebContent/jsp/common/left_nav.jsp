@@ -27,6 +27,19 @@
 	</div>
 	<div style="width: 100%; height: 1em"></div>
 	<div style="border:1px solid #46464f; border-style: dotted; border-radius: 15px;" align="center">
+		<div style="width: 100%; height: 1em"></div>
+		<select name="release" id="release" style="width: 120px;" onchange="retrieveReleaseDashboard(${DashboardForm.tabIndex}, ${DashboardForm.subProject}, this.value);">
+	        <option value="2.0" ${'2.0' == DashboardForm.operatingSystem ? 'selected' : ''}>
+	        	<font color="gray" size="2" face="Tahoma">Release 2.0</font>
+	        </option>
+	        <option value="2.1" ${'2.1' == DashboardForm.operatingSystem ? 'selected' : ''}>
+	        	<font color="gray" size="2" face="Tahoma">Release 2.1</font>
+	        </option>
+		</select>&nbsp;
+		<div style="width: 100%; height: 1em"></div>
+	</div>
+	<div style="width: 100%; height: 1em"></div>
+	<div style="border:1px solid #46464f; border-style: dotted; border-radius: 15px;" align="center">
 		<span>
 			<font color="gray" size="2" face="Tahoma">
 				<b><u>Filter information:</u></b> 
