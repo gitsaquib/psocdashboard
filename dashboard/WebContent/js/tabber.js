@@ -312,6 +312,11 @@ function expandDefects(type, index) {
 		title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 }
 
+function openDefectChart(defectData) {
+	$.colorbox({iframe:true, width:"60%", overlayClose: false, escKey: false, height:"50%", 
+		title:"",href:'/dashboard/defectchart?query='+defectData});
+}
+
 function showTestCases(queryStr) {
 	$.ajax({
 	    type: "post",

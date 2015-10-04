@@ -1,7 +1,11 @@
 <div id="section">
 <div style="border:1px solid #46464f; border-style: dotted; border-radius: 15px;">
 	<div id="subheader" style="border-radius: 15px;">
-		<font color="white" size="2" face="Tahoma"><b>Fixed Defects</b></font>
+		<a href='javascript: openDefectChart(escape("${DashboardForm.componentsCountFixed}"));'>
+			<font color="white" size="2" face="Tahoma">
+				Fixed Defects
+			</font>
+		</a>
 	</div>
 	<div style="align=center;">
 		<p align="center">

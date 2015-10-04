@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.http.conn.HttpHostConnectException;
@@ -122,7 +124,7 @@ public class Util {
     	
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Release", "Tags", "Name", "FormattedID", "Platform", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setFetch(new Fetch("State", "Release", "Tags", "Name", "FormattedID", "Platform", "Priority", "Components", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
     	defectRequest.setLimit(4000);
@@ -196,6 +198,7 @@ public class Util {
 	    	            	System.out.println(defect.getDefectId());
 	    	            }
 	    	            defect.setPlatform(platform);
+	    	            defect.setComponents(object.get("c_Components").getAsString());
 	    	            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
 	    	            	defects.add(defect);	
 	    	            }
@@ -431,6 +434,7 @@ public class Util {
 		    }
 		}
 		
+		dashboardForm.setComponentsCountOpen(populateComponentsMap(openDefects));
 		dashboardForm.setOpenDefects(openDefects);
 		dashboardForm.setOpenPriorities(priorities);
 		dashboardForm.setOpenDefectCount(openDefects.size());
@@ -505,6 +509,7 @@ public class Util {
 		    }
 		}
 		
+		dashboardForm.setComponentsCountSubmitted(populateComponentsMap(submittedDefects));
 		dashboardForm.setSubmittedDefects(submittedDefects);
 		dashboardForm.setSubmittedPriorities(priorities);
 		dashboardForm.setSubmittedDefectCount(submittedDefects.size());
@@ -579,6 +584,7 @@ public class Util {
 			}
 		}
 		
+		dashboardForm.setComponentsCountFixed(populateComponentsMap(fixedDefects));
 		dashboardForm.setFixedDefects(fixedDefects);
 		dashboardForm.setFixedPriorities(priorities);
 		dashboardForm.setFixedDefectCount(fixedDefects.size());
@@ -943,7 +949,7 @@ public class Util {
 		}
     	defectRequest = new QueryRequest("defects");
     	defectRequest.setQueryFilter(queryFilter);
-    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Platform", "Priority", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
+    	defectRequest.setFetch(new Fetch("State", "Release", "Name", "FormattedID", "Platform", "Priority", "Components", "LastUpdateDate", "SubmittedBy", "Owner", "Project", "ClosedDate"));
     	defectRequest.setProject("/project/"+projectId);  
     	defectRequest.setScopedDown(true);
     	defectRequest.setScopedDown(true);
@@ -999,7 +1005,7 @@ public class Util {
 			            	}
 			            }
 			            defect.setPlatform(platform);
-			            
+			            defect.setComponents(object.get("c_Components").getAsString());
 			            if(platform.equalsIgnoreCase(operatingSystem) || operatingSystem.equalsIgnoreCase("All")) {
 			            	defects.add(defect);	
 			            }
@@ -1614,4 +1620,37 @@ public class Util {
     	}
     	return -1;
     }
+	
+	private static String populateComponentsMap(List<Defect> defects) {
+		String components = "";
+		int noComponents = 0;
+		Map<String, Integer> componentsMap = new HashMap<String, Integer>();
+		for(Defect defect:defects) {
+			String componentOfDefect = defect.getComponents();
+			if(null != componentOfDefect) {
+				Integer count = componentsMap.get(componentOfDefect);
+				if(null != count) {
+					count++;
+				} else {
+					count = 1;
+				}
+				componentsMap.put(componentOfDefect, count);
+			} else {
+				noComponents++;
+			}
+		}
+		for(Entry<String, Integer> entry: componentsMap.entrySet()){
+			if(!components.isEmpty()) {
+				components = components +"////";
+			}
+			components = components + entry.getKey() + "~" + entry.getValue();
+		}
+		if(noComponents != 0) {
+			if(!components.isEmpty()) {
+				components = components +"////";
+			}
+			components = components + "NoComponents" + "~" + noComponents;
+		}
+		return URLEncoder.encode(components);
+	}
 }

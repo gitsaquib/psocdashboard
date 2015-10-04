@@ -33,9 +33,17 @@
 	<servlet-name>ChartServlet</servlet-name>
 	<servlet-class>com.pearson.dashboard.util.ChartServlet</servlet-class>
   </servlet>
+  <servlet>
+	<servlet-name>DefectChartServlet</servlet-name>
+	<servlet-class>com.pearson.dashboard.util.DefectChartServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
 	<servlet-name>ChartServlet</servlet-name>
 	<url-pattern>/chart</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+	<servlet-name>DefectChartServlet</servlet-name>
+	<url-pattern>/defectchart</url-pattern>
   </servlet-mapping>
   <session-config>
     <session-timeout>30</session-timeout>

@@ -23,7 +23,14 @@ public class Defect implements Serializable, Comparable<Defect> {
     private String defectUrl;
     private String sort; 
     private String platform;
+    private String components;
     
+	public String getComponents() {
+		return components;
+	}
+	public void setComponents(String components) {
+		this.components = components;
+	}
 	public String getDefectId() {
 		return defectId;
 	}

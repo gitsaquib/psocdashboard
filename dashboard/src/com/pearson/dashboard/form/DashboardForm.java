@@ -6,6 +6,7 @@
 package com.pearson.dashboard.form;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts.action.ActionForm;
 
@@ -32,6 +33,7 @@ public class DashboardForm extends ActionForm {
     private int openYesterdayDefectCount;
     private int openYesterdayP1AndP2Count;
     private List<Priority> openYesterdayPriorities;
+    private String componentsCountOpen;
     
     private List<Defect> closedYesterdayDefects;
     private int closedYesterdayDefectCount;
@@ -42,6 +44,7 @@ public class DashboardForm extends ActionForm {
     private int submittedDefectCount;
     private int submittedP1AndP2Count;
     private List<Priority> submittedPriorities;
+    private String componentsCountSubmitted;
     
     private List<Defect> closedDefects;
     private int closedDefectCount;
@@ -52,6 +55,7 @@ public class DashboardForm extends ActionForm {
     private int fixedDefectCount;
     private int fixedP1AndP2Count;
     private List<Priority> fixedPriorities;
+    private String componentsCountFixed;
     
     private List<Tab> tabs;
     
@@ -429,5 +433,23 @@ public class DashboardForm extends ActionForm {
 	}
 	public void setUseRegressionInputFile(String useRegressionInputFile) {
 		this.useRegressionInputFile = useRegressionInputFile;
+	}
+	public String getComponentsCountOpen() {
+		return componentsCountOpen;
+	}
+	public void setComponentsCountOpen(String componentsCountOpen) {
+		this.componentsCountOpen = componentsCountOpen;
+	}
+	public String getComponentsCountSubmitted() {
+		return componentsCountSubmitted;
+	}
+	public void setComponentsCountSubmitted(String componentsCountSubmitted) {
+		this.componentsCountSubmitted = componentsCountSubmitted;
+	}
+	public String getComponentsCountFixed() {
+		return componentsCountFixed;
+	}
+	public void setComponentsCountFixed(String componentsCountFixed) {
+		this.componentsCountFixed = componentsCountFixed;
 	}
 }
