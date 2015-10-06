@@ -1,10 +1,11 @@
 <div id="section">
 <div style="border:1px solid #46464f; border-style: dotted; border-radius: 15px;">
 	<div id="subheader" style="border-radius: 15px;">
+		<font color="white" size="2" face="Tahoma">
+			Open Defects
+		</font>
 		<a href='javascript: openDefectChart(escape("${DashboardForm.componentsCountOpen}"));'>
-			<font color="white" size="2" face="Tahoma">
-				Open Defects
-			</font>
+			<img src="images/chart.jpg" alt="Open Defects by Components" width="20" height="20"/>
 		</a>
 	</div>
 	<div style="align=center;">

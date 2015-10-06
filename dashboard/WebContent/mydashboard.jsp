@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 		<script src="js/jquery-1.11.1.min.js"></script> 
 		<script language="javascript" type="text/javascript" src='js/jquery.js'></script>
-		<script type="text/javascript" src="js/tabber.js?V=1"></script>
+		<script type="text/javascript" src="js/tabber.js?V=2"></script>
 		<link rel="stylesheet" href="css/tabber.css" TYPE="text/css" MEDIA="screen"/>
 		<script language="javascript" type="text/javascript" src="js/jquery.colorbox.js"></script>
 		<link href="css/colorbox.css" type="text/css" rel="stylesheet" />

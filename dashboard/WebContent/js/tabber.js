@@ -313,7 +313,7 @@ function expandDefects(type, index) {
 }
 
 function openDefectChart(defectData) {
-	$.colorbox({iframe:true, width:"60%", overlayClose: false, escKey: false, height:"50%", 
+	$.colorbox({iframe:true, width:"95%", overlayClose: false, escKey: false, height:"95%", 
 		title:"",href:'/dashboard/defectchart?query='+defectData});
 }
 

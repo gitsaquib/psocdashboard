@@ -32,8 +32,8 @@ public class DefectChartServlet extends HttpServlet {
 		JFreeChart chart = ChartFactory.createPieChart(""+total, dataset, legend, tooltips, urls);
 		PiePlot plot = (PiePlot) chart.getPlot();
 		
-		int width = 610;
-		int height = 210;
+		int width = 800;
+		int height = 400;
 		BufferedImage bi = chart.createBufferedImage(width, height);
 		OutputStream out = response.getOutputStream();
 		ImageIO.write(bi, "png", out);
@@ -46,12 +46,8 @@ public class DefectChartServlet extends HttpServlet {
 		if(null != data) {
 			for(int i=0; i<data.length; i++) {
 				String params[] = data[i].trim().split("~");
-				if(params.length == 1) {
-					System.out.println(params[0]);
-				}
 				total = total + Integer.parseInt(params[1]);
-				dataset.setValue(params[0], Integer.parseInt(params[1]));
-				
+				dataset.setValue(params[0]+"["+Integer.parseInt(params[1])+"]", Integer.parseInt(params[1]));
 			}
 		}
 		return total;
