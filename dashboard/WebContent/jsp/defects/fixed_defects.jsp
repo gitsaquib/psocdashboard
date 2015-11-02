@@ -4,7 +4,7 @@
 		<font color="white" size="2" face="Tahoma">
 			Fixed Defects
 		</font>
-		<a href='javascript: openDefectChart(escape("${DashboardForm.componentsCountFixed}"));'>
+		<a href='javascript: openDefectChart(escape("${DashboardForm.componentsCountFixed}"), "Fixed");'>
 			<img src="images/chart.jpg" alt="Submitted Defects by Components" width="20" height="20"/>
 		</a>
 	</div>

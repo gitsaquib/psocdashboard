@@ -312,9 +312,9 @@ function expandDefects(type, index) {
 		title:type,href:'/dashboard/dashboard.do?expandType='+type+'&tab='+index});
 }
 
-function openDefectChart(defectData) {
+function openDefectChart(defectData,charttype) {
 	$.colorbox({iframe:true, width:"95%", overlayClose: false, escKey: false, height:"95%", 
-		title:"",href:'/dashboard/defectchart?query='+defectData});
+		title:"",href:'/dashboard/defectchart?query='+defectData+"&type="+charttype});
 }
 
 function showTestCases(queryStr) {

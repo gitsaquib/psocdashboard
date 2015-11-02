@@ -4,7 +4,7 @@
 		<font color="white" size="2" face="Tahoma">
 			Open Defects
 		</font>
-		<a href='javascript: openDefectChart(escape("${DashboardForm.componentsCountOpen}"));'>
+		<a href='javascript: openDefectChart(escape("${DashboardForm.componentsCountOpen}"), "Open");'>
 			<img src="images/chart.jpg" alt="Open Defects by Components" width="20" height="20"/>
 		</a>
 	</div>

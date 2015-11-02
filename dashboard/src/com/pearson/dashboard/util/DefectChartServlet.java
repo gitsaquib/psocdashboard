@@ -22,18 +22,26 @@ public class DefectChartServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String query = URLDecoder.decode(request.getParameter("query"));
+		String type = URLDecoder.decode(request.getParameter("type"));
 		DefaultPieDataset dataset = new DefaultPieDataset();
 
 		int total = populateDataSet(query, dataset);
 		
 		boolean legend = true;
 		boolean tooltips = true;
+		if(type.equalsIgnoreCase("Submitted and Open Defects")) {
+			tooltips = false;
+		}
 		boolean urls = false;
-		JFreeChart chart = ChartFactory.createPieChart(""+total, dataset, legend, tooltips, urls);
+		JFreeChart chart = ChartFactory.createPieChart(type+"["+total+"]", dataset, legend, tooltips, urls);
 		PiePlot plot = (PiePlot) chart.getPlot();
 		
 		int width = 800;
 		int height = 400;
+		if(type.equalsIgnoreCase("Submitted and Open Defects")) {
+			width = 610;
+			height = 610;
+		}
 		BufferedImage bi = chart.createBufferedImage(width, height);
 		OutputStream out = response.getOutputStream();
 		ImageIO.write(bi, "png", out);
@@ -46,8 +54,10 @@ public class DefectChartServlet extends HttpServlet {
 		if(null != data) {
 			for(int i=0; i<data.length; i++) {
 				String params[] = data[i].trim().split("~");
-				total = total + Integer.parseInt(params[1]);
-				dataset.setValue(params[0]+"["+Integer.parseInt(params[1])+"]", Integer.parseInt(params[1]));
+				if(params.length > 1) {
+					total = total + Integer.parseInt(params[1]);
+					dataset.setValue(params[0]+"["+Integer.parseInt(params[1])+"]", Integer.parseInt(params[1]));
+				}
 			}
 		}
 		return total;

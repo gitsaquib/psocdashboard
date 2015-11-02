@@ -827,6 +827,11 @@ public class Util {
 		dashboardForm.setProjectName(tab.getTabDisplayName());
 		dashboardForm.setRegressionData(tab.isRegressionData());
 		dashboardForm.setFilterInfo(tab.getInformation());
+		
+		List<Defect> openAndSubmitted = new ArrayList<Defect>();
+		openAndSubmitted.addAll(openDefects);
+		openAndSubmitted.addAll(submittedDefects);
+		dashboardForm.setComponentsCountOpenSubmitted(populateComponentsMap(openAndSubmitted));
 	}
     
     public static String getTabAttribute(Configuration configuration, String key, int tabInt, int subTabInt) {

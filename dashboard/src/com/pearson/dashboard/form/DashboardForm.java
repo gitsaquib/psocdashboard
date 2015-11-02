@@ -96,7 +96,15 @@ public class DashboardForm extends ActionForm {
     private String tag;
     private String useRegressionInputFile;
     
-    public String getRole() {
+    private String componentsCountOpenSubmitted;
+    
+    public String getComponentsCountOpenSubmitted() {
+		return componentsCountOpenSubmitted;
+	}
+	public void setComponentsCountOpenSubmitted(String componentsCountOpenSubmitted) {
+		this.componentsCountOpenSubmitted = componentsCountOpenSubmitted;
+	}
+	public String getRole() {
 		return role;
 	}
 	public void setRole(String role) {
